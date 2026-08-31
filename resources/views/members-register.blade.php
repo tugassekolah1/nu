@@ -270,5 +270,5 @@
         <p>&copy; {{ date('Y') }} Warta NU. Seluruh Hak Cipta Dilindungi.</p>
     </footer>
 
-</body>
+</body> 
 </html>
