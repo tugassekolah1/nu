@@ -27,26 +27,56 @@
         .container { width: min(var(--container), calc(100% - 32px)); margin: 0 auto; }
 
         /* NAV */
-        .nav { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
-        .nav-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-        .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; }
-        .brand-mark {
-            width: 44px; height: 44px; border-radius: 14px;
-            background: linear-gradient(135deg, #183c2f 0%, #82be46 100%);
-            display: grid; place-items: center; color: white; box-shadow: var(--shadow); font-size: 17px;
-        }
-        .brand-name { font-size: 20px; line-height: 1.15; }
-        .brand-name small { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); }
-        .nav-actions { display: flex; align-items: center; gap: 10px; }
-        .btn-wa {
-            display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: #fff !important;
-            padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: 14px;
-        }
-        .btn-daftar-nav {
-            background: var(--brand-dark); color: #fff !important; padding: 10px 18px;
-            border-radius: 999px; font-weight: 700; font-size: 14px;
-        }
+       body { padding-top: 88px; }
 
+/* NAV — floating pill, auto-hide saat scroll ke bawah */
+.nav {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    width: min(calc(100% - 24px), 1100px);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    box-shadow: 0 10px 30px rgba(23, 57, 45, 0.1);
+    z-index: 50;
+    transition: transform 320ms ease, box-shadow 320ms ease, background 320ms ease;
+}
+.nav.nav-scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 14px 36px rgba(23, 57, 45, 0.16);
+}
+.nav.nav-hidden {
+    transform: translateX(-50%) translateY(-140%);
+}
+.nav-inner {
+    min-height: 64px;
+    padding: 6px 10px 6px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.brand { display: flex; align-items: center; gap: 12px; font-weight: 800; }
+.brand-mark {
+    width: 44px; height: 44px; border-radius: 14px;
+    background: linear-gradient(135deg, #183c2f 0%, #82be46 100%);
+    display: grid; place-items: center; color: white; box-shadow: var(--shadow); font-size: 17px;
+}
+.brand-name { font-size: 20px; line-height: 1.15; }
+.brand-name small { display: block; font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+.nav-actions { display: flex; align-items: center; gap: 10px; }
+.btn-wa {
+    display: inline-flex; align-items: center; gap: 6px; background: #25D366; color: #fff !important;
+    padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: 14px;
+}
+.btn-daftar-nav {
+    background: var(--brand-dark); color: #fff !important; padding: 10px 18px;
+    border-radius: 999px; font-weight: 700; font-size: 14px;
+}
         /* HERO */
         .hero {
             position: relative; overflow: hidden;
@@ -200,26 +230,25 @@
 </head>
 <body>
 
-    <nav class="nav">
-        <div class="container nav-inner">
-            <a href="{{ route('landing') }}" class="brand">
-                <span class="brand-mark">NU</span>
-                <span class="brand-name">
-                    NU BANJARANYAR
-                    <small>Nahdlatul Ulama</small>
-                </span>
+   <nav class="nav">
+    <div class="container nav-inner">
+        <a href="{{ route('landing') }}" class="brand">
+            <span class="brand-mark">NU</span>
+            <span class="brand-name">
+                NU BANJARANYAR
+                <small>Nahdlatul Ulama</small>
+            </span>
+        </a>
+
+        <div class="nav-actions">
+            <a href="https://wa.me/6281234567890" target="_blank" class="btn-wa">
+                <i data-lucide="message-circle" style="width:16px;height:16px;"></i>
+                WhatsApp
             </a>
-
-            <div class="nav-actions">
-                <a href="https://wa.me/6281234567890" target="_blank" class="btn-wa">
-                    <i data-lucide="message-circle" style="width:16px;height:16px;"></i>
-                    WhatsApp
-                </a>
-                <a href="{{ route('members.register-form') }}" class="btn-daftar-nav">Daftar Anggota</a>
-            </div>
+            <a href="{{ route('members.register-form') }}" class="btn-daftar-nav">Daftar Anggota</a>
         </div>
-    </nav>
-
+    </div>
+</nav>
     <header class="hero">
         <div class="container hero-inner">
             <h1 class="hero-title">Nahdlatul Ulama<br>Ranting Banjaranyar</h1>
@@ -410,9 +439,41 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-    <script>
-        lucide.createIcons();
-    </script>
+   <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script>
+    lucide.createIcons();
+</script>
+<script>
+    (function () {
+        const nav = document.getElementById('mainNav');
+        let lastScroll = 0;
+        let ticking = false;
+
+        function handleScroll() {
+            const current = window.scrollY;
+
+            // Kasih shadow lebih tegas begitu mulai scroll
+            nav.classList.toggle('nav-scrolled', current > 20);
+
+            // Scroll ke bawah & sudah lewat 120px -> sembunyikan navbar ke atas
+            // Scroll ke atas -> tampilkan lagi
+            if (current > lastScroll && current > 120) {
+                nav.classList.add('nav-hidden');
+            } else {
+                nav.classList.remove('nav-hidden');
+            }
+
+            lastScroll = current <= 0 ? 0 : current;
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', function () {
+            if (!ticking) {
+                window.requestAnimationFrame(handleScroll);
+                ticking = true;
+            }
+        });
+    })();
+</script>
 </body>
 </html>
