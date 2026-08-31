@@ -218,14 +218,35 @@
             .docs-grid, .people-grid { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 640px) {
-            .container { width: min(calc(100% - 24px), var(--container)); }
-            .hero-inner { min-height: 320px; padding: 52px 0 40px; }
-            .search-main { padding: 14px 16px; }
-            .hero-tags { gap: 8px; }
-            .hero-tags span { font-size: 12px; }
-            .actions-grid, .docs-grid, .people-grid, .news-row { grid-template-columns: 1fr; }
-            .calendar-dates span { width: 32px; height: 32px; font-size: 12px; }
-        }
+    .container { width: min(calc(100% - 24px), var(--container)); }
+    .hero-inner { min-height: 320px; padding: 52px 0 40px; }
+    .search-main { padding: 14px 16px; }
+    .hero-tags { gap: 8px; }
+    .hero-tags span { font-size: 12px; }
+
+    .actions-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .docs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .people-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .news-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+    .action-card { padding: 12px 8px; }
+    .action-card span { font-size: 11px; }
+    .action-card i { width: 20px; height: 20px; margin-bottom: 6px; }
+
+    .doc-card { min-height: 70px; padding: 12px; }
+    .doc-card strong { font-size: 12px; }
+
+    .news-visual { aspect-ratio: 1 / 1; padding: 12px; }
+    .news-visual h3 { font-size: 15px; -webkit-line-clamp: 2; }
+    .news-kicker, .news-meta { font-size: 10px; }
+    .news-footer { padding: 10px 12px; font-size: 11px; }
+
+    .people-card .copy { padding: 10px 12px 12px; }
+    .people-card h4 { font-size: 13px; }
+    .people-card p { font-size: 11px; }
+
+    .calendar-dates span { width: 32px; height: 32px; font-size: 12px; }
+}
     </style>
 </head>
 <body>

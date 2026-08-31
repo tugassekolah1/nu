@@ -72,7 +72,7 @@
 
                     <div class="flex gap-2">
                         <button type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
+                                class="bg-blue-600 hover:bg-blue-700  px-5 py-2 rounded-lg">
                             Simpan
                         </button>
                         <a href="{{ route('members.index') }}"

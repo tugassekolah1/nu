@@ -138,7 +138,7 @@
                                                     @method('PATCH')
                                                     <button type="submit" 
                                                             title="Konfirmasi Lunas"
-                                                            class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-xs">
+                                                            class="p-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700  transition-all shadow-xs">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                                         </svg>
