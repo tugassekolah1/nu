@@ -1,274 +1,316 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full">
+<html lang="id">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran Anggota NU - Warta NU</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
-
+    <title>Formulir Pendaftaran Anggota — NU Banjaranyar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        [x-cloak] { display: none !important; }
+        :root {
+            --bg: #eef2ec;
+            --surface: #ffffff;
+            --surface-soft: #f7faf6;
+            --ink: #17392d;
+            --ink-soft: #54655d;
+            --line: #d7e2d7;
+            --brand-deep: #356c49;
+            --brand-dark: #214b35;
+            --shadow: 0 18px 45px rgba(23, 57, 45, 0.08);
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --container: 1180px;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; font-family: "Inter", system-ui, sans-serif; color: var(--ink); background: var(--bg); min-height: 100vh; display: flex; flex-direction: column; }
+        img { max-width: 100%; display: block; }
+        a { color: inherit; text-decoration: none; }
+
+        .container { width: min(var(--container), calc(100% - 32px)); margin: 0 auto; }
+
+        /* Navigasi */
+        .nav { background: #fff; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 76px; }
+        .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -0.02em; }
+        .brand-mark {
+            width: 42px; height: 42px; border-radius: 14px;
+            background: linear-gradient(135deg, #183c2f 0%, #82be46 100%);
+            display: grid; place-items: center; color: white; box-shadow: var(--shadow); font-size: 15px;
+        }
+        .brand-name { font-size: 18px; line-height: 1.15; }
+        .brand-name small { display: block; font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+        .nav-back {
+            display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700;
+            color: var(--brand-deep); background: var(--surface-soft); padding: 10px 16px; border-radius: 999px;
+            border: 1px solid var(--line);
+        }
+
+        /* Header kecil */
+        .page-header {
+            background: linear-gradient(115deg, rgba(16, 47, 32, 0.92), rgba(28, 81, 51, 0.72));
+            color: #fff; padding: 48px 0 56px; position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ""; position: absolute; inset: 0;
+            background: radial-gradient(circle at 18% 30%, rgba(151, 214, 90, 0.28), transparent 24%),
+                        radial-gradient(circle at 85% 24%, rgba(152, 208, 91, 0.18), transparent 18%);
+            pointer-events: none;
+        }
+        .page-header-inner { position: relative; z-index: 1; text-align: center; }
+        .page-header .badge {
+            display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.22); color: #fff; font-size: 12px; font-weight: 700;
+            padding: 7px 14px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 14px;
+        }
+        .page-header h1 {
+            margin: 0; font-family: "Baloo 2", cursive; font-size: clamp(32px, 5vw, 56px);
+            line-height: 1.05; letter-spacing: -0.02em; text-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+        }
+        .page-header p { margin: 12px auto 0; color: rgba(255, 255, 255, 0.88); font-size: 16px; max-width: 560px; }
+
+        /* Notifikasi */
+        .alert {
+            max-width: 720px; margin: 0 auto 20px; padding: 16px 18px; border-radius: var(--radius-sm);
+            font-size: 14px; font-weight: 500; display: flex; align-items: flex-start; gap: 10px;
+        }
+        .alert-success { background: #e7f5ea; border: 1px solid #b6dfc0; color: #1e5631; }
+        .alert-error { background: #fdecec; border: 1px solid #f3b8b8; color: #8a1f1f; }
+        .alert ul { margin: 4px 0 0; padding-left: 18px; }
+
+        /* Form area */
+        .form-section { padding: 0 0 64px; margin-top: -32px; position: relative; z-index: 3; }
+        .form-card {
+            background: var(--surface); border: 1px solid rgba(33, 75, 53, 0.08); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow); padding: 40px; max-width: 720px; margin: 0 auto;
+        }
+        .form-note { font-size: 12px; color: var(--ink-soft); margin: 0 0 24px; }
+        .form-note .req { color: #c0392b; font-weight: 700; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; position: relative; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 13px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.04em; }
+        .form-group label .req { color: #c0392b; margin-left: 4px; }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 15px; color: var(--ink); background: var(--surface-soft);
+            outline: none; transition: border-color 180ms ease, box-shadow 180ms ease; width: 100%;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--brand-deep); box-shadow: 0 0 0 3px rgba(53, 108, 73, 0.12); background: #fff;
+        }
+        .form-group input::placeholder, .form-group textarea::placeholder { color: #95a49a; }
+        .form-group.has-error input,
+        .form-group.has-error select,
+        .form-group.has-error textarea { border-color: #c0392b; background: #fdf3f3; }
+        .form-error { font-size: 12px; color: #c0392b; font-weight: 600; margin: 2px 0 0; }
+
+        .form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2354665d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; cursor: pointer;
+        }
+        .form-group textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
+        .nik-counter { position: absolute; right: 14px; top: 41px; font-size: 11px; font-weight: 700; color: #95a49a; pointer-events: none; }
+
+        .form-actions { display: flex; gap: 14px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--line); }
+        .btn {
+            padding: 14px 28px; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 700;
+            cursor: pointer; border: none; transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: linear-gradient(180deg, #90ca47 0%, #7ebb3d 100%); color: #fff; box-shadow: 0 10px 22px rgba(75, 125, 34, 0.22); flex: 1; }
+        .btn-primary:hover { box-shadow: 0 14px 28px rgba(75, 125, 34, 0.28); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: var(--surface-soft); color: var(--ink-soft); border: 1px solid var(--line); }
+        .btn-secondary:hover { background: var(--line); color: var(--ink); }
+
+        .form-privacy { font-size: 12px; color: var(--ink-soft); text-align: center; margin: 18px 0 0; line-height: 1.6; }
+
+        .spinner {
+            width: 16px; height: 16px; border: 2.5px solid rgba(255,255,255,0.4); border-top-color: #fff;
+            border-radius: 50%; animation: spin 0.7s linear infinite; display: none;
+        }
+        .btn-primary.loading .spinner { display: inline-block; }
+        .btn-primary.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        footer { margin-top: auto; background: #101715; color: #d2d9d5; padding: 18px 0; font-size: 13px; }
+        .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+
+        @media (max-width: 860px) {
+            .nav-inner { padding: 14px 0; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-card { padding: 28px 22px; }
+            .footer-inner { flex-direction: column; align-items: flex-start; }
+        }
+        @media (max-width: 640px) {
+            .container { width: min(calc(100% - 24px), var(--container)); }
+            .form-actions { flex-direction: column; }
+            .btn { width: 100%; }
+            .brand-name { font-size: 15px; }
+            .nav-back span.label { display: none; }
+        }
     </style>
 </head>
-<body class="bg-slate-50 font-sans antialiased text-slate-800 selection:bg-emerald-500 selection:text-white min-h-full flex flex-col justify-between relative overflow-x-hidden">
-
-    <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-emerald-100/60 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <a href="{{ route('landing') }}" class="flex items-center gap-2.5 group focus:outline-none focus:ring-2 focus:ring-emerald-500/30 rounded-lg p-1 transition-all">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-800 to-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-900/20 group-hover:scale-105 transition-transform duration-200">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
-                        <path d="M18 14h-8"/>
-                        <path d="M15 18h-5"/>
-                        <path d="M10 6h8v4h-8z"/>
-                    </svg>
-                </div>
-                <span class="font-serif font-black text-lg tracking-tight text-slate-900 group-hover:text-emerald-800 transition-colors">WARTA NU</span>
+<body>
+    <nav class="nav">
+        <div class="container nav-inner">
+            <a href="{{ route('landing') }}" class="brand">
+                <span class="brand-mark">NU</span>
+                <span class="brand-name">
+                    NU BANJARANYAR
+                    <small>Nahdlatul Ulama</small>
+                </span>
             </a>
-
-            <a href="{{ route('landing') }}" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-emerald-800 bg-slate-100 hover:bg-emerald-50/80 px-3.5 py-2 rounded-full border border-slate-200/60 hover:border-emerald-200 transition-all shadow-sm">
-                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m12 19-7-7 7-7"/>
-                    <path d="M19 12H5"/>
-                </svg>
-                <span>Kembali ke Beranda</span>
+            <a href="{{ route('landing') }}" class="nav-back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                <span class="label">Kembali ke Beranda</span>
             </a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container page-header-inner">
+            <span class="badge">Keanggotaan Resmi</span>
+            <h1>Formulir Pendaftaran Anggota</h1>
+            <p>Silakan lengkapi data diri Anda di bawah ini untuk bergabung sebagai anggota NU Ranting Banjaranyar.</p>
         </div>
     </header>
 
-    <main class="max-w-lg mx-auto px-4 py-10 w-full flex-grow">
+    <section class="form-section">
+        <div class="container">
 
-        <div class="text-center mb-8">
-            <span class="inline-flex items-center gap-1.5 bg-emerald-100/80 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3 border border-emerald-200/50">
-                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <line x1="19" x2="19" y1="8" y2="14"/>
-                    <line x1="22" x2="16" y1="11" y2="11"/>
-                </svg>
-                <span>Keanggotaan Resmi</span>
-            </span>
-            <h1 class="text-3xl font-serif font-bold text-slate-900 tracking-tight">Formulir Pendaftaran Anggota</h1>
-            <p class="text-slate-500 text-sm mt-1.5 leading-relaxed">Lengkapi data diri Anda di bawah ini untuk bergabung dalam jaringan komunitas Warta NU.</p>
-        </div>
-
-        @if (session('success'))
-            <div class="mb-6 p-4 bg-emerald-50/90 border border-emerald-200 text-emerald-800 rounded-2xl flex items-start gap-3 shadow-sm">
-                <svg class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                    <path d="m9 11 3 3L22 4"/>
-                </svg>
-                <div class="text-sm font-medium">
-                    {{ session('success') }}
+            @if (session('success'))
+                <div class="alert alert-success">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                    <span>{{ session('success') }}</span>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        @if ($errors->any())
-            <div class="mb-6 p-4 bg-rose-50/90 border border-rose-200 text-rose-800 rounded-2xl shadow-sm">
-                <div class="flex items-center gap-2 mb-2 font-semibold text-sm text-rose-900">
-                    <svg class="w-4 h-4 text-rose-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" x2="12" y1="8" y2="12"/>
-                        <line x1="12" x2="12.01" y1="16" y2="16"/>
-                    </svg>
-                    <span>Terdapat beberapa kesalahan input:</span>
+            @if ($errors->any())
+                <div class="alert alert-error">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                    <div>
+                        <strong>Terdapat beberapa kesalahan input:</strong>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 </div>
-                <ul class="list-disc list-inside text-xs space-y-1 text-rose-700">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+            @endif
 
-        <div class="bg-white border border-slate-200/80 rounded-3xl shadow-xl shadow-slate-200/60 p-6 sm:p-8 relative overflow-hidden backdrop-blur-sm">
-            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400"></div>
-
-            <p class="text-[11px] text-slate-400 mb-5 -mt-1">
-                Kolom bertanda <span class="text-rose-500 font-bold">*</span> wajib diisi.
-            </p>
-
-            <form action="{{ route('members.register') }}" method="POST"
-                  x-data="{ loading: false, nikLength: '{{ old('nik') }}'.length }"
-                  @submit="loading = true" class="space-y-6" novalidate>
+            <form class="form-card" action="{{ route('members.register') }}" method="POST" id="registerForm" novalidate>
                 @csrf
 
-                <!-- SECTION: Data Diri -->
-                <div>
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-3 pb-2 border-b border-slate-100">
-                        Data Diri
-                    </h2>
+                <p class="form-note">Kolom bertanda <span class="req">*</span> wajib diisi.</p>
 
-                    <div class="space-y-5">
-                        <div>
-                            <label for="nik" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                NIK (Nomor Induk Kependudukan) <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <div class="absolute left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect width="20" height="14" x="2" y="5" rx="2"/>
-                                        <line x1="2" x2="22" y1="10" y2="10"/>
-                                    </svg>
-                                </div>
-                                <input type="text" id="nik" name="nik" maxlength="16" inputmode="numeric"
-                                       autocomplete="off" autofocus
-                                       x-model="nikLength = $event.target.value.length"
-                                       x-on:input="$el.value = $el.value.replace(/[^0-9]/g, ''); nikLength = $el.value.length"
-                                       value="{{ old('nik') }}" required placeholder="16 digit NIK sesuai KTP"
-                                       style="padding-left: 2.75rem !important;"
-                                       class="w-full pr-16 py-2.5 text-sm bg-slate-50/50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all outline-none @error('nik') border-rose-500 ring-2 ring-rose-500/20 @enderror">
-                                <span class="absolute right-3.5 text-[11px] font-semibold text-slate-400" x-text="nikLength + '/16'"></span>
-                            </div>
-                            @error('nik')
-                                <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
-                            @enderror
-                        </div>
+                <div class="form-grid">
+                    <div class="form-group @error('nik') has-error @enderror">
+                        <label for="nik">NIK <span class="req">*</span></label>
+                        <input type="text" id="nik" name="nik" placeholder="16 digit NIK sesuai KTP"
+                               maxlength="16" inputmode="numeric" autocomplete="off"
+                               value="{{ old('nik') }}" required>
+                        <span class="nik-counter" id="nikCounter">0/16</span>
+                        @error('nik')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                        <div>
-                            <label for="full_name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Nama Lengkap <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <div class="absolute left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="12" cy="7" r="4"/>
-                                    </svg>
-                                </div>
-                                <input type="text" id="full_name" name="full_name" autocomplete="name"
-                                       value="{{ old('full_name') }}" required placeholder="Nama lengkap sesuai identitas"
-                                       style="padding-left: 2.75rem !important;"
-                                       class="w-full pr-4 py-2.5 text-sm bg-slate-50/50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all outline-none @error('full_name') border-rose-500 ring-2 ring-rose-500/20 @enderror">
-                            </div>
-                            @error('full_name')
-                                <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="form-group @error('full_name') has-error @enderror">
+                        <label for="full_name">Nama Lengkap <span class="req">*</span></label>
+                        <input type="text" id="full_name" name="full_name" placeholder="Nama lengkap sesuai identitas"
+                               autocomplete="name" value="{{ old('full_name') }}" required>
+                        @error('full_name')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                        <div>
-                            <label for="gender" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Jenis Kelamin <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <div class="absolute left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="9" cy="7" r="4"/>
-                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                    </svg>
-                                </div>
-                                <select id="gender" name="gender" required
-                                        style="padding-left: 2.75rem !important;"
-                                        class="w-full pr-10 py-2.5 text-sm bg-slate-50/50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all outline-none appearance-none @error('gender') border-rose-500 ring-2 ring-rose-500/20 @enderror">
-                                    <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Pilih Jenis Kelamin</option>
-                                    <option value="L" {{ old('gender') === 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="P" {{ old('gender') === 'P' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
-                                <div class="absolute right-0 pr-3.5 flex items-center pointer-events-none text-slate-400 z-10">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="m6 9 6 6 6-6"/>
-                                    </svg>
-                                </div>
-                            </div>
-                            @error('gender')
-                                <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="form-group @error('gender') has-error @enderror">
+                        <label for="gender">Jenis Kelamin <span class="req">*</span></label>
+                        <select id="gender" name="gender" required>
+                            <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Pilih jenis kelamin</option>
+                            <option value="L" {{ old('gender') === 'L' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="P" {{ old('gender') === 'P' ? 'selected' : '' }}>Perempuan</option>
+                        </select>
+                        @error('gender')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group @error('phone') has-error @enderror">
+                        <label for="phone">No. WhatsApp / HP <span class="req">*</span></label>
+                        <input type="tel" id="phone" name="phone" placeholder="Contoh: 081234567890"
+                               inputmode="numeric" autocomplete="tel" value="{{ old('phone') }}" required>
+                        @error('phone')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group full @error('address') has-error @enderror">
+                        <label for="address">Alamat Lengkap <span class="req">*</span></label>
+                        <textarea id="address" name="address" autocomplete="street-address" required
+                                  placeholder="Jalan, RT/RW, Desa/Kelurahan, Kecamatan...">{{ old('address') }}</textarea>
+                        @error('address')
+                            <p class="form-error">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
-                <!-- SECTION: Kontak & Domisili -->
-                <div>
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-3 pb-2 border-b border-slate-100">
-                        Kontak &amp; Domisili
-                    </h2>
-
-                    <div class="space-y-5">
-                        <div>
-                            <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                No. WhatsApp / HP <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative flex items-center">
-                                <div class="absolute left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                                    </svg>
-                                </div>
-                                <input type="tel" id="phone" name="phone" inputmode="numeric" autocomplete="tel"
-                                       x-on:input="$el.value = $el.value.replace(/[^0-9]/g, '')"
-                                       value="{{ old('phone') }}" required placeholder="Contoh: 081234567890"
-                                       style="padding-left: 2.75rem !important;"
-                                       class="w-full pr-4 py-2.5 text-sm bg-slate-50/50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all outline-none @error('phone') border-rose-500 ring-2 ring-rose-500/20 @enderror">
-                            </div>
-                            <p class="text-[11px] text-slate-400 mt-1">Pastikan nomor aktif, digunakan untuk konfirmasi keanggotaan.</p>
-                            @error('phone')
-                                <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <label for="address" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                                Alamat Lengkap <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative">
-                                <div class="absolute top-3 left-0 pl-3.5 flex items-start pointer-events-none text-slate-400 z-10">
-                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-                                        <circle cx="12" cy="10" r="3"/>
-                                    </svg>
-                                </div>
-                                <textarea id="address" name="address" rows="3" autocomplete="street-address" required
-                                          placeholder="Jalan, RT/RW, Desa/Kelurahan, Kecamatan..."
-                                          style="padding-left: 2.75rem !important;"
-                                          class="w-full pr-4 py-2.5 text-sm bg-slate-50/50 border border-slate-300 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all outline-none resize-none @error('address') border-rose-500 ring-2 ring-rose-500/20 @enderror">{{ old('address') }}</textarea>
-                            </div>
-                            @error('address')
-                                <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Daftar Anggota Sekarang</span>
+                    </button>
+                    <button type="reset" class="btn btn-secondary">Reset Form</button>
                 </div>
 
-                <button type="submit" :disabled="loading"
-                        class="w-full mt-2 inline-flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 disabled:bg-emerald-400 text-white font-bold px-6 py-3.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-emerald-700/20 hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:cursor-not-allowed">
-                    <template x-if="!loading">
-                        <span class="inline-flex items-center justify-center gap-2">
-                            <span>Daftar Anggota Sekarang</span>
-                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M5 12h14"/>
-                                <path d="m12 5 7 7-7 7"/>
-                            </svg>
-                        </span>
-                    </template>
-                    <template x-if="loading">
-                        <span class="inline-flex items-center justify-center gap-2" x-cloak>
-                            <svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <span>Memproses Pendaftaran...</span>
-                        </span>
-                    </template>
-                </button>
-
-                <p class="text-[11px] text-center text-slate-400 leading-relaxed">
-                    Dengan mendaftar, Anda menyetujui data ini digunakan untuk keperluan administrasi keanggotaan NU dan tidak akan dibagikan ke pihak lain.
-                </p>
+                <p class="form-privacy">Dengan mendaftar, Anda menyetujui data ini digunakan untuk keperluan administrasi keanggotaan NU dan tidak akan dibagikan ke pihak lain.</p>
             </form>
         </div>
-    </main>
+    </section>
 
-    <footer class="py-6 border-t border-slate-200/80 bg-white text-center text-xs text-slate-400">
-        <p>&copy; {{ date('Y') }} Warta NU. Seluruh Hak Cipta Dilindungi.</p>
+    <footer>
+        <div class="container footer-inner">
+            <span>Copyright © {{ now()->year }} NU Ranting Banjaranyar</span>
+            <span>Kontak: nubanjaranyar@gmail.com</span>
+        </div>
     </footer>
 
-</body> 
+    <script>
+        // Filter angka-only untuk NIK & No. HP, plus counter digit NIK
+        const nikInput = document.getElementById('nik');
+        const nikCounter = document.getElementById('nikCounter');
+        const phoneInput = document.getElementById('phone');
+
+        function updateNikCounter() {
+            nikCounter.textContent = nikInput.value.length + '/16';
+        }
+
+        nikInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            updateNikCounter();
+        });
+        updateNikCounter();
+
+        phoneInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // Loading state saat submit
+        document.getElementById('registerForm').addEventListener('submit', function () {
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+        });
+    </script>
+</body>
 </html>
