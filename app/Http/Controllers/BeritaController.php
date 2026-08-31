@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 
 class BeritaController extends Controller
 {
+    
     public function index()
     {
         $beritas = Berita::latest()->paginate(10);
@@ -75,11 +76,12 @@ public function show(Berita $berita)
         $berita->delete();
         return redirect()->route('berita.index')->with('success', 'Berita dihapus');
     }
-    public function landing()
+   public function landing()
 {
     $newsList = Berita::where('status', true)
         ->latest()
-        ->paginate(6);
+        ->take(6)
+        ->get();
 
     return view('welcome', compact('newsList'));
 }
