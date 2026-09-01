@@ -10,15 +10,34 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
+                <!-- Navigation Links (Desktop) -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <!-- Dashboard -->
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <!-- Manajemen Berita -->
+                    <x-nav-link :href="route('berita.index')" :active="request()->routeIs('berita.*')">
+                        {{ __('Manajemen Berita') }}
+                    </x-nav-link>
+
+                    <!-- Anggota / Member -->
+                    <x-nav-link :href="route('members.index')" :active="request()->routeIs('member.*')">
+                        {{ __('Anggota') }}
+                    </x-nav-link>
+
+                    <!-- Kembali ke Beranda / Landing Page -->
+                    <a href="{{ url('/') }}" target="_blank" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                        {{ __('Lihat Website') }}
+                    </a>
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Settings Dropdown (Desktop) -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -52,7 +71,7 @@
                 </x-dropdown>
             </div>
 
-            <!-- Hamburger -->
+            <!-- Hamburger Button (Mobile) -->
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
@@ -64,15 +83,36 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
+    <!-- Responsive Navigation Menu (Mobile) -->
+    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-gray-50 border-t border-gray-100">
         <div class="pt-2 pb-3 space-y-1">
+            <!-- Dashboard Mobile -->
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            <!-- Manajemen Berita Mobile -->
+            <x-responsive-nav-link :href="route('berita.index')" :active="request()->routeIs('berita.*')">
+                {{ __('Manajemen Berita') }}
+            </x-responsive-nav-link>
+
+            <!-- Anggota Mobile -->
+            <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('member.*')">
+                {{ __('Anggota') }}
+            </x-responsive-nav-link>
+
+            <!-- Kembali ke Beranda Mobile -->
+            <x-responsive-nav-link :href="url('/')" target="_blank" class="text-indigo-600 font-medium">
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                    <span>{{ __('Lihat Website (Beranda)') }}</span>
+                </div>
+            </x-responsive-nav-link>
         </div>
 
-        <!-- Responsive Settings Options -->
+        <!-- Responsive Settings Options (User Profile Mobile) -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>

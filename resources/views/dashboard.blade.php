@@ -1,4 +1,4 @@
-        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
   <div class="p-6 bg-slate-100 min-h-screen space-y-8 font-sans antialiased">
     
@@ -28,7 +28,43 @@
 
     {{-- Interactive Cards Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Card: Total Infak --}}
+<a href="{{ route('infaq.index') }}" 
+   class="group relative p-6 rounded-2xl border border-slate-200/80 bg-white hover:bg-emerald-50/40 hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-xl hover:-translate-y-1.5 active:scale-[0.99]">
+    
+    <div class="flex items-start justify-between">
+        <div class="space-y-1">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest group-hover:text-emerald-700 transition-colors">
+                Keuangan & Sedekah
+            </span>
+            <h2 class="text-lg font-bold text-slate-800 group-hover:text-emerald-950">Total Infak</h2>
+        </div>
         
+        {{-- Icon Uang / Dompet --}}
+        <div class="p-4 rounded-2xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-xs group-hover:rotate-6">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="flex items-end justify-between pt-2">
+        <div>
+            <h3 class="text-3xl font-black text-slate-900 group-hover:text-emerald-900 transition-colors tracking-tight">
+                Rp {{ number_format($totalInfaq ?? 0, 0, ',', '.') }}
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Total infak terkumpul (lunas)</p>
+        </div>
+        
+        {{-- Tombol Aksi Visual --}}
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-100/80 group-hover:bg-emerald-600 group-hover:text-white px-4 py-2.5 rounded-xl transition-all duration-300 shadow-xs">
+            <span>Kelola Infak</span>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+        </div>
+    </div>
+</a>
         {{-- Card 1: Kelola Anggota --}}
         <a href="{{ route('members.index') }}" 
            class="group relative p-6 rounded-2xl border border-slate-200/80 bg-white hover:bg-emerald-50/40 hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-xl hover:-translate-y-1.5 active:scale-[0.99]">
@@ -100,6 +136,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                     </svg>
                 </div>
+                
             </div>
         </a>
 
@@ -132,6 +169,10 @@
                 </svg>
                 <span>Halaman Kelola Berita</span>
             </a>
+            <a href="{{ route('agenda.index') }}"
+   class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm">
+    Kelola Agenda
+</a>
         </div>
     </div>
 

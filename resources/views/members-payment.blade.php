@@ -82,7 +82,7 @@
                            class="block w-full text-sm text-gray-600 mb-4">
 
                     <button type="submit"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium">
+                            class="w-full bg-blue-600 hover:bg-blue-700  px-5 py-3 rounded-lg font-medium">
                         Kirim Bukti Transfer
                     </button>
                 </form>
