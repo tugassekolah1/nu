@@ -372,46 +372,6 @@
     </section>
 
   
-<!-- STRUKTUR PENGURUS -->
-    <section class="w-[min(1180px,calc(100%-32px))] mx-auto mt-12 mb-12">
-        <h2 class="text-center text-2xl md:text-3xl font-bold text-[#1d2b26] mb-8 font-['Baloo_2',cursive]">
-            Struktur Pengurus
-        </h2>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            @forelse ($pengurus as $item)
-                <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col items-center">
-                    <div class="mb-4">
-                        @if($item->foto)
-                            <img src="{{ asset('storage/' . $item->foto) }}" 
-                                 class="w-28 h-28 rounded-full object-cover border-4 border-[#214b35]/10 shadow-inner" 
-                                 alt="{{ $item->nama }}">
-                        @else
-                            <div class="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-medium text-sm border-2 border-dashed border-gray-200">
-                                No Photo
-                            </div>
-                        @endif
-                    </div>
-                    
-                    <h3 class="text-lg font-bold text-[#1d2b26] mb-1 line-clamp-1">
-                        {{ $item->nama }}
-                    </h3>
-                    
-                    <p class="text-sm font-semibold text-[#214b35] mb-3">
-                        {{ $item->jabatan }}
-                    </p>
-                    
-                    <span class="inline-block bg-[#214b35]/10 text-[#214b35] text-xs font-bold px-3 py-1 rounded-full">
-                        {{ $item->label_banom }}
-                    </span>
-                </div>
-            @empty
-                <div class="col-span-full text-center py-8 bg-white rounded-2xl border border-gray-100">
-                    <p class="text-gray-500 text-sm">Data pengurus belum tersedia.</p>
-                </div>
-            @endforelse
-        </div>
-    </section>
 
     <!-- KONTAK STRIP -->
     <div class="mt-[46px] bg-[#214b35] text-white py-8 text-center w-full">

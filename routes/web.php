@@ -65,5 +65,5 @@ Route::get('/profil', function () {
     return view('profil');
 })->name('profil');
 Route::get('/galeri', [GalleryController::class, 'publicIndex'])->name('galeri.index');
-Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
+Route::get('/profil', [PengurusController::class, 'index'])->name('profil');
 require __DIR__.'/auth.php';

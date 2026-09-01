@@ -12,7 +12,7 @@ class PengurusController extends Controller
     public function index()
     {
         $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
-        return view('pengurus.index', compact('pengurus'));
+        return view('profil', compact('pengurus'));
     }
 
     // Dashboard Admin - List Data
