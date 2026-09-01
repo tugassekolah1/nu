@@ -4,12 +4,14 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\InfaqController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Agenda;
 use App\Models\Berita;
 use App\Models\Infaq;
 use App\Models\NuMember;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GalleryController;
 
 Route::get('/', [BeritaController::class, 'landing'])->name('landing');
 
@@ -31,11 +33,16 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('berita', BeritaController::class)
         ->parameters(['berita' => 'berita'])
         ->except(['show']);
-
+Route::resource('gallery', GalleryController::class);
     Route::resource('members', MemberController::class)
         ->parameters(['members' => 'member'])
         ->except(['show']);
-
+Route::get('/pengurus', [PengurusController::class, 'adminIndex'])->name('pengurus.index');
+    Route::get('/pengurus/create', [PengurusController::class, 'create'])->name('pengurus.create');
+    Route::post('/pengurus', [PengurusController::class, 'store'])->name('pengurus.store');
+    Route::get('/pengurus/{pengurus}/edit', [PengurusController::class, 'edit'])->name('pengurus.edit');
+    Route::put('/pengurus/{pengurus}', [PengurusController::class, 'update'])->name('pengurus.update');
+    Route::delete('/pengurus/{pengurus}', [PengurusController::class, 'destroy'])->name('pengurus.destroy');
     Route::patch('/members/{member}/confirm-payment', [MemberController::class, 'confirmPayment'])
         ->name('members.confirm-payment');
 
@@ -57,7 +64,6 @@ Route::get('/infaq/success/{kode}', [InfaqController::class, 'success'])->name('
 Route::get('/profil', function () {
     return view('profil');
 })->name('profil');
-Route::get('/galeri', function () {
-    return view('galeri');
-})->name('galeri.index');
+Route::get('/galeri', [GalleryController::class, 'publicIndex'])->name('galeri.index');
+Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
 require __DIR__.'/auth.php';

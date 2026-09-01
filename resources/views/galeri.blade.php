@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galeri Kegiatan - NU Ranting Banjaranyar</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite('resources/css/app.css')
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased selection:bg-emerald-500 selection:text-white">
 
-    <!-- HEADER / HERO HERO LAYER -->
+    <!-- HEADER / HERO LAYER -->
     <header class="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 pt-16 pb-20 border-b border-emerald-800/40">
         
         <!-- Blob Dekorasi -->
@@ -18,9 +18,9 @@
 
         <div class="relative z-10 max-w-6xl mx-auto px-6">
             
-            <!-- Tombol Back to Home (Kiri Atas) -->
+            <!-- Tombol Back to Home -->
             <div class="mb-8">
-                <a href="{{ route('landing') }}" 
+                <a href="{{ url('/') }}" 
                    class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-800/50 rounded-full text-xs sm:text-sm font-medium backdrop-blur-md transition-all duration-200 shadow-lg hover:-translate-x-1">
                     <i data-lucide="arrow-left" class="w-4 h-4 text-amber-300"></i>
                     <span>Kembali ke Beranda</span>
@@ -47,71 +47,42 @@
     <main class="max-w-6xl mx-auto px-6 py-12">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            <!-- Card Foto 1 -->
-            <div class="group relative bg-emerald-950/40 border border-emerald-800/30 rounded-2xl overflow-hidden shadow-xl hover:border-emerald-600/50 transition-all duration-300">
-                <div class="aspect-video w-full overflow-hidden bg-emerald-900/50 relative">
-                    <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=800&auto=format&fit=crop" 
-                         alt="Pengajian Rutin" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent opacity-80"></div>
+            @forelse ($galleries as $item)
+                <!-- Card Foto Dynamic -->
+                <div class="group relative bg-emerald-950/40 border border-emerald-800/30 rounded-2xl overflow-hidden shadow-xl hover:border-emerald-600/50 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="aspect-video w-full overflow-hidden bg-emerald-900/50 relative">
+                            <img src="{{ asset('storage/' . $item->foto) }}" 
+                                 alt="{{ $item->judul }}" 
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent opacity-80"></div>
+                        </div>
+                        <div class="p-5 relative">
+                            <h3 class="font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
+                                {{ $item->judul }}
+                            </h3>
+                            @if ($item->deskripsi)
+                                <p class="mt-2 text-xs text-emerald-100/70 line-clamp-2 leading-relaxed">
+                                    {{ $item->deskripsi }}
+                                </p>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <div class="px-5 pb-5 pt-0">
+                        <p class="text-xs text-emerald-200/70 flex items-center gap-1.5 border-t border-emerald-800/30 pt-3">
+                            <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
+                            {{ $item->created_at->isoFormat('D MMMM Y') }}
+                        </p>
+                    </div>
                 </div>
-                <div class="p-5 relative">
-                    <span class="text-xs font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-md">
-                        Keagamaan
-                    </span>
-                    <h3 class="mt-3 font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
-                        Pengajian Rutin Lailatul Ijtima'
-                    </h3>
-                    <p class="mt-1 text-xs text-emerald-200/70 flex items-center gap-1.5">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
-                        15 Agustus 2026
-                    </p>
+            @empty
+                <!-- Tampilan Jika Data Kosong -->
+                <div class="col-span-full text-center py-16 bg-emerald-950/20 border border-emerald-800/30 rounded-2xl">
+                    <i data-lucide="image-off" class="w-12 h-12 mx-auto text-emerald-600 mb-3"></i>
+                    <p class="text-emerald-200/70 text-sm">Belum ada foto galeri yang diunggah.</p>
                 </div>
-            </div>
-
-            <!-- Card Foto 2 -->
-            <div class="group relative bg-emerald-950/40 border border-emerald-800/30 rounded-2xl overflow-hidden shadow-xl hover:border-emerald-600/50 transition-all duration-300">
-                <div class="aspect-video w-full overflow-hidden bg-emerald-900/50 relative">
-                    <img src="https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=800&auto=format&fit=crop" 
-                         alt="Santunan Anak Yatim" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent opacity-80"></div>
-                </div>
-                <div class="p-5 relative">
-                    <span class="text-xs font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-md">
-                        Sosial
-                    </span>
-                    <h3 class="mt-3 font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
-                        Santunan Anak Yatim & Dhuafa
-                    </h3>
-                    <p class="mt-1 text-xs text-emerald-200/70 flex items-center gap-1.5">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
-                        10 Juli 2026
-                    </p>
-                </div>
-            </div>
-
-            <!-- Card Foto 3 -->
-            <div class="group relative bg-emerald-950/40 border border-emerald-800/30 rounded-2xl overflow-hidden shadow-xl hover:border-emerald-600/50 transition-all duration-300">
-                <div class="aspect-video w-full overflow-hidden bg-emerald-900/50 relative">
-                    <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?q=80&w=800&auto=format&fit=crop" 
-                         alt="Pelatihan Banser" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent opacity-80"></div>
-                </div>
-                <div class="p-5 relative">
-                    <span class="text-xs font-semibold text-amber-300 bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 rounded-md">
-                        Kaderisasi
-                    </span>
-                    <h3 class="mt-3 font-bold text-lg text-white group-hover:text-amber-300 transition-colors">
-                        Diklatsar Banser Satkoryon
-                    </h3>
-                    <p class="mt-1 text-xs text-emerald-200/70 flex items-center gap-1.5">
-                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
-                        25 Mei 2026
-                    </p>
-                </div>
-            </div>
+            @endforelse
 
         </div>
     </main>

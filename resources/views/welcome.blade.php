@@ -371,79 +371,45 @@
         </div>
     </section>
 
-    <!-- PENGURUS & BANOM -->
-    <section id="pengurus" class="py-16 px-4 max-w-6xl mx-auto">
-        <!-- Header Section -->
-        <div class="text-center mb-10">
-            <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">
-                Pengurus & Banom <span class="text-emerald-600">NU Banjaranyar</span>
-            </h2>
-            <p class="mt-3 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-sm sm:text-base">
-                Struktur kepengurusan dan badan otonom yang mengabdi untuk masyarakat dan syiarnya agama.
-            </p>
+  
+<!-- STRUKTUR PENGURUS -->
+    <section class="w-[min(1180px,calc(100%-32px))] mx-auto mt-12 mb-12">
+        <h2 class="text-center text-2xl md:text-3xl font-bold text-[#1d2b26] mb-8 font-['Baloo_2',cursive]">
+            Struktur Pengurus
+        </h2>
 
-            <!-- Filter Tabs -->
-            <div class="mt-8 flex flex-wrap justify-center gap-2" id="filter-tabs">
-                <button onclick="filterBanom('all')" class="tab-btn active border px-4 py-2 rounded-full text-sm font-semibold transition-all bg-emerald-800 text-white border-emerald-800 shadow-md">Semua</button>
-                <button onclick="filterBanom('ranting')" class="tab-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-600 px-4 py-2 rounded-full text-sm font-semibold transition-all">Ranting NU</button>
-                <button onclick="filterBanom('ipnu')" class="tab-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-600 px-4 py-2 rounded-full text-sm font-semibold transition-all">IPNU</button>
-                <button onclick="filterBanom('ippnu')" class="tab-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-600 px-4 py-2 rounded-full text-sm font-semibold transition-all">IPPNU</button>
-                <button onclick="filterBanom('fatayat')" class="tab-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-600 px-4 py-2 rounded-full text-sm font-semibold transition-all">Fatayat NU</button>
-                <button onclick="filterBanom('banser')" class="tab-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-emerald-600 px-4 py-2 rounded-full text-sm font-semibold transition-all">Banser</button>
-            </div>
-        </div>
-
-        <!-- Grid Pengurus -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="pengurus-grid">
-            <!-- Card Ranting NU -->
-            <div class="pengurus-card ranting bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xl shrink-0">K</div>
-                <div>
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 mb-1">Ranting NU</span>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">K.H. Ahmad Syarif</h3>
-                    <p class="text-xs text-slate-500 font-medium">Rais Syuriah</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @forelse ($pengurus as $item)
+                <div class="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex flex-col items-center">
+                    <div class="mb-4">
+                        @if($item->foto)
+                            <img src="{{ asset('storage/' . $item->foto) }}" 
+                                 class="w-28 h-28 rounded-full object-cover border-4 border-[#214b35]/10 shadow-inner" 
+                                 alt="{{ $item->nama }}">
+                        @else
+                            <div class="w-28 h-28 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-medium text-sm border-2 border-dashed border-gray-200">
+                                No Photo
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-[#1d2b26] mb-1 line-clamp-1">
+                        {{ $item->nama }}
+                    </h3>
+                    
+                    <p class="text-sm font-semibold text-[#214b35] mb-3">
+                        {{ $item->jabatan }}
+                    </p>
+                    
+                    <span class="inline-block bg-[#214b35]/10 text-[#214b35] text-xs font-bold px-3 py-1 rounded-full">
+                        {{ $item->label_banom }}
+                    </span>
                 </div>
-            </div>
-
-            <!-- Card IPNU -->
-            <div class="pengurus-card ipnu bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-green-100 text-green-700 font-bold flex items-center justify-center text-xl shrink-0">R</div>
-                <div>
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mb-1">PR IPNU</span>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Rekan Muhammad Zaky</h3>
-                    <p class="text-xs text-slate-500 font-medium">Ketua IPNU Banjaranyar</p>
+            @empty
+                <div class="col-span-full text-center py-8 bg-white rounded-2xl border border-gray-100">
+                    <p class="text-gray-500 text-sm">Data pengurus belum tersedia.</p>
                 </div>
-            </div>
-
-            <!-- Card IPPNU -->
-            <div class="pengurus-card ippnu bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xl shrink-0">S</div>
-                <div>
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-teal-100 text-teal-800 mb-1">PR IPPNU</span>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Rekanita Siti Rahma</h3>
-                    <p class="text-xs text-slate-500 font-medium">Ketua IPPNU Banjaranyar</p>
-                </div>
-            </div>
-
-            <!-- Card Fatayat -->
-            <div class="pengurus-card fatayat bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-lime-100 text-lime-800 font-bold flex items-center justify-center text-xl shrink-0">N</div>
-                <div>
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-lime-100 text-lime-800 mb-1">Fatayat NU</span>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Sahabat Nurul Hidayah</h3>
-                    <p class="text-xs text-slate-500 font-medium">Ketua Pimpinan Ranting</p>
-                </div>
-            </div>
-
-            <!-- Card Banser -->
-            <div class="pengurus-card banser bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl transition-all duration-300 flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-900 font-bold flex items-center justify-center text-xl shrink-0">B</div>
-                <div>
-                    <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-900 mb-1">Satkoryon Banser</span>
-                    <h3 class="font-bold text-slate-900 dark:text-white text-base">Ndan Bambang S.</h3>
-                    <p class="text-xs text-slate-500 font-medium">Kasatkorpok Banjaranyar</p>
-                </div>
-            </div>
+            @endforelse
         </div>
     </section>
 

@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <a href="{{ route('/') }}" class="inline-block bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all">
+        <a href="/" class="inline-block bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-all">
             Kembali ke Beranda
         </a>
 

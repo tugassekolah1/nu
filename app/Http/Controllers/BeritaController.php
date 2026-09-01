@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Agenda;
 use App\Models\Berita;
+use App\Models\Pengurus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -47,7 +48,14 @@ class BeritaController extends Controller
     {
         abort_if(!$berita->status, 404); // draft gak boleh diakses publik
 
-        return view('berita-detail', compact('berita'));
+       $newsList = Berita::where('status', true)
+        ->where('id', '!=', $berita->id)
+        ->latest()
+        ->take(5)
+        ->get();
+
+    // 3. Kirim kedua variabel ($berita dan $newsList) ke view berita-detail
+    return view('berita-detail', compact('berita', 'newsList'));
     }
 
     public function edit(Berita $berita)
@@ -88,8 +96,8 @@ class BeritaController extends Controller
             ->orderBy('event_date')
             ->take(3)
             ->get();
-
-        return view('welcome', compact('newsList', 'upcomingAgenda'));
+        $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
+        return view('welcome', compact('newsList', 'upcomingAgenda', 'pengurus'));
     }
 
     /**
@@ -109,4 +117,5 @@ class BeritaController extends Controller
 
         return $count ? "{$slug}-" . ($count + 1) : $slug;
     }
+    
 }
