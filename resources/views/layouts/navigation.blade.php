@@ -109,6 +109,12 @@
             <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('member.*')">
                 {{ __('Anggota') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('pengurus.index')" :active="request()->routeIs('member.*')">
+                {{ __('Pengurus') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('agenda.index')" :active="request()->routeIs('member.*')">
+                {{ __('Agenda') }}
+            </x-responsive-nav-link>
 
             <!-- Kembali ke Beranda Mobile -->
             <x-responsive-nav-link :href="url('/')" target="_blank" class="text-indigo-600 font-medium">

@@ -129,8 +129,8 @@
 </head>
 <body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
 
-
-<main class="w-full pt-20 bg-surface">
+<x-navbar></x-navbar>
+<main class="w-full pt-30 bg-surface">
     <div class="flex flex-col w-full">
 
         {{-- Top Editorial Header & Date Stamp --}}
@@ -148,8 +148,8 @@
         {{-- ========================================== --}}
         @if($newsList->isNotEmpty())
             @php $featuredNews = $newsList->first(); @endphp
-            <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-48 pb-space-32">
-                <article class="group relative flex flex-col lg:grid lg:grid-cols-12 gap-space-32 items-start" data-category-item="{{ $featuredNews->kategori_slug ?? 'kegiatan' }}">
+            <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-48 py-10 pb-space-32">
+                <article class="group relative flex flex-col lg:grid lg:grid-cols-12 gap-space-32 items-start">
                     {{-- Media Well --}}
                     <div class="w-full lg:col-span-8 overflow-hidden rounded-xl bg-surface-container-high relative aspect-[16/10] sm:aspect-[16/9]">
                         @if($featuredNews->gambar)
@@ -175,7 +175,6 @@
                             {{-- Metadata --}}
                             <div class="flex items-center flex-wrap gap-space-8 mb-space-12">
                                 <span class="font-label-editorial text-label-editorial text-primary font-bold tracking-wider uppercase">
-                                    {{ $featuredNews->kategori ?? 'KEGIATAN & SYI\'AR' }}
                                 </span>
                                 <span class="text-on-surface-variant/40">•</span>
                                 <span class="font-label-meta text-label-meta text-on-surface-variant font-medium">
@@ -236,7 +235,7 @@
                         @foreach($newsList->skip(1)->take(2) as $index => $berita)
                             @if($index % 2 === 0)
                                 {{-- Format Feature (gambar besar di atas) --}}
-                                <article class="group flex flex-col gap-space-16 pb-space-40 border-b border-on-surface/10" data-category-item="{{ $berita->kategori_slug ?? 'keagamaan' }}">
+                                <article class="group flex flex-col gap-space-16 pb-space-40 border-b border-on-surface/10" >
                                     <div class="w-full overflow-hidden rounded-lg bg-surface-container-high aspect-[16/10]">
                                         @if($berita->gambar)
                                             <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-[1.015]" loading="lazy"/>
@@ -245,7 +244,6 @@
                                     <div class="flex flex-col">
                                         <div class="flex items-center gap-space-8 mb-space-8">
                                             <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
-                                                {{ $berita->kategori ?? 'PESANTREN & PENDIDIKAN' }}
                                             </span>
                                             <span class="text-on-surface-variant/40">•</span>
                                             <span class="font-label-meta text-label-meta text-on-surface-variant">
@@ -266,7 +264,7 @@
                                 </article>
                             @else
                                 {{-- Format Sosial Impact (gambar kecil di kiri) --}}
-                                <article class="group flex flex-col sm:flex-row gap-space-24 pb-space-40 border-b border-on-surface/10 items-start" data-category-item="{{ $berita->kategori_slug ?? 'sosial' }}">
+                                <article class="group flex flex-col sm:flex-row gap-space-24 pb-space-40 border-b border-on-surface/10 items-start">
                                     <div class="w-full sm:w-5/12 overflow-hidden rounded-lg bg-surface-container-high shrink-0 aspect-[4/3]">
                                         @if($berita->gambar)
                                             <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-[1.015]" loading="lazy"/>
@@ -276,7 +274,6 @@
                                         <div>
                                             <div class="flex items-center gap-space-8 mb-space-8">
                                                 <span class="font-label-editorial text-label-editorial text-secondary uppercase font-bold tracking-wider">
-                                                    {{ $berita->kategori ?? 'SOSIAL & LAZISNU' }}
                                                 </span>
                                                 <span class="text-on-surface-variant/40">•</span>
                                                 <span class="font-label-meta text-label-meta text-on-surface-variant">

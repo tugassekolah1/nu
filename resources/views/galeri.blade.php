@@ -8,9 +8,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased selection:bg-emerald-500 selection:text-white">
-
+<x-navbar></x-navbar>
     <!-- HEADER / HERO LAYER -->
-    <header class="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 pt-16 pb-20 border-b border-emerald-800/40">
+    <header class="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-emerald-800 pt-32 pb-20 border-b border-emerald-800/40">
         
         <!-- Blob Dekorasi -->
         <div class="absolute -top-24 -left-24 w-96 h-96 bg-lime-400/10 rounded-full blur-3xl"></div>
@@ -20,11 +20,7 @@
             
             <!-- Tombol Back to Home -->
             <div class="mb-8">
-                <a href="{{ url('/') }}" 
-                   class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-100 border border-emerald-800/50 rounded-full text-xs sm:text-sm font-medium backdrop-blur-md transition-all duration-200 shadow-lg hover:-translate-x-1">
-                    <i data-lucide="arrow-left" class="w-4 h-4 text-amber-300"></i>
-                    <span>Kembali ke Beranda</span>
-                </a>
+                
             </div>
 
             <!-- Judul Halaman -->

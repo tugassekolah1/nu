@@ -1,4 +1,18 @@
- <script id="tailwind-config">
+<!DOCTYPE html>
+<html class="scroll-smooth" lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Nahdlatul Ulama Banjaranyar, Cilongok - Berkhidmat untuk Umat</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@200..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
         tailwind.config = {
           darkMode: "class",
           theme: {
@@ -53,35 +67,122 @@
           border: 1px solid rgba(255, 255, 255, 0.12);
         }
     </style>
-<header class="fixed top-0 inset-x-0 z-50 px-4 sm:px-8 pt-4 pb-2 transition-all">
-    <div class="max-w-7xl mx-auto neutral-frosted rounded-full px-5 py-3 shadow-subtle flex items-center justify-between">
+</head>
+<body class="selection:bg-muted-sage selection:text-nu-deep bg-warm-bg text-charcoal">
+<!-- 1. NAVBAR (Neutral Frosted Editorial Glass) -->
+<!-- 1. NAVBAR (Neutral Frosted Editorial Glass) -->
+@props(['active' => ''])
+
+<header x-data="{ mobileMenuOpen: false }" class="fixed top-0 inset-x-0 z-50 px-4 sm:px-8 pt-4 pb-2 transition-all">
+    <div class="max-w-7xl mx-auto neutral-frosted rounded-2xl md:rounded-full px-5 py-3 shadow-subtle flex items-center justify-between relative">
+        
         <!-- Brand & Official Badge -->
         <a class="flex items-center gap-3 group" href="{{ route('landing') }}">
             <img alt="Logo NU Banjaranyar" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1VVjAZeFl8x9UC1ygLyGJQ7s08PMheg8thGTpLjMGEDNy6dxehyc8qxHnJ3TWq0onXXPh6_HPNWDese-jycKUQ2eb98-bnO7YW_VY0GaCIEySrmJqvz-GHn0s7CMUqoutQaae-CsDK4XqFr1CTpqkfXyJQS3h0oeeJcHzC-gIHlGibUdsPPEn0o-vdxP46pPspwdFoEMDPWgm6H4UW6yedGPXqeoPVeyU2SVeokYJCsQ1wcEIIhfseMkPXD"/>
             <div class="flex flex-col">
-                <span class="font-bold text-base sm:text-lg tracking-tight text-charcoal leading-tight">NU BANJARANYAR</span>
+                <span class="font-bold text-base sm:text-lg tracking-tight text-charcoal leading-tight">PWC NU</span>
                 <span class="text-xs font-medium text-muted-charcoal tracking-wide">Kecamatan Cilongok, Banyumas</span>
             </div>
         </a>
+
         <!-- Desktop Nav -->
         <nav class="hidden lg:flex items-center gap-1 text-sm font-medium text-muted-charcoal">
-            <a class="px-4 py-2 rounded-full text-charcoal font-semibold bg-warm-beige/70 transition-colors" href="{{ route('landing') }}">Beranda</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#agenda">Agenda</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#berita">Warta Kabar</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#layanan">Layanan Warga</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#tentang">Tentang NU</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="{{ route('profil') }}">Pengurus</a>
+            <!-- Beranda -->
+            <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('landing') ? 'text-charcoal font-semibold bg-warm-beige/70' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('landing') }}">
+                Beranda
+            </a>
+
+            <!-- Anchor section di Landing Page -->
+            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="{{ route('landing') }}#agenda">Agenda</a>
+            
+            <!-- Warta Kabar / Berita -->
+            <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('berita.public') || request()->routeIs('berita.show') ? 'text-charcoal font-semibold bg-warm-beige/70' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('berita.public') }}">
+                Warta Kabar
+            </a>
+
+            <!-- Layanan Warga / Infaq -->
+            <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('infaq.*') ? 'text-charcoal font-semibold bg-warm-beige/70' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('infaq.index') }}">
+                Infaq
+            </a>
+
+            <!-- Galeri -->
+            <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('galeri.index') ? 'text-charcoal font-semibold bg-warm-beige/70' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('galeri.index') }}">
+                Galeri
+            </a>
+
+            <!-- Pengurus -->
+            <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('profil') ? 'text-charcoal font-semibold bg-warm-beige/70' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('profil') }}">
+                Pengurus
+            </a>
         </nav>
-        <!-- Action CTAs -->
+
+        <!-- Action CTAs & Mobile Toggle -->
         <div class="flex items-center gap-2 sm:gap-3">
-            <a class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white font-medium text-sm hover:bg-[#113725] transition-all active:scale-95 shadow-sm" href="{{ route('members.register-form') }}">
+            <a class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white font-medium text-sm hover:bg-[#113725] transition-all active:scale-95 shadow-sm {{ request()->routeIs('members.register-form') ? 'ring-2 ring-muted-gold' : '' }}" href="{{ route('members.register-form') }}">
                 <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
                 <span>Daftar Anggota</span>
             </a>
-            <a class="inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-btn bg-warm-card hover:bg-warm-beige/60 text-charcoal font-semibold text-xs sm:text-sm border border-border-subtle transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+            <a class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-btn bg-warm-card hover:bg-warm-beige/60 text-charcoal font-semibold text-xs sm:text-sm border border-border-subtle transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
                 <span class="material-symbols-outlined text-muted-charcoal text-[18px]">chat</span>
-                <span class="hidden md:inline">Hubungi Kami</span>
+                <span>Hubungi Kami</span>
+            </a>
+
+            <!-- Mobile Hamburger Button -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" id="mobile-menu-btn" class="lg:hidden p-2.5 rounded-xl bg-warm-beige/50 hover:bg-warm-beige/80 text-charcoal focus:outline-none transition-colors" aria-label="Toggle Menu">
+                <span class="material-symbols-outlined block text-2xl" id="menu-icon">menu</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu" class="hidden lg:hidden max-w-7xl mx-auto mt-2 neutral-frosted rounded-2xl p-5 shadow-elevated border border-border-neutral flex-col gap-3 transition-all">
+        <nav class="flex flex-col gap-1 text-sm font-medium text-muted-charcoal">
+            <a class="px-4 py-2.5 rounded-xl transition-colors {{ request()->routeIs('landing') ? 'text-charcoal font-semibold bg-warm-beige/80' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('landing') }}">Beranda</a>
+            <a class="px-4 py-2.5 rounded-xl hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="{{ route('landing') }}#agenda">Agenda</a>
+            <a class="px-4 py-2.5 rounded-xl transition-colors {{ request()->routeIs('berita.public') || request()->routeIs('berita.show') ? 'text-charcoal font-semibold bg-warm-beige/80' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('berita.public') }}">Warta Kabar</a>
+            <a class="px-4 py-2.5 rounded-xl transition-colors {{ request()->routeIs('infaq.*') ? 'text-charcoal font-semibold bg-warm-beige/80' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('infaq.index') }}">Infaq</a>
+            <a class="px-4 py-2.5 rounded-xl transition-colors {{ request()->routeIs('galeri.index') ? 'text-charcoal font-semibold bg-warm-beige/80' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('galeri.index') }}">Galeri</a>
+            <a class="px-4 py-2.5 rounded-xl transition-colors {{ request()->routeIs('profil') ? 'text-charcoal font-semibold bg-warm-beige/80' : 'hover:text-charcoal hover:bg-warm-beige/50' }}" href="{{ route('profil') }}">Pengurus</a>
+        </nav>
+
+        <div class="pt-3 border-t border-border-subtle flex flex-col gap-2">
+            <a class="flex items-center justify-center gap-2 px-5 py-3 rounded-btn bg-nu-deep text-white font-medium text-sm hover:bg-[#113725] transition-all" href="{{ route('members.register-form') }}">
+                <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                <span>Daftar Anggota</span>
+            </a>
+            <a class="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-btn bg-warm-card hover:bg-warm-beige/60 text-charcoal font-semibold text-sm border border-border-subtle transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+                <span class="material-symbols-outlined text-muted-charcoal text-[18px]">chat</span>
+                <span>Hubungi Kami (WhatsApp)</span>
             </a>
         </div>
     </div>
+
+    <!-- SLOT CUSTOM KONTEN (OPSIONAL) -->
+    @if(isset($slot) && $slot->isNotEmpty())
+        <div class="max-w-7xl mx-auto mt-2">
+            {{ $slot }}
+        </div>
+    @endif
 </header>
+<!-- JavaScript Sederhana untuk Toggle Menu Mobile (Jika Anda tidak memakai Alpine.js) -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', function () {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('flex');
+                
+                // Ubah icon hamburguer ke close (X)
+                if (mobileMenu.classList.contains('flex')) {
+                    menuIcon.textContent = 'close';
+                } else {
+                    menuIcon.textContent = 'menu';
+                }
+            });
+        }
+    });
+</script>

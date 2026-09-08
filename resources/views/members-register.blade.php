@@ -160,23 +160,9 @@
     </style>
 </head>
 <body>
-    <nav class="nav">
-        <div class="container nav-inner">
-            <a href="{{ route('landing') }}" class="brand">
-                <span class="brand-mark">NU</span>
-                <span class="brand-name">
-                    NU BANJARANYAR
-                    <small>Nahdlatul Ulama</small>
-                </span>
-            </a>
-            <a href="{{ route('landing') }}" class="nav-back">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
-                <span class="label">Kembali ke Beranda</span>
-            </a>
-        </div>
-    </nav>
+    <x-navbar></x-navbar>
 
-    <header class="page-header">
+    <header class="page-header pt-32">
         <div class="container page-header-inner">
             <span class="badge">Keanggotaan Resmi</span>
             <h1>Formulir Pendaftaran Anggota</h1>

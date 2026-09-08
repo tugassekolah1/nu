@@ -30,7 +30,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {{-- Card: Total Infak --}}
-        <a href="{{ route('infaq.index') }}" 
+        <a href="#" 
            class="group relative p-6 rounded-2xl border border-slate-200/80 bg-white hover:bg-emerald-50/40 hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-xl hover:-translate-y-1.5 active:scale-[0.99]">
             
             <div class="flex items-start justify-between">
@@ -213,7 +213,7 @@
             <span class="text-xs font-bold text-slate-400 uppercase tracking-widest group-hover:text-teal-700 transition-colors">
                Agenda
             </span>
-            <h2 class="text-lg font-bold text-slate-800 group-hover:text-teal-950">Galeri Kegiatan</h2>
+            <h2 class="text-lg font-bold text-slate-800 group-hover:text-teal-950">Agenda Kegiatan</h2>
         </div>
         <div class="p-4 rounded-2xl bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all duration-300 shadow-xs group-hover:-rotate-6">
             <!-- Icon Photo / Gallery -->

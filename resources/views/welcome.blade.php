@@ -66,11 +66,56 @@
           background: #16452F;
           border: 1px solid rgba(255, 255, 255, 0.12);
         }
+        /* Animasi awal saat halaman dibuka: hero section */
+#beranda .lg\:col-span-6,
+#beranda h1,
+#beranda p {
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+#beranda h1 { animation-delay: 0.15s; }
+#beranda p  { animation-delay: 0.3s; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Animasi saat di-scroll: berlaku untuk SEMUA <section> otomatis */
+section {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+section.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card di dalam grid ikut stagger otomatis, tanpa perlu class tambahan */
+section.revealed .grid > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+section.revealed .grid > *:nth-child(1) { animation-delay: 0.05s; }
+section.revealed .grid > *:nth-child(2) { animation-delay: 0.15s; }
+section.revealed .grid > *:nth-child(3) { animation-delay: 0.25s; }
+section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
+
+@media (prefers-reduced-motion: reduce) {
+  section, section .grid > *, #beranda * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
     </style>
 </head>
 <body class="selection:bg-muted-sage selection:text-nu-deep bg-warm-bg text-charcoal">
 <!-- 1. NAVBAR (Neutral Frosted Editorial Glass) -->
-<header class="fixed top-0 inset-x-0 z-50 px-4 sm:px-8 pt-4 pb-2 transition-all">
+{{-- <header class="fixed top-0 inset-x-0 z-50 px-4 sm:px-8 pt-4 pb-2 transition-all">
     <div class="max-w-7xl mx-auto neutral-frosted rounded-full px-5 py-3 shadow-subtle flex items-center justify-between">
         <!-- Brand & Official Badge -->
         <a class="flex items-center gap-3 group" href="{{ route('landing') }}">
@@ -101,8 +146,8 @@
             </a>
         </div>
     </div>
-</header>
-
+</header> --}}
+<x-navbar></x-navbar>
 <main class="w-full bg-warm-bg">
     <!-- 2. HERO / ORGANIZATION INTRODUCTION (EDITORIAL ART DIRECTION) -->
     <section class="relative pt-32 sm:pt-36 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto" id="beranda">
@@ -118,7 +163,7 @@
                 <!-- Institutional Tag -->
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted-sage text-charcoal font-medium text-xs sm:text-sm mb-6 w-fit border border-border-neutral">
                     <span class="w-2 h-2 rounded-full bg-nu-deep"></span>
-                    <span>Website Resmi PRNU Banjaranyar, MWC NU Cilongok</span>
+                    <span>Website Resmi MWC NU Cilongok</span>
                 </div>
                 <!-- Headline -->
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-charcoal tracking-tight leading-[1.14] mb-6">
@@ -170,7 +215,7 @@
                             </div>
                             <div class="flex-1">
                                 <p class="text-xs font-bold uppercase tracking-wider text-nu-deep">Pusat Amaliyah & Khidmat</p>
-                                <p class="text-sm font-semibold text-charcoal line-clamp-1">Masjid Jami' Al-Ikhlas & Gedung Ranting Banjaranyar</p>
+                                <p class="text-sm font-semibold text-charcoal line-clamp-1">Masjid Jami' Al-Ikhlas</p>
                             </div>
                         </div>
                     </div>
@@ -217,7 +262,7 @@
                             <div class="mb-4">
                                 <span class="block text-xs uppercase tracking-widest font-bold text-muted-charcoal">WAKTU PELAKSANAAN</span>
                                 <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-charcoal tracking-tight mt-1">
-                                    {{ strtoupper($featuredAgenda->event_date->translatedFormat('l, d F Y')) }}
+                                    {{ strtoupper($featuredAgenda->event_date->locale('id')->translatedFormat('l, d F Y')) }}
                                 </p>
                                 <p class="text-sm font-semibold text-nu-deep mt-0.5">{{ $featuredAgenda->event_time ?? 'Pukul 19.45 WIB (Ba\'da Isya)' }} — Selesai</p>
                             </div>
@@ -277,7 +322,6 @@
                             </div>
                             <div class="mt-4 pt-4 border-t border-border-neutral flex items-center justify-between">
                                 <span class="text-xs text-muted-charcoal">{{ $agenda->event_time ?? 'Pukul 08.30 WIB' }}</span>
-                                <a class="text-xs font-bold text-nu-deep hover:underline" href="#layanan">Detail Agenda →</a>
                             </div>
                         </div>
                     @empty
@@ -352,7 +396,7 @@
                 @endif
 
                 <!-- TWO/THREE SECONDARY STORIES (Right Stacked) -->
-                <div class="lg:col-span-5 flex flex-col gap-6 justify-between">
+                <div class="lg:col-span-5 flex flex-col gap-6 ">
                     @if($newsList->count() > 1)
                         @foreach($newsList->skip(1)->take(2) as $berita)
                             <article class="bg-warm-card rounded-card p-5 border border-border-neutral flex flex-col sm:flex-row gap-4 items-start shadow-subtle group">
@@ -457,6 +501,21 @@
                     </div>
                     <div class="mt-8 pt-4 border-t border-border-neutral flex items-center justify-between text-sm font-semibold text-nu-deep">
                         <span>Salurkan Donasi</span>
+                        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </a>
+                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="/cek-kartu">
+                    <div>
+                        <div class="w-14 h-14 rounded-card bg-warm-beige flex items-center justify-center text-charcoal mb-6 border border-border-subtle">
+                            <span class="material-symbols-outlined text-[30px]">savings</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-charcoal mb-2 group-hover:text-nu-deep transition-colors">cetak kartu</h3>
+                        <p class="text-sm text-muted-charcoal leading-relaxed">
+                            Layanan cetak kartu anggota
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-border-neutral flex items-center justify-between text-sm font-semibold text-nu-deep">
+                        <span>Cetak</span>
                         <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
                     </div>
                 </a>
@@ -576,97 +635,65 @@
     </section>
 
     <!-- 8. PENGURUS (PORTRAIT PHOTOGRAPHY GRID) -->
-    <section class="w-full py-16 sm:py-24 bg-warm-card border-b border-border-neutral" id="pengurus">
-        <div class="max-w-7xl mx-auto px-4 sm:px-8">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-                <div>
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
-                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">group</span>
-                        <span>Khidmat Kepemimpinan</span>
-                    </div>
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Pengurus Ranting NU</h2>
-                    <p class="text-base text-muted-charcoal mt-1">Ulama dan tokoh penggerak masa khidmat 2023 - 2028.</p>
+   <section class="w-full py-16 sm:py-24 bg-warm-card border-b border-border-neutral" id="pengurus">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+            <div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                    <span class="material-symbols-outlined text-[16px] text-muted-charcoal">group</span>
+                    <span>Khidmat Kepemimpinan</span>
                 </div>
-                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('profil') }}">
-                    <span>Lihat Struktur Lengkap</span>
-                    <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                </a>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Pengurus Ranting NU</h2>
+                <p class="text-base text-muted-charcoal mt-1">Ulama dan tokoh penggerak masa khidmat {{ $periode ?? '2023 - 2028' }}.</p>
             </div>
-            <!-- 4:5 Portrait Grid for Leadership -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Rais Syuriyah -->
-                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
-                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative">
-                        <img alt="{{ $pengurus['rais_syuriyah']['name'] ?? 'K.H. Masrur Ihsan' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $pengurus['rais_syuriyah']['photo'] ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuCCndoFU1ZHN28MuBF-Pt47jjrBEFwRo_nwsKgBLhM55Inn0yOq17leBYJpqi7WWVEutfWMRWdxKrU75ZeeHWIOkD9AUx4ksaXJT9tlshYrQfAzssXoGCnEfiBVYADBj3qQ1HoudeVp9uTKKy_RvlXcuT5RYYGjoZAqILukiI78PSGV-GLXYEpg3SEtiCmimzz_b_4qSisW2zWNxchYY64FfynuzyIBC9KF4Ufy5Z-Wr55y3KVwDwfUdw' }}"/>
-                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-muted-gold">
-                            Syuriyah
-                        </div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
-                        <div>
-                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['rais_syuriyah']['name'] ?? 'K.H. Masrur Ihsan' }}</h3>
-                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Rais Syuriyah</p>
-                        </div>
-                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Pembina Rohani & Penjaga Kemurnian Tradisi Aswaja</p>
-                    </div>
-                </div>
-                <!-- Ketua Tanfidziyah -->
-                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
-                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative">
-                        <img alt="{{ $pengurus['ketua_tanfidziyah']['name'] ?? 'Ust. Ahmad Syarifuddin' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $pengurus['ketua_tanfidziyah']['photo'] ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_u0yv-h4tHJggCYC8Q3_dIWLRwn93A0OcBnSHWdHPB8j-eoO7TLeyP9N_NxFYtgTFsMT9ldWqkIjebv79LYOmgejYSNpxtzoo0MHkfFRagr-4Nn-UmcAcX_ksna_K8Km3pUHFVn2oUU-Fi7EhCZgjSTCyYVzZc_RbAXQ-c3gPWsZxNIEP_HcG9mmGkr1lccIkquT4qZWnBiD_xMigN17jzBZwtewtLUX1OXShCpKgpd7zNlABlU2U6g' }}"/>
-                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
-                            Tanfidziyah
-                        </div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
-                        <div>
-                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['ketua_tanfidziyah']['name'] ?? 'Ust. Ahmad Syarifuddin, S.Pd.I.' }}</h3>
-                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Ketua Tanfidziyah</p>
-                        </div>
-                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Koordinator Pelaksana Program Kerja & Organisasi</p>
-                    </div>
-                </div>
-                <!-- Sekretaris -->
-                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
-                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative flex items-center justify-center">
-                        <div class="text-center p-4">
-                            <span class="material-symbols-outlined text-muted-charcoal text-5xl">badge</span>
-                            <p class="text-xs text-muted-charcoal font-medium mt-2">Sekretariat Banjaranyar</p>
-                        </div>
-                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
-                            Sekretariat
-                        </div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
-                        <div>
-                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['sekretaris']['name'] ?? 'M. Nur Hidayat, M.Pd.' }}</h3>
-                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Sekretaris Ranting</p>
-                        </div>
-                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Administrasi Persuratan & Digitalisasi KARTANU</p>
-                    </div>
-                </div>
-                <!-- Bendahara / Ketua LAZISNU -->
-                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
-                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative flex items-center justify-center">
-                        <div class="text-center p-4">
-                            <span class="material-symbols-outlined text-muted-charcoal text-5xl">account_balance_wallet</span>
-                            <p class="text-xs text-muted-charcoal font-medium mt-2">UPZIS & Keuangan</p>
-                        </div>
-                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
-                            Kebendaharaan
-                        </div>
-                    </div>
-                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
-                        <div>
-                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['bendahara']['name'] ?? 'H. Subur Waluyo' }}</h3>
-                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Bendahara / Ketua UPZIS</p>
-                        </div>
-                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Akuntabilitas Dana Umat & Manajemen Koin NU</p>
-                    </div>
-                </div>
-            </div>
+            <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('profil') }}">
+                <span>Lihat Struktur Lengkap</span>
+                <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
         </div>
-    </section>
+
+        <!-- 4:5 Portrait Grid for Leadership -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal-stagger">
+            @forelse ($pengurus as $item)
+                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
+                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative">
+                        @if($item->foto)
+                            <img alt="{{ $item->nama }}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                 src="{{ asset('storage/' . $item->foto) }}"/>
+                        @else
+                            <div class="w-full h-full flex items-center justify-center">
+                                <div class="text-center p-4">
+                                    <span class="material-symbols-outlined text-muted-charcoal text-5xl">badge</span>
+                                    <p class="text-xs text-muted-charcoal font-medium mt-2">{{ $item->label_banom ?? 'Pengurus' }}</p>
+                                </div>
+                            </div>
+                        @endif
+                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
+                            {{ $item->label_banom ?? 'Pengurus' }}
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
+                        <div>
+                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $item->nama }}</h3>
+                            <p class="text-xs font-semibold text-nu-deep mt-0.5">{{ $item->jabatan }}</p>
+                        </div>
+                        @if($item->deskripsi ?? null)
+                            <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">
+                                {{ $item->deskripsi }}
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-12 bg-warm-bg rounded-container-r border border-border-neutral shadow-subtle">
+                    <span class="material-symbols-outlined text-muted-charcoal text-4xl mb-2">group_off</span>
+                    <p class="text-sm font-semibold text-charcoal mt-2">Data pengurus belum tersedia.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+</section>
 
     <!-- INFAQ & KOIN NU (INTEGRATED TRANSPARENCY BLOCK) -->
     <section class="w-full py-16 bg-warm-bg" id="infaq-lazisnu">
@@ -831,5 +858,24 @@
         </div>
     </div>
 </footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+  // Otomatis pilih SEMUA <section> tanpa perlu tambah class manual
+  document.querySelectorAll('section').forEach((el) => observer.observe(el));
+
+  // Section pertama (hero) langsung tampil, ga usah nunggu scroll
+  const hero = document.querySelector('#beranda');
+  if (hero) hero.classList.add('revealed');
+});
+</script>
 </body>
 </html>
