@@ -184,20 +184,26 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <span class="material-symbols-outlined text-[18px] text-muted-charcoal">arrow_forward</span>
                     </a>
                 </div>
-                <!-- Quick Stat Badge Row -->
-                <div class="mt-10 pt-8 border-t border-border-neutral flex items-center gap-8 text-left">
+                <!-- Quick Stat Badge Row (dengan Count-Up Animation) -->
+                <div class="mt-10 pt-8 border-t border-border-neutral flex items-center gap-8 text-left" id="hero-stats-counter">
                     <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-charcoal">{{ $stats['majelis_taklim'] ?? '12' }}</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-charcoal"
+                             data-count-target="{{ preg_replace('/[^0-9]/', '', $stats['majelis_taklim'] ?? '12') }}"
+                             data-count-suffix="{{ preg_replace('/[0-9]/', '', $stats['majelis_taklim'] ?? '12') }}">0</div>
                         <div class="text-xs sm:text-sm text-muted-charcoal font-medium">Majelis Taklim</div>
                     </div>
                     <div class="h-8 w-px bg-border-neutral"></div>
                     <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-charcoal">{{ $stats['warga_nahdliyin'] ?? '850+' }}</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-charcoal"
+                             data-count-target="{{ preg_replace('/[^0-9]/', '', $stats['warga_nahdliyin'] ?? '850+') }}"
+                             data-count-suffix="{{ preg_replace('/[0-9]/', '', $stats['warga_nahdliyin'] ?? '850+') }}">0</div>
                         <div class="text-xs sm:text-sm text-muted-charcoal font-medium">Warga Nahdliyin</div>
                     </div>
                     <div class="h-8 w-px bg-border-neutral"></div>
                     <div>
-                        <div class="text-2xl sm:text-3xl font-bold text-charcoal">100%</div>
+                        <div class="text-2xl sm:text-3xl font-bold text-charcoal"
+                             data-count-target="100"
+                             data-count-suffix="%">0</div>
                         <div class="text-xs sm:text-sm text-muted-charcoal font-medium">ZISWAF Terverifikasi</div>
                     </div>
                 </div>
@@ -223,7 +229,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
             </div>
         </div>
     </section>
-
+</main>
     <!-- 3. AGENDA TERDEKAT (DIRECTLY VISIBLE, INSTANTLY SCANNABLE EDITORIAL LAYOUT) -->
     <section class="w-full py-16 sm:py-24 bg-warm-card border-y border-border-neutral" id="agenda">
         <div class="max-w-7xl mx-auto px-4 sm:px-8">
@@ -601,7 +607,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <span class="text-muted-gold">Menggerakkan Maslahat.</span>
                     </h2>
                     <p class="text-base sm:text-lg text-white/80 leading-relaxed mb-8">
-                        Di tanah Banjaranyar, Nahdlatul Ulama terus menapaki jalan dakwah yang merangkul, membimbing amaliah Ahlussunnah wal Jama'ah an-Nahdliyah, dan mengawal kemandirian ekonomi umat melalui gotong royong tanpa henti.
+                        Di tanah ini, Nahdlatul Ulama terus menapaki jalan dakwah yang merangkul, membimbing amaliah Ahlussunnah wal Jama'ah an-Nahdliyah, dan mengawal kemandirian ekonomi umat melalui gotong royong tanpa henti.
                     </p>
                     <div>
                         <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-btn bg-warm-card text-charcoal font-bold text-sm hover:bg-warm-beige transition-colors shadow-subtle" href="{{ route('profil') }}">
@@ -622,7 +628,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <div class="pt-6 border-t border-white/15 flex items-center justify-between">
                             <div>
                                 <p class="text-base font-bold text-white">{{ $pengurus['rais_syuriyah']['name'] ?? 'K.H. Masrur Ihsan' }}</p>
-                                <p class="text-xs text-muted-gold font-medium">Rais Syuriyah PRNU Banjaranyar</p>
+                                <p class="text-xs text-muted-gold font-medium">Rais Syuriyah PRNU Cilongok</p>
                             </div>
                             <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-muted-gold border border-white/10">
                                 <span class="material-symbols-outlined text-[20px]">verified</span>
@@ -875,6 +881,57 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
   // Section pertama (hero) langsung tampil, ga usah nunggu scroll
   const hero = document.querySelector('#beranda');
   if (hero) hero.classList.add('revealed');
+});
+document.addEventListener('DOMContentLoaded', function () {
+  function animateCount(el) {
+    const target = parseInt(el.getAttribute('data-count-target'), 10) || 0;
+    const suffix = el.getAttribute('data-count-suffix') || '';
+    const duration = 1500;
+    const startTime = performance.now();
+
+    function easeOutQuad(t) {
+      return t * (2 - t);
+    }
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutQuad(progress);
+      const current = Math.floor(eased * target);
+
+      el.textContent = current.toLocaleString('id-ID') + suffix;
+
+      if (progress < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        el.textContent = target.toLocaleString('id-ID') + suffix;
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  // Khusus stats di hero: langsung jalan saat load, TIDAK pakai IntersectionObserver,
+  // karena section hero selalu terlihat begitu halaman dibuka.
+  const heroStats = document.getElementById('hero-stats-counter');
+  if (heroStats) {
+    const heroCounters = heroStats.querySelectorAll('[data-count-target]');
+    heroCounters.forEach((el) => animateCount(el));
+  }
+
+  // Kalau nanti ada blok statistik LAIN di section yang baru terlihat setelah scroll
+  // (bukan di hero), pakai observer terpisah dengan id/class berbeda, contoh:
+  //
+  // const otherStats = document.querySelectorAll('.scroll-stats-counter [data-count-target]');
+  // const observer = new IntersectionObserver((entries) => {
+  //   entries.forEach((entry) => {
+  //     if (entry.isIntersecting) {
+  //       animateCount(entry.target);
+  //       observer.unobserve(entry.target);
+  //     }
+  //   });
+  // }, { threshold: 0.4 });
+  // otherStats.forEach((el) => observer.observe(el));
 });
 </script>
 </body>
