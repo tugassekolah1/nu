@@ -205,6 +205,40 @@
         </div>
     </div>
 </a>
+<a href="{{ route('agenda.index') }}" 
+   class="group relative p-6 rounded-2xl border border-slate-200/80 bg-white hover:bg-teal-50/40 hover:border-teal-300 transition-all duration-300 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-xl hover:-translate-y-1.5 active:scale-[0.99]">
+    
+    <div class="flex items-start justify-between">
+        <div class="space-y-1">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest group-hover:text-teal-700 transition-colors">
+               Agenda
+            </span>
+            <h2 class="text-lg font-bold text-slate-800 group-hover:text-teal-950">Galeri Kegiatan</h2>
+        </div>
+        <div class="p-4 rounded-2xl bg-teal-50 text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all duration-300 shadow-xs group-hover:-rotate-6">
+            <!-- Icon Photo / Gallery -->
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="flex items-end justify-between pt-2">
+        <div>
+            <h3 class="text-3xl font-black text-slate-900 group-hover:text-teal-900 transition-colors tracking-tight">
+              0
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Agenda</p>
+        </div>
+        
+        <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-700 bg-teal-100/80 group-hover:bg-teal-600 group-hover:text-white px-3 py-2 rounded-xl transition-all duration-300 shadow-xs">
+            <span>Kelola</span>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+        </div>
+    </div>
+</a>
     </div>
 
     {{-- Section Panduan & Akses Cepat --}}

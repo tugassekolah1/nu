@@ -1,3 +1,7 @@
+   @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+   
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,6 +32,9 @@
                     </x-nav-link>
                     <x-nav-link :href="route('pengurus.index')" :active="request()->routeIs('member.*')">
                         {{ __('Pengurus') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('agenda.index')" :active="request()->routeIs('member.*')">
+                        {{ __('Agenda') }}
                     </x-nav-link>
                     <!-- Kembali ke Beranda / Landing Page -->
                     <a href="{{ url('/') }}" target="_blank" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">

@@ -1,475 +1,835 @@
 <!DOCTYPE html>
-<html lang="id">
+<html class="scroll-smooth" lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NU Banjaranyar</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Nahdlatul Ulama Banjaranyar, Cilongok - Berkhidmat untuk Umat</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@200..700,0..1&display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "warm-bg": "#F7F5EF",
+                "warm-card": "#FDFCF7",
+                "charcoal": "#171816",
+                "muted-charcoal": "#4F544E",
+                "nu-deep": "#16452F",
+                "nu-night": "#141815",
+                "muted-sage": "#E7ECE4",
+                "warm-beige": "#EDE8DD",
+                "muted-gold": "#B49352",
+                "border-neutral": "#E5E2D9",
+                "border-subtle": "#D5D2C8",
+              },
+              fontFamily: {
+                sans: ["Inter", "sans-serif"],
+                arabic: ["Amiri", "serif"],
+              },
+              borderRadius: {
+                "btn": "14px",
+                "card": "20px",
+                "container-r": "28px",
+              },
+              boxShadow: {
+                "subtle": "0 2px 10px rgba(23, 24, 22, 0.04), 0 1px 3px rgba(23, 24, 22, 0.03)",
+                "elevated": "0 10px 30px rgba(23, 24, 22, 0.06), 0 1px 3px rgba(23, 24, 22, 0.04)",
+              }
+            }
+          }
+        };
+    </script>
     <style>
-        :root {
-            --bg: #eef2ec;
-            --surface: #ffffff;
-            --ink: #17392d;
-            --ink-soft: #4b5c53;
-            --line: #d7e2d7;
-            --brand-deep: #356c49;
-            --brand-dark: #214b35;
-            --shadow: 0 18px 45px rgba(23, 57, 45, 0.08);
-            --container: 1180px;
+        @layer base {
+          body {
+            font-family: 'Inter', sans-serif;
+            color: #171816;
+            background-color: #F7F5EF;
+            -webkit-font-smoothing: antialiased;
+          }
         }
-        * { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { margin: 0; font-family: "Inter", system-ui, sans-serif; color: var(--ink); background: var(--bg); font-size: 16px; }
-        img { max-width: 100%; display: block; }
-        a { color: inherit; text-decoration: none; }
-
-        /* NAV */
-       body { padding-top: 88px; }
-
-/* NAV — floating pill, auto-hide saat scroll ke bawah */
-@keyframes blob {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(20px, -30px) scale(1.1); }
-    66% { transform: translate(-15px, 15px) scale(0.95); }
-}
-.animate-blob { animation: blob 9s infinite ease-in-out; }
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-up { animation: fadeUp 0.7s ease-out forwards; }
-
-        /* PAGINATION */
-        .news-pagination { margin-top: 28px; display: flex; justify-content: center; }
-        .news-pagination nav { display: flex; width: 100%; justify-content: center; }
-
-        /* 1. Sembunyikan navigasi bawaan mobile (Prev/Next simpel) */
-        .news-pagination nav > div:first-child { display: none !important; }
-
-        /* 2. PAKSA nomor halaman (desktop view) agar MUNCUL di mobile */
-        .news-pagination nav > div:last-child {
-            display: flex !important;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+        .neutral-frosted {
+          background: rgba(247, 245, 239, 0.88);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(215, 210, 200, 0.7);
         }
-
-        /* 3. Sembunyikan teks "Showing X to Y of Z results" */
-        .news-pagination nav > div:last-child > div:first-child { display: none !important; }
-
-        /* 4. Tampilkan nomor halaman & panah navigasi */
-        .news-pagination nav > div:last-child > div:last-child {
-            display: flex !important;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-
-        /* Style untuk angka & tombol */
-        .news-pagination span[aria-current="page"] span,
-        .news-pagination a,
-        .news-pagination span[aria-disabled="true"] span {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 40px; height: 40px; margin: 2px; padding: 0 12px;
-            border-radius: 10px; font-size: 14px; font-weight: 700;
-            background: var(--surface); color: var(--ink); border: 1px solid var(--line);
-            transition: background 160ms ease, color 160ms ease;
-        }
-
-        .news-pagination a:hover { background: var(--brand-dark); color: #fff; border-color: var(--brand-dark); }
-        .news-pagination span[aria-current="page"] span {
-            background: var(--brand-dark); color: #fff; border-color: var(--brand-dark);
-        }
-        .news-pagination span[aria-disabled="true"] span {
-            opacity: 0.4; pointer-events: none;
+        .dark-editorial-panel {
+          background: #16452F;
+          border: 1px solid rgba(255, 255, 255, 0.12);
         }
     </style>
 </head>
-<body class="font-[Inter,system-ui,sans-serif] text-[#17392d] bg-[#eef2ec] text-base pt-[88px]">
-
- <!-- NAVBAR -->
-<header class="fixed top-0 left-0 w-full z-50 flex justify-center transition-all duration-300">
-    <nav id="navbar" class="w-[92%] max-w-5xl mt-5 px-6 py-3 flex items-center justify-between rounded-full bg-emerald-950/85 backdrop-blur-md border border-emerald-800/40 shadow-xl shadow-emerald-950/20 transition-all duration-300">
-
-        <a href="{{ route('landing') }}" class="flex items-center gap-2.5">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-lime-400 flex items-center justify-center text-emerald-950 font-black text-sm shadow-md">
-                NU
-            </div>
-            <div class="leading-tight hidden sm:block">
-                <span class="block font-bold text-sm text-white">NU BANJARANYAR</span>
-                <span class="block text-[11px] text-emerald-200/80 font-medium">Nahdlatul Ulama</span>
+<body class="selection:bg-muted-sage selection:text-nu-deep bg-warm-bg text-charcoal">
+<!-- 1. NAVBAR (Neutral Frosted Editorial Glass) -->
+<header class="fixed top-0 inset-x-0 z-50 px-4 sm:px-8 pt-4 pb-2 transition-all">
+    <div class="max-w-7xl mx-auto neutral-frosted rounded-full px-5 py-3 shadow-subtle flex items-center justify-between">
+        <!-- Brand & Official Badge -->
+        <a class="flex items-center gap-3 group" href="{{ route('landing') }}">
+            <img alt="Logo NU Banjaranyar" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1VVjAZeFl8x9UC1ygLyGJQ7s08PMheg8thGTpLjMGEDNy6dxehyc8qxHnJ3TWq0onXXPh6_HPNWDese-jycKUQ2eb98-bnO7YW_VY0GaCIEySrmJqvz-GHn0s7CMUqoutQaae-CsDK4XqFr1CTpqkfXyJQS3h0oeeJcHzC-gIHlGibUdsPPEn0o-vdxP46pPspwdFoEMDPWgm6H4UW6yedGPXqeoPVeyU2SVeokYJCsQ1wcEIIhfseMkPXD"/>
+            <div class="flex flex-col">
+                <span class="font-bold text-base sm:text-lg tracking-tight text-charcoal leading-tight">NU BANJARANYAR</span>
+                <span class="text-xs font-medium text-muted-charcoal tracking-wide">Kecamatan Cilongok, Banyumas</span>
             </div>
         </a>
-
-        <ul class="hidden md:flex items-center gap-8 text-sm font-medium">
-            <li><a href="{{ route('landing') }}" class="text-emerald-100 hover:text-amber-300 transition-colors">Beranda</a></li>
-            <li><a href="#warta" class="text-emerald-100 hover:text-amber-300 transition-colors">Warta</a></li>
-            <li><a href="#agenda" class="text-emerald-100 hover:text-amber-300 transition-colors">Agenda</a></li>
-            <li><a href="#pengurus" class="text-emerald-100 hover:text-amber-300 transition-colors">Pengurus</a></li>
-        </ul>
-
-        <a href="{{ route('members.register-form') }}" class="hidden md:inline-flex items-center bg-amber-400 hover:bg-amber-300 active:scale-95 text-emerald-950 font-bold text-sm px-5 py-2 rounded-full transition-all shadow-md shadow-amber-400/25">
-            Daftar Anggota
-        </a>
-
-        <button id="menu-btn" class="md:hidden text-emerald-100 hover:text-white focus:outline-none p-1">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-
-        <div id="mobile-menu" class="hidden absolute top-full left-0 right-0 mt-3 p-4 bg-emerald-950/95 backdrop-blur-md border border-emerald-800/40 rounded-2xl shadow-2xl flex-col gap-2 text-center md:hidden">
-            <a href="{{ route('landing') }}" class="text-emerald-100 font-medium hover:text-amber-300 py-2 transition-colors">Beranda</a>
-            <a href="#warta" class="text-emerald-100 font-medium hover:text-amber-300 py-2 transition-colors">Warta</a>
-            <a href="#agenda" class="text-emerald-100 font-medium hover:text-amber-300 py-2 transition-colors">Agenda</a>
-            <a href="#pengurus" class="text-emerald-100 font-medium hover:text-amber-300 py-2 transition-colors">Pengurus</a>
-            <a href="{{ route('members.register-form') }}" class="bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-sm px-5 py-2.5 rounded-full mt-2 inline-block transition-all">
-                Daftar Anggota
+        <!-- Desktop Nav -->
+        <nav class="hidden lg:flex items-center gap-1 text-sm font-medium text-muted-charcoal">
+            <a class="px-4 py-2 rounded-full text-charcoal font-semibold bg-warm-beige/70 transition-colors" href="{{ route('landing') }}">Beranda</a>
+            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#agenda">Agenda</a>
+            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#berita">Warta Kabar</a>
+            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#layanan">Layanan Warga</a>
+            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#tentang">Tentang NU</a>
+            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="{{ route('profil') }}">Pengurus</a>
+        </nav>
+        <!-- Action CTAs -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <a class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white font-medium text-sm hover:bg-[#113725] transition-all active:scale-95 shadow-sm" href="{{ route('members.register-form') }}">
+                <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                <span>Daftar Anggota</span>
+            </a>
+            <a class="inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-btn bg-warm-card hover:bg-warm-beige/60 text-charcoal font-semibold text-xs sm:text-sm border border-border-subtle transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+                <span class="material-symbols-outlined text-muted-charcoal text-[18px]">chat</span>
+                <span class="hidden md:inline">Hubungi Kami</span>
             </a>
         </div>
-
-    </nav>
-</header>
-
-<!-- HERO -->
-<header class="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-800 to-emerald-700 pt-32 pb-24">
-
-    <!-- Blob animasi lembut -->
-    <div class="absolute -top-24 -left-24 w-96 h-96 bg-lime-400/20 rounded-full blur-3xl animate-blob"></div>
-    <div class="absolute top-10 -right-20 w-80 h-80 bg-amber-300/15 rounded-full blur-3xl animate-blob [animation-delay:2s]"></div>
-    <div class="absolute bottom-0 left-1/3 w-72 h-72 bg-emerald-400/15 rounded-full blur-3xl animate-blob [animation-delay:4s]"></div>
-
-    <div class="relative z-10 max-w-3xl mx-auto px-6 text-center flex flex-col items-center gap-6">
-
-        <span class="animate-fade-up [animation-delay:.1s] opacity-0 inline-flex items-center gap-2 bg-white/10 border border-white/20 text-emerald-50 text-xs font-semibold px-4 py-1.5 rounded-full">
-            Selamat Datang di Website Resmi
-        </span>
-
-        <h1 class="animate-fade-up [animation-delay:.25s] opacity-0 font-serif font-extrabold text-white text-4xl sm:text-5xl lg:text-6xl leading-tight tracking-tight">
-            Nahdlatul Ulama<br>
-            <span class="text-amber-300">Ranting Banjaranyar</span>
-        </h1>
-
-        <p class="animate-fade-up [animation-delay:.4s] opacity-0 text-emerald-50/90 text-base sm:text-lg leading-relaxed max-w-xl">
-            Menjaga tradisi Ahlussunnah wal Jama'ah, mempererat ukhuwah, dan melayani umat melalui dakwah, pendidikan, dan pemberdayaan masyarakat.
-        </p>
-
-        <div class="animate-fade-up [animation-delay:.55s] opacity-0 flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-2">
-            <a href="#warta" class="inline-flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-emerald-950 font-bold text-base px-7 py-4 rounded-2xl shadow-lg shadow-amber-400/25 hover:-translate-y-0.5 transition-all">
-                <i data-lucide="newspaper" class="w-5 h-5"></i>
-                Lihat Berita
-            </a>
-            <a href="#agenda" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-base px-7 py-4 rounded-2xl hover:-translate-y-0.5 transition-all">
-                <i data-lucide="calendar-days" class="w-5 h-5"></i>
-                Acara Mendatang
-            </a>
-            <a href="{{ route('members.register-form') }}" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-bold text-base px-7 py-4 rounded-2xl hover:-translate-y-0.5 transition-all">
-                <i data-lucide="user-plus" class="w-5 h-5"></i>
-                Daftar Anggota
-            </a>
-        </div>
-
     </div>
 </header>
 
-<main>
-    <!-- LAYANAN & INFORMASI -->
-    <section class="pt-[46px]">
-        <div class="w-[min(1180px,calc(100%-32px))] mx-auto w-[min(calc(100%-24px),1180px)]">
-            <h2 class="m-0 mb-5 text-[clamp(26px,3vw,38px)] leading-[1.15] tracking-[-0.02em] font-extrabold text-[#214b35]">Layanan &amp; Informasi</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-                <a href="{{ route('members.register-form') }}" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="user-plus" class="w-5 h-5 md:w-6 md:h-6"></i>
+<main class="w-full bg-warm-bg">
+    <!-- 2. HERO / ORGANIZATION INTRODUCTION (EDITORIAL ART DIRECTION) -->
+    <section class="relative pt-32 sm:pt-36 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto" id="beranda">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            <!-- Left: Monumental Editorial Text & CTAs -->
+            <div class="lg:col-span-6 flex flex-col justify-center text-left">
+                <!-- Basmalah Calligraphy -->
+                <div class="mb-5 inline-flex items-center">
+                    <p class="font-arabic text-2xl sm:text-3xl text-muted-gold tracking-wide select-none font-normal">
+                        بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+                    </p>
+                </div>
+                <!-- Institutional Tag -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted-sage text-charcoal font-medium text-xs sm:text-sm mb-6 w-fit border border-border-neutral">
+                    <span class="w-2 h-2 rounded-full bg-nu-deep"></span>
+                    <span>Website Resmi PRNU Banjaranyar, MWC NU Cilongok</span>
+                </div>
+                <!-- Headline -->
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-charcoal tracking-tight leading-[1.14] mb-6">
+                    Nahdlatul Ulama <span class="block text-nu-deep">Kecamatan Cilongok</span>
+                </h1>
+                <!-- Warm Paragraph -->
+                <p class="text-base sm:text-lg text-muted-charcoal leading-relaxed mb-8 max-w-xl">
+                    Berkhidmah untuk Umat, Menjaga Tradisi Ahlussunnah wal Jama'ah. Wadah persaudaraan Nahdliyin desa Banjaranyar yang mandiri, guyub, dan penuh maslahat.
+                </p>
+                <!-- Direct High-Contrast Action CTAs -->
+                <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+                    <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-btn bg-nu-deep text-white font-semibold text-base hover:bg-[#113725] shadow-subtle transition-all active:scale-95" href="#agenda">
+                        <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+                        <span>Lihat Agenda Terdekat</span>
+                    </a>
+                    <a class="inline-flex items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-btn bg-warm-card text-charcoal font-semibold text-base border border-border-subtle hover:bg-warm-beige/50 transition-all shadow-subtle" href="#berita">
+                        <span>Baca Warta Terbaru</span>
+                        <span class="material-symbols-outlined text-[18px] text-muted-charcoal">arrow_forward</span>
+                    </a>
+                </div>
+                <!-- Quick Stat Badge Row -->
+                <div class="mt-10 pt-8 border-t border-border-neutral flex items-center gap-8 text-left">
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold text-charcoal">{{ $stats['majelis_taklim'] ?? '12' }}</div>
+                        <div class="text-xs sm:text-sm text-muted-charcoal font-medium">Majelis Taklim</div>
                     </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Daftar Anggota</span>
-                </a>
-                <a href="#warta" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="newspaper" class="w-5 h-5 md:w-6 md:h-6"></i>
+                    <div class="h-8 w-px bg-border-neutral"></div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold text-charcoal">{{ $stats['warga_nahdliyin'] ?? '850+' }}</div>
+                        <div class="text-xs sm:text-sm text-muted-charcoal font-medium">Warga Nahdliyin</div>
                     </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Warta Berita</span>
-                </a>
-                <a href="#pengurus" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="users" class="w-5 h-5 md:w-6 md:h-6"></i>
+                    <div class="h-8 w-px bg-border-neutral"></div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold text-charcoal">100%</div>
+                        <div class="text-xs sm:text-sm text-muted-charcoal font-medium">ZISWAF Terverifikasi</div>
                     </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Struktur Pengurus</span>
-                </a>
-                <a href="#agenda" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="calendar-days" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Agenda Kegiatan</span>
-                </a>
-                <a href="{{route('infaq.index')}}" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="hand-coins" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Donasi / Infaq</span>
-                </a>
-                <a href="/galeri" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="images" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Galeri Kegiatan</span>
-                </a>
-                <a href="/profil" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="book-open" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Profil Organisasi</span>
-                </a>
-                <a href="https://wa.me/6281234567890" target="_blank" class="bg-white border border-[#d7e2d7] rounded-[18px] p-4 md:p-[22px] md:px-4 text-center shadow-[0_18px_45px_rgba(23,57,45,0.08)] hover:-translate-y-[3px] hover:border-[#356c49] transition-all duration-160">
-                    <div class="w-11 h-11 md:w-[52px] md:h-[52px] mx-auto mb-3 rounded-[14px] bg-gradient-to-b from-[#90ca47] to-[#7ebb3d] grid place-items-center text-white">
-                        <i data-lucide="phone" class="w-5 h-5 md:w-6 md:h-6"></i>
-                    </div>
-                    <span class="block font-bold text-[13px] md:text-[15px] text-[#17392d]">Kontak Kami</span>
-                </a>
+                </div>
             </div>
-        </div>
-    </section>
-
-    <!-- WARTA TERBARU -->
-    <section class="pt-[46px]" id="warta">
-        <div class="w-[min(1180px,calc(100%-32px))] mx-auto w-[min(calc(100%-24px),1180px)]">
-            <h2 class="m-0 mb-5 text-[clamp(26px,3vw,38px)] leading-[1.15] tracking-[-0.02em] font-extrabold text-[#214b35]">Warta Terbaru</h2>
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
-                @forelse ($newsList as $berita)
-                    <article class="rounded-[18px] overflow-hidden bg-white shadow-[0_18px_45px_rgba(23,57,45,0.08)] border border-[#d7e2d7]">
-                        <a href="{{ route('berita.show', $berita->slug) }}">
-                            <div class="aspect-square md:aspect-[4/3] p-3.5 md:p-5 text-white flex flex-col justify-end gap-2 relative overflow-hidden @if($loop->iteration % 3 == 1) bg-gradient-to-br from-[#102a20] via-[#213d2f] to-[#365946] @elseif($loop->iteration % 3 == 2) bg-gradient-to-br from-[#294738] via-[#375844] to-[#22372c] @else bg-gradient-to-br from-[#274134] via-[#355648] to-[#4f6d50] @endif"
-                                 @if ($berita->gambar)
-                                     style="background-image: linear-gradient(rgba(16,42,32,0.35), rgba(16,42,32,0.8)), url('{{ Storage::url($berita->gambar) }}'); background-size: cover; background-position: center;"
-                                 @endif
-                            >
-                                <div class="text-[11px] md:text-[13px] font-bold text-white/85">Warta NU</div>
-                                <h3 class="m-0 font-serif text-[15px] md:text-[clamp(19px,2.2vw,24px)] leading-[1.25] line-clamp-3">{{ $berita->judul }}</h3>
-                                <div class="text-[11px] md:text-[13px] text-white/85">
-                                    {{ $berita->user->name ?? 'Admin' }} • {{ $berita->created_at->translatedFormat('d M Y') }}
-                                </div>
+            <!-- Right: Authentic Photographic Container -->
+            <div class="lg:col-span-6 relative">
+                <div class="relative rounded-container-r overflow-hidden shadow-elevated bg-warm-card border border-border-neutral">
+                    <img alt="Masjid Komunitas Nahdlatul Ulama Jawa Tengah" class="w-full h-[380px] sm:h-[460px] lg:h-[500px] object-cover hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1XjdFNzwEN44vo6uvXmdLOU24k5K44IEpb0OdCUfG-RxXEdQXf913ZWxoz2dmsD08PciwI6DqHPNugh6LIkGV6DML8vlIq4Td7eZcePFKwHudAZXw-kBdKWOLygVJrjuiqfsCG7K1uwIVBKQqNUbU5CLocxDxT-cfUbaK6qOaW8uIUdZ5R0nlAt21NXXJ-iN5va7vrnDkQI69kXYqON9WyK6wAEmWLJAv8FSyrhPKecmmEQ10fQAKjuGZE3"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent"></div>
+                    <!-- Bottom Overlay on Image -->
+                    <div class="absolute bottom-4 left-4 right-4 p-4 sm:p-5 rounded-card bg-warm-card/95 border border-border-neutral text-charcoal shadow-subtle">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-muted-sage text-charcoal flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-[22px]">mosque</span>
                             </div>
-                            <div class="px-3.5 py-2.5 md:px-[18px] md:py-3.5 bg-[#8bc14b] text-[#16372c] font-bold text-xs md:text-sm">Baca selengkapnya</div>
-                        </a>
-                    </article>
-                @empty
-                    <p class="text-[#4b5c53]">Belum ada berita yang diterbitkan.</p>
-                @endforelse
-            </div>
-            <div class="news-pagination mt-7 flex justify-center">
-                {{ $newsList->links() }}
+                            <div class="flex-1">
+                                <p class="text-xs font-bold uppercase tracking-wider text-nu-deep">Pusat Amaliyah & Khidmat</p>
+                                <p class="text-sm font-semibold text-charcoal line-clamp-1">Masjid Jami' Al-Ikhlas & Gedung Ranting Banjaranyar</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- SAMBUTAN & AGENDA -->
-    <section class="pt-[46px]" id="pengurus">
-        <div class="w-[min(1180px,calc(100%-32px))] mx-auto grid lg:grid-cols-[1.6fr_1fr] gap-8 items-start">
-            <div>
-                <h2 class="m-0 mb-5 text-[clamp(26px,3vw,38px)] leading-[1.15] tracking-[-0.02em] font-extrabold text-[#214b35]">Sambutan Pengurus</h2>
-                <div class="bg-white rounded-[18px] p-6 border border-[#d7e2d7] shadow-[0_18px_45px_rgba(23,57,45,0.08)]">
-                    <p class="m-0 text-[#4b5c53] leading-[1.75] text-[15px]">Selamat datang di website resmi NU Ranting Banjaranyar. Kami berkomitmen untuk terus mempererat silaturahmi antar warga Nahdliyin, menyebarkan dakwah Ahlussunnah wal Jama'ah, serta memberikan pelayanan terbaik bagi seluruh anggota dan masyarakat sekitar.</p>
+    <!-- 3. AGENDA TERDEKAT (DIRECTLY VISIBLE, INSTANTLY SCANNABLE EDITORIAL LAYOUT) -->
+    <section class="w-full py-16 sm:py-24 bg-warm-card border-y border-border-neutral" id="agenda">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">event_upcoming</span>
+                        <span>Jadwal Pengajian Ranting</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Agenda Terdekat</h2>
+                    <p class="text-base text-muted-charcoal mt-1">Ikuti kegiatan & pengajian NU yang akan datang di wilayah Banjaranyar.</p>
                 </div>
-
-                <div id="pengurus" class="grid grid-cols-2 gap-3 md:gap-[18px] mt-5">
-                    <article class="bg-white rounded-[18px] overflow-hidden border border-[#d7e2d7] shadow-[0_18px_45px_rgba(23,57,45,0.08)]">
-                        <div class="aspect-[1.15/1] bg-gradient-to-br from-[#cad7cf] to-[#f0f4ef] relative">
-                            <div class="absolute inset-x-4 top-3.5 h-[120px] rounded-2xl bg-gradient-to-br from-[#4d6c5d] to-[#9cb995]"></div>
-                        </div>
-                        <div class="p-3 md:p-4">
-                            <h4 class="m-0 mb-2 text-sm md:text-base">Ketua Ranting</h4>
-                            <p class="m-0 text-[#4b5c53] text-xs md:text-sm leading-[1.6]">Memimpin jalannya organisasi dan mengoordinasikan seluruh program kerja ranting.</p>
-                        </div>
-                    </article>
-                    <article class="bg-white rounded-[18px] overflow-hidden border border-[#d7e2d7] shadow-[0_18px_45px_rgba(23,57,45,0.08)]">
-                        <div class="aspect-[1.15/1] bg-gradient-to-br from-[#cad7cf] to-[#f0f4ef] relative">
-                            <div class="absolute inset-x-4 top-3.5 h-[120px] rounded-2xl bg-gradient-to-br from-[#4d6c5d] to-[#9cb995]"></div>
-                        </div>
-                        <div class="p-3 md:p-4">
-                            <h4 class="m-0 mb-2 text-sm md:text-base">Sekretaris</h4>
-                            <p class="m-0 text-[#4b5c53] text-xs md:text-sm leading-[1.6]">Mengelola administrasi, surat-menyurat, dan dokumentasi kegiatan organisasi.</p>
-                        </div>
-                    </article>
-                    <article class="bg-white rounded-[18px] overflow-hidden border border-[#d7e2d7] shadow-[0_18px_45px_rgba(23,57,45,0.08)]">
-                        <div class="aspect-[1.15/1] bg-gradient-to-br from-[#cad7cf] to-[#f0f4ef] relative">
-                            <div class="absolute inset-x-4 top-3.5 h-[120px] rounded-2xl bg-gradient-to-br from-[#4d6c5d] to-[#9cb995]"></div>
-                        </div>
-                        <div class="p-3 md:p-4">
-                            <h4 class="m-0 mb-2 text-sm md:text-base">Bendahara</h4>
-                            <p class="m-0 text-[#4b5c53] text-xs md:text-sm leading-[1.6]">Mengelola keuangan organisasi termasuk infaq, donasi, dan iuran keanggotaan.</p>
-                        </div>
-                    </article>
-                </div>
+                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="#agenda">
+                    <span>Lihat Semua Agenda</span>
+                    <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
             </div>
-
-            <aside id="agenda">
-                <h2 class="m-0 mb-5 text-[clamp(26px,3vw,38px)] leading-[1.15] tracking-[-0.02em] font-extrabold text-[#214b35]">Agenda Kegiatan</h2>
-                <div class="bg-white border border-[#d7e2d7] rounded-[20px] shadow-[0_18px_45px_rgba(23,57,45,0.08)] p-5 pb-4">
-                    <div class="flex items-center justify-between mb-4 text-[#56675e] font-bold text-[15px]">
-                        <i data-lucide="arrow-left" class="w-[18px] h-[18px]"></i>
-                        <span>{{ now()->translatedFormat('F Y') }}</span>
-                        <i data-lucide="arrow-right" class="w-[18px] h-[18px]"></i>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1.5 text-center">
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">M</span>
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">S</span>
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">S</span>
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">R</span>
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">K</span>
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">J</span>
-                        <span class="text-xs text-[#8a988f] font-bold uppercase">S</span>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1.5 text-center mt-2.5">
-                        @for ($i = 1; $i <= 30; $i++)
-                            <span class="w-[34px] h-[34px] grid place-items-center mx-auto rounded-[10px] text-sm {{ $i === (int) now()->format('j') ? 'bg-[#214b35] text-white font-extrabold' : 'bg-[#dceabb] text-[#45683f]' }}">{{ $i }}</span>
-                        @endfor
-                    </div>
-                </div>
-
-                @forelse ($upcomingAgenda as $index => $agenda)
-                    @if ($index === 0)
-                        <div class="bg-white border border-[#d7e2d7] rounded-[20px] shadow-[0_18px_45px_rgba(23,57,45,0.08)] mt-4 p-[18px]">
-                            <div class="text-xs text-[#7f8c85] uppercase font-bold mb-1.5">{{ $agenda->event_date->translatedFormat('d F Y') }}</div>
-                            <strong class="block text-base text-[#17392d] mb-1">{{ $agenda->title }}</strong>
-                            <span class="text-[#61736a] text-sm">
-                                {{ $agenda->event_time ?? 'Waktu menyusul' }}
-                                @if ($agenda->location) • {{ $agenda->location }} @endif
-                            </span>
-                            <span class="inline-block mt-2.5 px-3.5 py-1.5 rounded-full bg-[#8bc14b] text-[#16372c] font-bold text-[13px]">{{ $agenda->category }}</span>
+            <!-- Editorial Grid: 1 Large Featured + 2 Secondary Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <!-- FEATURED BIG UPCOMING EVENT CARD (Huge Bold Date Typography) -->
+                @if($upcomingAgenda->isNotEmpty())
+                    @php $featuredAgenda = $upcomingAgenda->first(); @endphp
+                    <div class="lg:col-span-7 bg-warm-bg rounded-container-r p-6 sm:p-8 border border-border-neutral flex flex-col justify-between relative overflow-hidden shadow-subtle">
+                        <div class="relative z-10">
+                            <!-- Badge Row -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-6">
+                                <span class="px-3.5 py-1 rounded-full bg-nu-deep text-white text-xs font-bold uppercase tracking-wider">
+                                    Agenda Utama Terdekat
+                                </span>
+                                <span class="text-xs font-semibold px-3 py-1 rounded-full bg-warm-beige text-charcoal border border-border-subtle">
+                                    {{ $featuredAgenda->category ?? 'Malam Rabu Pon' }}
+                                </span>
+                            </div>
+                            <!-- Huge Date Typography -->
+                            <div class="mb-4">
+                                <span class="block text-xs uppercase tracking-widest font-bold text-muted-charcoal">WAKTU PELAKSANAAN</span>
+                                <p class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-charcoal tracking-tight mt-1">
+                                    {{ strtoupper($featuredAgenda->event_date->translatedFormat('l, d F Y')) }}
+                                </p>
+                                <p class="text-sm font-semibold text-nu-deep mt-0.5">{{ $featuredAgenda->event_time ?? 'Pukul 19.45 WIB (Ba\'da Isya)' }} — Selesai</p>
+                            </div>
+                            <!-- Event Title & Excerpt -->
+                            <h3 class="text-xl sm:text-2xl font-bold text-charcoal mb-3 leading-snug">
+                                {{ $featuredAgenda->title }}
+                            </h3>
+                            <p class="text-sm sm:text-base text-muted-charcoal leading-relaxed mb-6">
+                                {{ Str::limit($featuredAgenda->description ?? $featuredAgenda->deskripsi ?? 'Rangkaian istighotsah kubro, tahlil massal, sholawat nahdliyah, dan taushiyah keaswajaan bersama segenap jajaran Syuriyah dan Tanfidziyah Ranting.', 200) }}
+                            </p>
+                            <!-- Meta specs -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-card bg-warm-card border border-border-neutral text-sm">
+                                @if($featuredAgenda->location ?? $featuredAgenda->lokasi ?? null)
+                                    <div class="flex items-start gap-2.5">
+                                        <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">location_on</span>
+                                        <span class="font-medium text-charcoal">{{ $featuredAgenda->location ?? $featuredAgenda->lokasi }}</span>
+                                    </div>
+                                @endif
+                                @if($featuredAgenda->speaker ?? $featuredAgenda->pemateri ?? null)
+                                    <div class="flex items-start gap-2.5">
+                                        <span class="material-symbols-outlined text-muted-gold text-[20px] shrink-0">record_voice_over</span>
+                                        <span class="font-medium text-charcoal">Mau'idzah: {{ $featuredAgenda->speaker ?? $featuredAgenda->pemateri }}</span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
-                    @endif
-                @empty
-                    <div class="bg-white border border-[#d7e2d7] rounded-[20px] shadow-[0_18px_45px_rgba(23,57,45,0.08)] mt-4 p-[18px]">
-                        <div class="text-xs text-[#7f8c85] uppercase font-bold mb-1.5">Info</div>
-                        <strong class="block text-base text-[#17392d] mb-1">Belum ada agenda terjadwal</strong>
-                        <span class="text-[#61736a] text-sm">Nantikan kegiatan selanjutnya</span>
-                    </div>
-                @endforelse
-
-                @if ($upcomingAgenda->count() > 1)
-                    <div class="bg-white border border-[#d7e2d7] rounded-[20px] shadow-[0_18px_45px_rgba(23,57,45,0.08)] mt-4 p-[18px]">
-                        <div class="grid gap-3.5">
-                            @foreach ($upcomingAgenda->skip(1) as $agenda)
-                                <div class="grid grid-cols-[46px_1fr] gap-3.5 items-center">
-                                    <div class="w-[46px] h-[46px] rounded-[14px] bg-gradient-to-br from-[#c8d5c9] to-[#eff4ee] relative">
-                                        <div class="absolute inset-[9px] rounded-full bg-gradient-to-b from-[#5f766a] to-[#d3ddd5]"></div>
-                                    </div>
-                                    <div>
-                                        <strong class="block text-[15px]">{{ $agenda->title }}</strong>
-                                        <span class="block text-[#4b5c53] text-[13px] mt-[3px]">{{ $agenda->event_date->translatedFormat('d M Y') }}@if ($agenda->event_time) • {{ $agenda->event_time }} @endif</span>
-                                    </div>
-                                </div>
-                            @endforeach
+                        <!-- Action bottom -->
+                        <div class="relative z-10 mt-8 pt-6 border-t border-border-neutral flex flex-wrap items-center justify-between gap-4">
+                            <span class="text-xs font-medium text-muted-charcoal">Terbuka untuk Umum (Putra & Putri)</span>
+                            <a class="inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white text-sm font-medium hover:bg-[#113725] transition-colors" href="https://wa.me/6281234567890?text=Konfirmasi%20Kehadiran%20{{ urlencode($featuredAgenda->title) }}" rel="noopener noreferrer" target="_blank">
+                                <span>Lihat Detail & Lokasi</span>
+                                <span class="material-symbols-outlined text-[18px]">navigation</span>
+                            </a>
                         </div>
                     </div>
                 @endif
-            </aside>
+
+                <!-- 2 SECONDARY UPCOMING EVENTS STACKED -->
+                <div class="lg:col-span-5 flex flex-col gap-6">
+                    @forelse($upcomingAgenda->skip(1)->take(2) as $agenda)
+                        <div class="bg-warm-bg rounded-container-r p-6 border border-border-neutral flex flex-col justify-between shadow-subtle">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-muted-charcoal">{{ $agenda->event_date->translatedFormat('l, d M Y') }}</span>
+                                    <span class="text-xs px-2.5 py-0.5 rounded-full bg-muted-sage text-charcoal font-semibold border border-border-neutral">{{ $agenda->category ?? 'LAZISNU' }}</span>
+                                </div>
+                                <h4 class="text-lg font-bold text-charcoal mb-2 hover:text-nu-deep transition-colors">
+                                    {{ $agenda->title }}
+                                </h4>
+                                <p class="text-xs sm:text-sm text-muted-charcoal line-clamp-2 leading-relaxed mb-4">
+                                    {{ Str::limit($agenda->description ?? $agenda->deskripsi ?? '', 150) }}
+                                </p>
+                                <div class="flex items-center gap-2 text-xs font-medium text-muted-charcoal">
+                                    <span class="material-symbols-outlined text-[18px] text-muted-charcoal">apartment</span>
+                                    <span>{{ $agenda->location ?? $agenda->lokasi ?? 'Aula Gedung Ranting PRNU Banjaranyar' }}</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-border-neutral flex items-center justify-between">
+                                <span class="text-xs text-muted-charcoal">{{ $agenda->event_time ?? 'Pukul 08.30 WIB' }}</span>
+                                <a class="text-xs font-bold text-nu-deep hover:underline" href="#layanan">Detail Agenda →</a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="bg-warm-bg rounded-container-r p-6 border border-border-neutral flex flex-col justify-center items-center text-center shadow-subtle">
+                            <span class="material-symbols-outlined text-muted-charcoal text-4xl mb-2">event_busy</span>
+                            <p class="text-sm font-semibold text-charcoal">Belum ada agenda tambahan</p>
+                            <p class="text-xs text-muted-charcoal mt-1">Nantikan kegiatan selanjutnya</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
         </div>
     </section>
 
-  
+    <!-- 4. KABAR TERBARU (EDITORIAL NEWS COMPOSITION: ASYMMETRIC) -->
+    <section class="w-full py-16 sm:py-24 bg-warm-bg" id="berita">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">feed</span>
+                        <span>Warta & Narasi Nahdliyin</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Kabar Terbaru Ranting</h2>
+                    <p class="text-base text-muted-charcoal mt-1">Dokumentasi gerak, fatwa, dan kabar sosial seputar warga NU Cilongok.</p>
+                </div>
+                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('berita.public')}}">
+                    <span>Lihat Semua Berita</span>
+                    <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                <!-- ONE LARGE FEATURED STORY (Left) -->
+                @if($newsList->isNotEmpty())
+                    @php $featuredNews = $newsList->first(); @endphp
+                    <article class="lg:col-span-7 bg-warm-card rounded-container-r border border-border-neutral overflow-hidden flex flex-col justify-between shadow-subtle group">
+                        <div>
+                            <div class="relative h-64 sm:h-80 w-full overflow-hidden">
+                                <img alt="{{ $featuredNews->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ $featuredNews->gambar ? Storage::url($featuredNews->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuALJW36SfuHdqaIUBnAV33yc_p3mURfwwxP-zISe3TI_oxyOpGcbYYs31ulyiDy4QChMr9yTHggIvicAsmVx6hsW4WW0WmI3evkBVt2UljE3wn7qNo-yN8xigpyzZ4E4Qowhq5xm347RUfevQm4nC8Sd3lOFHwRgQeGkkDgckRn-NnLo3_EgLpE_9XJt2XfwJ2_cuz1EqdF7qlRqrTSlnRR_xGHmxw7X9r867rxPKhq0fF5osmjZQ94jw' }}"/>
+                                <div class="absolute top-4 left-4">
+                                    <span class="px-3.5 py-1 rounded-full bg-charcoal/90 text-white text-xs font-semibold backdrop-blur-md">
+                                        Laporan Utama
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="p-6 sm:p-8">
+                                <div class="flex items-center gap-3 text-xs text-muted-charcoal font-medium mb-3">
+                                    <span>{{ $featuredNews->created_at->translatedFormat('d F Y') }}</span>
+                                    <span>•</span>
+                                    <span>Oleh {{ $featuredNews->user->name ?? 'Sekretariat PRNU' }}</span>
+                                    @if($featuredNews->kategori)
+                                        <span>•</span>
+                                        <span class="text-nu-deep font-semibold">{{ $featuredNews->kategori }}</span>
+                                    @endif
+                                </div>
+                                <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal mb-4 leading-snug group-hover:text-nu-deep transition-colors">
+                                    <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
+                                </h3>
+                                <p class="text-base text-muted-charcoal leading-relaxed">
+                                    {{ Str::limit(strip_tags($featuredNews->konten), 250) }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="px-6 sm:px-8 pb-6 sm:pb-8 pt-2 flex items-center justify-between">
+                            <a class="inline-flex items-center gap-2 text-sm font-bold text-nu-deep hover:underline" href="{{ route('berita.show', $featuredNews->slug) }}">
+                                <span>Baca Selengkapnya</span>
+                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                            </a>
+                            <span class="text-xs text-muted-charcoal">4 menit baca</span>
+                        </div>
+                    </article>
+                @endif
 
-    <!-- KONTAK STRIP -->
-    <div class="mt-[46px] bg-[#214b35] text-white py-8 text-center w-full">
-        <div class="w-[min(1180px,calc(100%-32px))] mx-auto">
-            <h3 class="m-0 mb-2 text-[22px] font-['Baloo_2',cursive]">Ada Pertanyaan?</h3>
-            <p class="m-0 mb-[18px] text-white/85 text-[15px]">Hubungi pengurus kami langsung untuk info pendaftaran atau kegiatan.</p>
-            <a href="https://wa.me/6281234567890" target="_blank" class="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-[13px] rounded-full font-bold text-[15px] hover:opacity-90 transition-opacity">
-                <i data-lucide="message-circle" class="w-[18px] h-[18px]"></i>
-                Chat via WhatsApp
-            </a>
+                <!-- TWO/THREE SECONDARY STORIES (Right Stacked) -->
+                <div class="lg:col-span-5 flex flex-col gap-6 justify-between">
+                    @if($newsList->count() > 1)
+                        @foreach($newsList->skip(1)->take(2) as $berita)
+                            <article class="bg-warm-card rounded-card p-5 border border-border-neutral flex flex-col sm:flex-row gap-4 items-start shadow-subtle group">
+                                <div class="w-full sm:w-36 h-32 rounded-btn overflow-hidden shrink-0">
+                                    <img alt="{{ $berita->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $berita->gambar ? Storage::url($berita->gambar) : '' }}"/>
+                                </div>
+                                <div class="flex flex-col justify-between flex-1">
+                                    <div>
+                                        <span class="text-[11px] font-bold text-muted-charcoal uppercase tracking-wider">{{ $berita->kategori ?? 'Kaderisasi Banom' }}</span>
+                                        <h4 class="text-base font-bold text-charcoal mt-1 mb-1 leading-snug group-hover:text-nu-deep transition-colors">
+                                            <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
+                                        </h4>
+                                        <p class="text-xs text-muted-charcoal line-clamp-2 leading-relaxed">
+                                            {{ Str::limit(strip_tags($berita->konten), 120) }}
+                                        </p>
+                                    </div>
+                                    <div class="mt-3 flex items-center justify-between text-xs text-muted-charcoal font-medium">
+                                        <span>{{ $berita->created_at->translatedFormat('d M Y') }}</span>
+                                        <a href="{{ route('berita.show', $berita->slug) }}" class="text-nu-deep font-semibold group-hover:underline">Baca →</a>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- 5. YANG MUNGKIN ANDA CARI (PRIMARY SERVICES USABILITY SECTION) -->
+    <section class="w-full py-16 sm:py-24 bg-warm-card border-t border-border-neutral" id="layanan">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="max-w-2xl mb-12">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                    <span class="material-symbols-outlined text-[16px] text-muted-charcoal">touch_app</span>
+                    <span>Aksesibilitas Umat</span>
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Yang Mungkin Anda Cari</h2>
+                <p class="text-base text-muted-charcoal mt-1">Layanan terpadu yang dirancang mudah dan jelas untuk seluruh kalangan warga dan sesepuh jamaah.</p>
+            </div>
+            <!-- Varied Card Hierarchy -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Large & Prominent Anchor Visual (KARTANU) -->
+                <a class="md:col-span-2 lg:col-span-1 p-6 sm:p-7 rounded-container-r bg-nu-deep text-white flex flex-col justify-between hover:bg-[#113725] transition-all shadow-subtle group relative overflow-hidden" href="{{ route('members.register-form') }}">
+                    <div class="relative z-10">
+                        <div class="w-14 h-14 rounded-card bg-white/10 flex items-center justify-center text-white mb-6 border border-white/20">
+                            <span class="material-symbols-outlined text-[30px]">badge</span>
+                        </div>
+                        <span class="text-xs uppercase tracking-widest font-bold text-muted-gold">Layanan Utama</span>
+                        <h3 class="text-2xl font-bold mt-1 mb-2 text-white">Daftar Anggota (KARTANU)</h3>
+                        <p class="text-sm text-white/80 leading-relaxed">
+                            Pendaftaran resmi Kartu Tanda Anggota Nahdlatul Ulama secara mandiri, mudah, dan tercatat di pusat.
+                        </p>
+                    </div>
+                    <div class="relative z-10 mt-8 pt-4 border-t border-white/15 flex items-center justify-between text-sm font-semibold text-muted-gold">
+                        <span>Isi Formulir Sekarang</span>
+                        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </a>
+                <!-- Card 2: Agenda & Jadwal Majelis -->
+                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="#agenda">
+                    <div>
+                        <div class="w-14 h-14 rounded-card bg-muted-sage flex items-center justify-center text-charcoal mb-6">
+                            <span class="material-symbols-outlined text-[30px]">calendar_month</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-charcoal mb-2 group-hover:text-nu-deep transition-colors">Agenda & Jadwal Majelis</h3>
+                        <p class="text-sm text-muted-charcoal leading-relaxed">
+                            Informasi jadwal rotasi selapanan, tahlil keliling, dan pengajian kitab kuning tiap musala.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-border-neutral flex items-center justify-between text-sm font-semibold text-nu-deep">
+                        <span>Cek Jadwal</span>
+                        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </a>
+                <!-- Card 3: Warta & Informasi Jamaah -->
+                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="#berita">
+                    <div>
+                        <div class="w-14 h-14 rounded-card bg-muted-sage flex items-center justify-center text-charcoal mb-6">
+                            <span class="material-symbols-outlined text-[30px]">newspaper</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-charcoal mb-2 group-hover:text-nu-deep transition-colors">Warta & Berita Jamaah</h3>
+                        <p class="text-sm text-muted-charcoal leading-relaxed">
+                            Publikasi kabar berkala, rilisan resmi ranting, dan informasi kemaslahatan warga.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-border-neutral flex items-center justify-between text-sm font-semibold text-nu-deep">
+                        <span>Buka Warta</span>
+                        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </a>
+                <!-- Card 4: Koin NU & ZISWAF Mandiri -->
+                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="{{ route('infaq.index') }}">
+                    <div>
+                        <div class="w-14 h-14 rounded-card bg-warm-beige flex items-center justify-center text-charcoal mb-6 border border-border-subtle">
+                            <span class="material-symbols-outlined text-[30px]">savings</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-charcoal mb-2 group-hover:text-nu-deep transition-colors">Koin NU & ZISWAF</h3>
+                        <p class="text-sm text-muted-charcoal leading-relaxed">
+                            Layanan jemput koin infaq, zakat fitrah & mal via UPZIS LAZISNU Banjaranyar secara amanah.
+                        </p>
+                    </div>
+                    <div class="mt-8 pt-4 border-t border-border-neutral flex items-center justify-between text-sm font-semibold text-nu-deep">
+                        <span>Salurkan Donasi</span>
+                        <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. INFORMASI & LAYANAN (QUIETER ACCESSIBILITY ROW) -->
+    <section class="w-full py-12 bg-warm-bg border-b border-border-neutral">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="flex items-center justify-between mb-6">
+                <span class="text-xs font-bold uppercase tracking-wider text-muted-charcoal">Informasi & Layanan Lainnya</span>
+                <span class="text-xs text-muted-charcoal">Sekretariat PRNU Banjaranyar</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Item 1 -->
+                <div class="p-4 rounded-card bg-warm-card border border-border-neutral flex items-center gap-3.5 hover:border-border-subtle transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-warm-beige flex items-center justify-center text-charcoal shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">account_tree</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-charcoal truncate">Struktur Pengurus</p>
+                        <p class="text-xs text-muted-charcoal truncate">Masa Khidmat 2023 - 2028</p>
+                    </div>
+                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('profil') }}">
+                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </a>
+                </div>
+                <!-- Item 2 -->
+                <div class="p-4 rounded-card bg-warm-card border border-border-neutral flex items-center gap-3.5 hover:border-border-subtle transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-warm-beige flex items-center justify-center text-charcoal shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">photo_library</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-charcoal truncate">Galeri Dokumentasi</p>
+                        <p class="text-xs text-muted-charcoal truncate">Foto & Video Kegiatan</p>
+                    </div>
+                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('galeri.index') }}">
+                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </a>
+                </div>
+                <!-- Item 3 -->
+                <div class="p-4 rounded-card bg-warm-card border border-border-neutral flex items-center gap-3.5 hover:border-border-subtle transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-warm-beige flex items-center justify-center text-charcoal shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">menu_book</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-charcoal truncate">Profil Ranting</p>
+                        <p class="text-xs text-muted-charcoal truncate">Sejarah & Wilayah Dakwah</p>
+                    </div>
+                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('profil') }}">
+                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </a>
+                </div>
+                <!-- Item 4 -->
+                <div class="p-4 rounded-card bg-warm-card border border-border-neutral flex items-center gap-3.5 hover:border-border-subtle transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-warm-beige flex items-center justify-center text-charcoal shrink-0">
+                        <span class="material-symbols-outlined text-[20px]">location_on</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-charcoal truncate">Kontak Sekretariat</p>
+                        <p class="text-xs text-muted-charcoal truncate">{{ $kontak['alamat'] ?? 'Jl. Raya Cilongok No. 12' }}</p>
+                    </div>
+                    <a class="text-muted-charcoal hover:text-charcoal" href="#kontak">
+                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. TENTANG NU KECAMATAN (EDITORIAL DARK SECTION FOR VISUAL RHYTHM - SOLID DEEP NU GREEN) -->
+    <section class="w-full py-20 sm:py-28 bg-nu-deep text-white relative overflow-hidden" id="tentang">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <!-- Left: Big Typography Statement -->
+                <div class="lg:col-span-6 flex flex-col">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 text-white text-xs font-semibold tracking-wider uppercase mb-6 w-fit border border-white/10">
+                        <span>Khidmat Jam'iyyah</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] mb-6 text-white">
+                        Menjaga Tradisi, <br/>
+                        <span class="text-muted-gold">Menggerakkan Maslahat.</span>
+                    </h2>
+                    <p class="text-base sm:text-lg text-white/80 leading-relaxed mb-8">
+                        Di tanah Banjaranyar, Nahdlatul Ulama terus menapaki jalan dakwah yang merangkul, membimbing amaliah Ahlussunnah wal Jama'ah an-Nahdliyah, dan mengawal kemandirian ekonomi umat melalui gotong royong tanpa henti.
+                    </p>
+                    <div>
+                        <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-btn bg-warm-card text-charcoal font-bold text-sm hover:bg-warm-beige transition-colors shadow-subtle" href="{{ route('profil') }}">
+                            <span>Profil Selengkapnya</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Right: Authentic Quote Card Split Layout -->
+                <div class="lg:col-span-6">
+                    <div class="p-8 sm:p-10 rounded-container-r dark-editorial-panel relative">
+                        <p class="font-arabic text-2xl sm:text-3xl text-muted-gold text-right leading-loose mb-6">
+                            تَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ وَلَا تَعَاوَنُوا عَلَى الْإِثْمِ وَالْعُدْوَانِ
+                        </p>
+                        <blockquote class="text-base sm:text-lg italic text-white/90 leading-relaxed mb-6 font-light">
+                            "{{ $pengurus['rais_syuriyah']['message'] ?? 'Nahdlatul Ulama adalah tali pengikat persaudaraan dan penjaga benteng akidah. Dengan kebersamaan kita menjaga masjid, merawat generasi muda, dan saling menopang dalam setiap kesulitan hidup.' }}"
+                        </blockquote>
+                        <div class="pt-6 border-t border-white/15 flex items-center justify-between">
+                            <div>
+                                <p class="text-base font-bold text-white">{{ $pengurus['rais_syuriyah']['name'] ?? 'K.H. Masrur Ihsan' }}</p>
+                                <p class="text-xs text-muted-gold font-medium">Rais Syuriyah PRNU Banjaranyar</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-muted-gold border border-white/10">
+                                <span class="material-symbols-outlined text-[20px]">verified</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. PENGURUS (PORTRAIT PHOTOGRAPHY GRID) -->
+    <section class="w-full py-16 sm:py-24 bg-warm-card border-b border-border-neutral" id="pengurus">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">group</span>
+                        <span>Khidmat Kepemimpinan</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Pengurus Ranting NU</h2>
+                    <p class="text-base text-muted-charcoal mt-1">Ulama dan tokoh penggerak masa khidmat 2023 - 2028.</p>
+                </div>
+                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('profil') }}">
+                    <span>Lihat Struktur Lengkap</span>
+                    <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
+            </div>
+            <!-- 4:5 Portrait Grid for Leadership -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Rais Syuriyah -->
+                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
+                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative">
+                        <img alt="{{ $pengurus['rais_syuriyah']['name'] ?? 'K.H. Masrur Ihsan' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $pengurus['rais_syuriyah']['photo'] ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuCCndoFU1ZHN28MuBF-Pt47jjrBEFwRo_nwsKgBLhM55Inn0yOq17leBYJpqi7WWVEutfWMRWdxKrU75ZeeHWIOkD9AUx4ksaXJT9tlshYrQfAzssXoGCnEfiBVYADBj3qQ1HoudeVp9uTKKy_RvlXcuT5RYYGjoZAqILukiI78PSGV-GLXYEpg3SEtiCmimzz_b_4qSisW2zWNxchYY64FfynuzyIBC9KF4Ufy5Z-Wr55y3KVwDwfUdw' }}"/>
+                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-muted-gold">
+                            Syuriyah
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
+                        <div>
+                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['rais_syuriyah']['name'] ?? 'K.H. Masrur Ihsan' }}</h3>
+                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Rais Syuriyah</p>
+                        </div>
+                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Pembina Rohani & Penjaga Kemurnian Tradisi Aswaja</p>
+                    </div>
+                </div>
+                <!-- Ketua Tanfidziyah -->
+                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
+                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative">
+                        <img alt="{{ $pengurus['ketua_tanfidziyah']['name'] ?? 'Ust. Ahmad Syarifuddin' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ $pengurus['ketua_tanfidziyah']['photo'] ?? 'https://lh3.googleusercontent.com/aida-public/AB6AXuD_u0yv-h4tHJggCYC8Q3_dIWLRwn93A0OcBnSHWdHPB8j-eoO7TLeyP9N_NxFYtgTFsMT9ldWqkIjebv79LYOmgejYSNpxtzoo0MHkfFRagr-4Nn-UmcAcX_ksna_K8Km3pUHFVn2oUU-Fi7EhCZgjSTCyYVzZc_RbAXQ-c3gPWsZxNIEP_HcG9mmGkr1lccIkquT4qZWnBiD_xMigN17jzBZwtewtLUX1OXShCpKgpd7zNlABlU2U6g' }}"/>
+                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
+                            Tanfidziyah
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
+                        <div>
+                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['ketua_tanfidziyah']['name'] ?? 'Ust. Ahmad Syarifuddin, S.Pd.I.' }}</h3>
+                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Ketua Tanfidziyah</p>
+                        </div>
+                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Koordinator Pelaksana Program Kerja & Organisasi</p>
+                    </div>
+                </div>
+                <!-- Sekretaris -->
+                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
+                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative flex items-center justify-center">
+                        <div class="text-center p-4">
+                            <span class="material-symbols-outlined text-muted-charcoal text-5xl">badge</span>
+                            <p class="text-xs text-muted-charcoal font-medium mt-2">Sekretariat Banjaranyar</p>
+                        </div>
+                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
+                            Sekretariat
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
+                        <div>
+                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['sekretaris']['name'] ?? 'M. Nur Hidayat, M.Pd.' }}</h3>
+                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Sekretaris Ranting</p>
+                        </div>
+                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Administrasi Persuratan & Digitalisasi KARTANU</p>
+                    </div>
+                </div>
+                <!-- Bendahara / Ketua LAZISNU -->
+                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
+                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative flex items-center justify-center">
+                        <div class="text-center p-4">
+                            <span class="material-symbols-outlined text-muted-charcoal text-5xl">account_balance_wallet</span>
+                            <p class="text-xs text-muted-charcoal font-medium mt-2">UPZIS & Keuangan</p>
+                        </div>
+                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
+                            Kebendaharaan
+                        </div>
+                    </div>
+                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
+                        <div>
+                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $pengurus['bendahara']['name'] ?? 'H. Subur Waluyo' }}</h3>
+                            <p class="text-xs font-semibold text-nu-deep mt-0.5">Bendahara / Ketua UPZIS</p>
+                        </div>
+                        <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">Akuntabilitas Dana Umat & Manajemen Koin NU</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INFAQ & KOIN NU (INTEGRATED TRANSPARENCY BLOCK) -->
+    <section class="w-full py-16 bg-warm-bg" id="infaq-lazisnu">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="rounded-container-r bg-warm-card border border-border-neutral p-8 sm:p-12 shadow-subtle grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                <div class="lg:col-span-7">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warm-beige text-charcoal text-xs font-bold uppercase tracking-wider mb-3 border border-border-subtle">
+                        <span class="material-symbols-outlined text-[16px] text-muted-gold">verified_user</span>
+                        <span>Layanan Mandiri ZISWAF</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight mb-4">
+                        Salurkan Koin NU & Sedekah untuk Warga Membutuhkan
+                    </h3>
+                    <p class="text-base text-muted-charcoal leading-relaxed mb-6">
+                        UPZIS LAZISNU Banjaranyar menyalurkan amanah donasi untuk biaya kesehatan warga dhuafa, beasiswa santri madrasah, dan santunan yatim piatu desa secara berkala dan terbuka.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-card bg-warm-bg border border-border-neutral">
+                        <div class="flex-1">
+                            <span class="text-xs text-muted-charcoal block">Rekening Bank Syariah Indonesia (BSI)</span>
+                            <span class="text-xl font-bold font-mono text-charcoal tracking-wider">{{ $infaqInfo['rekening'] ?? '7192-8821-09' }}</span>
+                            <span class="text-xs text-muted-charcoal block">a.n. LAZISNU BANJARANYAR</span>
+                        </div>
+                        <button class="px-4 py-2.5 min-h-[44px] rounded-btn bg-warm-card hover:bg-warm-beige text-charcoal text-xs font-bold border border-border-subtle flex items-center gap-1.5 shadow-subtle active:scale-95 transition-all" onclick="navigator.clipboard.writeText('{{ $infaqInfo['rekening'] ?? '7192882109' }}'); alert('Nomor Rekening BSI Tersalin');">
+                            <span class="material-symbols-outlined text-[16px] text-muted-charcoal">content_copy</span>
+                            <span>Salin Rekening</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="lg:col-span-5 flex flex-col items-center text-center p-6 rounded-card bg-warm-bg border border-border-neutral">
+                    <span class="text-xs font-bold text-muted-charcoal uppercase tracking-wider mb-3">Pindai QRIS Standar Bank Indonesia</span>
+                    <div class="p-3 bg-white rounded-card shadow-subtle border border-border-neutral w-48 h-48 flex items-center justify-center">
+                        <svg class="w-full h-full text-charcoal" fill="currentColor" viewbox="0 0 100 100">
+                            <rect fill="currentColor" height="26" rx="3" width="26" x="10" y="10"></rect>
+                            <rect fill="white" height="18" rx="2" width="18" x="14" y="14"></rect>
+                            <rect fill="currentColor" height="10" rx="1" width="10" x="18" y="18"></rect>
+                            <rect fill="currentColor" height="26" rx="3" width="26" x="64" y="10"></rect>
+                            <rect fill="white" height="18" rx="2" width="18" x="68" y="14"></rect>
+                            <rect fill="currentColor" height="10" rx="1" width="10" x="72" y="18"></rect>
+                            <rect fill="currentColor" height="26" rx="3" width="26" x="10" y="64"></rect>
+                            <rect fill="white" height="18" rx="2" width="18" x="14" y="68"></rect>
+                            <rect fill="currentColor" height="10" rx="1" width="10" x="18" y="72"></rect>
+                            <rect height="6" rx="1" width="6" x="42" y="12"></rect>
+                            <rect height="6" rx="1" width="6" x="52" y="12"></rect>
+                            <rect height="12" rx="1" width="6" x="42" y="24"></rect>
+                            <rect height="6" rx="1" width="6" x="52" y="30"></rect>
+                            <rect height="16" rx="1" width="6" x="12" y="42"></rect>
+                            <rect height="6" rx="1" width="12" x="24" y="42"></rect>
+                            <rect height="6" rx="1" width="6" x="24" y="52"></rect>
+                            <rect fill="#16452F" height="16" rx="2" width="16" x="42" y="44"></rect>
+                            <rect height="6" rx="1" width="6" x="64" y="44"></rect>
+                            <rect height="6" rx="1" width="12" x="76" y="44"></rect>
+                            <rect height="6" rx="1" width="12" x="64" y="56"></rect>
+                            <rect height="14" rx="1" width="6" x="82" y="56"></rect>
+                            <rect height="12" rx="1" width="6" x="44" y="68"></rect>
+                            <rect height="6" rx="1" width="8" x="54" y="74"></rect>
+                            <rect height="14" rx="1" width="14" x="68" y="74"></rect>
+                        </svg>
+                    </div>
+                    <p class="text-xs text-muted-charcoal mt-3">NMID: {{ $infaqInfo['nmid'] ?? 'ID10202519283719' }} • Bebas Biaya Admin</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. CONTACT & WHATSAPP CLOSING SECTION -->
+    <section class="w-full py-16 sm:py-20 bg-warm-card border-t border-border-neutral" id="kontak">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="rounded-container-r bg-warm-beige/70 border border-border-subtle p-8 sm:p-14 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+                <div class="max-w-xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-bold uppercase tracking-wider mb-3 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">support_agent</span>
+                        <span>Layanan Sekretariat</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-charcoal tracking-tight mb-3">
+                        Ada yang Ingin Ditanyakan? <br/>
+                        <span class="text-nu-deep">Pengurus Kami Siap Membantu.</span>
+                    </h2>
+                    <p class="text-base text-muted-charcoal leading-relaxed">
+                        Konsultasi persuratan majelis, rekomendasi pernikahan/pendidikan santri, inventaris tenda & sound, atau info keanggotaan.
+                    </p>
+                </div>
+                <div class="shrink-0 flex flex-col sm:flex-row items-center gap-3">
+                    <a class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[50px] rounded-btn bg-nu-deep hover:bg-[#113725] text-white font-bold text-base shadow-subtle transition-all active:scale-95" href="https://wa.me/{{ $kontak['whatsapp'] ?? '6281234567890' }}?text=Assalamu%27alaikum%20Pengurus%20NU%20Banjaranyar" rel="noopener noreferrer" target="_blank">
+                        <span class="material-symbols-outlined text-[24px]">chat</span>
+                        <div class="text-left">
+                            <span class="block text-[11px] font-normal uppercase tracking-wider text-white/80">WhatsApp Sekretariat</span>
+                            <span>+62 {{ $kontak['whatsapp'] ?? '812-3456-7890' }}</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
-<footer class="bg-[#101715] text-[#d2d9d5] py-5 text-sm w-full">
-    <div class="w-[min(1180px,calc(100%-32px))] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3.5 flex-wrap">
-        <span>Copyright © {{ now()->year }} NU Ranting Banjaranyar</span>
-        <span>Kontak: nubanjaranyar@gmail.com</span>
+<!-- 10. FLOATING WHATSAPP BUTTON (Subtle Neutral & Deep NU Green) -->
+<div class="fixed bottom-6 right-6 z-40">
+    <a aria-label="Hubungi WhatsApp Pengurus" class="flex items-center gap-2.5 px-4 py-3 rounded-full bg-warm-card/95 border border-border-subtle text-charcoal shadow-subtle hover:shadow-elevated hover:scale-105 active:scale-95 transition-all group" href="https://wa.me/{{ $kontak['whatsapp'] ?? '6281234567890' }}" rel="noopener noreferrer" target="_blank">
+        <div class="w-8 h-8 rounded-full bg-nu-deep text-white flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[19px]">chat</span>
+        </div>
+        <div class="hidden sm:flex flex-col text-left">
+            <span class="text-xs font-bold text-charcoal leading-tight">Sekretariat NU</span>
+            <span class="text-[11px] text-muted-charcoal">Respon Cepat</span>
+        </div>
+    </a>
+</div>
+
+<!-- 11. FOOTER (Deep Charcoal #141815) -->
+<footer class="w-full bg-nu-night text-white pt-16 pb-12 border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-white/10">
+            <!-- Col 1: Identity & Address (5 cols) -->
+            <div class="lg:col-span-5 flex flex-col">
+                <div class="flex items-center gap-3 mb-4">
+                    <img alt="Emblem NU" class="w-10 h-10 object-contain brightness-0 invert opacity-90" src="https://lh3.googleusercontent.com/aida/AEtjO1VVjAZeFl8x9UC1ygLyGJQ7s08PMheg8thGTpLjMGEDNy6dxehyc8qxHnJ3TWq0onXXPh6_HPNWDese-jycKUQ2eb98-bnO7YW_VY0GaCIEySrmJqvz-GHn0s7CMUqoutQaae-CsDK4XqFr1CTpqkfXyJQS3h0oeeJcHzC-gIHlGibUdsPPEn0o-vdxP46pPspwdFoEMDPWgm6H4UW6yedGPXqeoPVeyU2SVeokYJCsQ1wcEIIhfseMkPXD"/>
+                    <div>
+                        <span class="font-extrabold text-lg tracking-tight block leading-none text-white">NU BANJARANYAR</span>
+                        <span class="text-xs text-white/60 font-medium">Kecamatan Cilongok, Banyumas</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/70 leading-relaxed max-w-sm mb-6">
+                    Pengurus Ranting Nahdlatul Ulama Desa Banjaranyar, MWC NU Kecamatan Cilongok, PCNU Kabupaten Banyumas. Merawat akidah Ahlussunnah wal Jama'ah an-Nahdliyah.
+                </p>
+                <div class="flex items-start gap-2.5 text-xs text-white/60 leading-relaxed">
+                    <span class="material-symbols-outlined text-muted-gold text-[18px] shrink-0">location_on</span>
+                    <span>{{ $kontak['alamat'] ?? 'Gedung Sekretariat PRNU, Jl. Raya Cilongok No. 12, Banjaranyar, Banyumas, Jawa Tengah 53162' }}</span>
+                </div>
+            </div>
+            <!-- Col 2: Quick Links (3 cols) -->
+            <div class="lg:col-span-3 flex flex-col">
+                <span class="text-xs font-bold tracking-wider text-muted-gold uppercase mb-4">Tautan Navigasi</span>
+                <ul class="space-y-2.5 text-sm text-white/70">
+                    <li><a class="hover:text-white transition-colors" href="{{ route('landing') }}">Beranda Ranting</a></li>
+                    <li><a class="hover:text-white transition-colors" href="#agenda">Jadwal Agenda & Majelis</a></li>
+                    <li><a class="hover:text-white transition-colors" href="#berita">Warta & Kabar Terkini</a></li>
+                    <li><a class="hover:text-white transition-colors" href="#layanan">Layanan Kemaslahatan</a></li>
+                    <li><a class="hover:text-white transition-colors" href="{{ route('members.register-form') }}">Pendaftaran KARTANU</a></li>
+                </ul>
+            </div>
+            <!-- Col 3: Banom & Lembaga (4 cols) -->
+            <div class="lg:col-span-4 flex flex-col">
+                <span class="text-xs font-bold tracking-wider text-muted-gold uppercase mb-4">Badan Otonom & Lembaga</span>
+                <div class="grid grid-cols-2 gap-2.5 text-sm text-white/70">
+                    <a class="hover:text-white transition-colors" href="#">• Muslimat NU</a>
+                    <a class="hover:text-white transition-colors" href="#">• GP Ansor</a>
+                    <a class="hover:text-white transition-colors" href="#">• Fatayat NU</a>
+                    <a class="hover:text-white transition-colors" href="#">• Banser Satkoryon</a>
+                    <a class="hover:text-white transition-colors" href="#">• IPNU & IPPNU</a>
+                    <a class="hover:text-white transition-colors" href="{{ route('infaq.index') }}">• LAZISNU UPZIS</a>
+                </div>
+                <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/60">
+                    <p><strong class="text-white">Email:</strong> {{ $kontak['email'] ?? 'sekretariat@nubanjaranyar.or.id' }}</p>
+                    <p class="mt-1"><strong class="text-white">Jam Khidmat:</strong> {{ $kontak['jam_layanan'] ?? 'Setiap Hari Ahad & Rabu (08.00 - 16.00 WIB)' }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Copyright & Calligraphy sub -->
+        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
+            <p>© {{ now()->year }} Nahdlatul Ulama Banjaranyar, Cilongok, Banyumas. Khidmat untuk Umat & Bangsa.</p>
+            <p class="font-arabic text-lg text-muted-gold tracking-wide">مَنْ أَحَبَّ قَوْمًا حُشِرَ مَعَهُمْ</p>
+        </div>
     </div>
 </footer>
-
-<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
-<script>
-    function filterBanom(category) {
-        const cards = document.querySelectorAll('.pengurus-card');
-        const buttons = document.querySelectorAll('.tab-btn');
-
-        buttons.forEach(btn => {
-            btn.classList.remove('bg-emerald-800', 'text-white', 'border-emerald-800', 'shadow-md');
-            btn.classList.add('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-300', 'dark:border-slate-700');
-        });
-
-        event.currentTarget.classList.remove('bg-white', 'dark:bg-slate-800', 'text-slate-700', 'dark:text-slate-300', 'border-slate-300', 'dark:border-slate-700');
-        event.currentTarget.classList.add('bg-emerald-800', 'text-white', 'border-emerald-800', 'shadow-md');
-
-        cards.forEach(card => {
-            if (category === 'all' || card.classList.contains(category)) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    }
-
-    lucide.createIcons();
-    document.addEventListener('DOMContentLoaded', () => {
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-
-        const navbar = document.getElementById('navbar');
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        const floatingClasses = ['w-[92%]', 'max-w-5xl', 'mt-5', 'rounded-full', 'border', 'shadow-xl'];
-        const stickyClasses = ['w-full', 'max-w-full', 'mt-0', 'rounded-none', 'border-b', 'shadow-md'];
-
-        if (menuBtn && mobileMenu) {
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                mobileMenu.classList.toggle('hidden');
-                mobileMenu.classList.toggle('flex');
-            });
-        }
-
-        function applyNavbarStyle(toSticky) {
-            if (!navbar) return;
-            if (toSticky) {
-                navbar.classList.remove(...floatingClasses);
-                navbar.classList.add(...stickyClasses);
-            } else {
-                navbar.classList.remove(...stickyClasses);
-                navbar.classList.add(...floatingClasses);
-            }
-        }
-
-        let lastScrollY = window.scrollY;
-
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.scrollY;
-
-            if (mobileMenu && !mobileMenu.classList.contains('hidden') && Math.abs(currentScroll - lastScrollY) > 20) {
-                mobileMenu.classList.add('hidden');
-                mobileMenu.classList.remove('flex');
-            }
-
-            if (currentScroll <= 10) {
-                applyNavbarStyle(false);
-            } else if (currentScroll > lastScrollY) {
-                applyNavbarStyle(true);
-            } else {
-                applyNavbarStyle(false);
-            }
-
-            lastScrollY = currentScroll <= 0 ? 0 : currentScroll;
-        }, { passive: true });
-    });
-</script>
-
 </body>
 </html>

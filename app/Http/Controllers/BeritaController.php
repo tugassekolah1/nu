@@ -99,7 +99,12 @@ class BeritaController extends Controller
         $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
         return view('welcome', compact('newsList', 'upcomingAgenda', 'pengurus'));
     }
+public function index_publik()
+{
+    $newsList = Berita::where('status', true)->latest()->paginate(5);
 
+    return view('berita', compact('newsList'));
+}
     /**
      * Method untuk membuat slug unik dari judul berita
      */

@@ -11,7 +11,7 @@
     <!-- Header / Navbar Sederhana -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="{{ route('landing') }}" class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition">
+            <a href="{{ route('berita.public') }}" class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
