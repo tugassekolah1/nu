@@ -114,39 +114,6 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
     </style>
 </head>
 <body class="selection:bg-muted-sage selection:text-nu-deep bg-warm-bg text-charcoal">
-<!-- 1. NAVBAR (Neutral Frosted Editorial Glass) -->
-{{-- <header class="fixed top-0 inset-x-0 z-50 px-4 sm:px-8 pt-4 pb-2 transition-all">
-    <div class="max-w-7xl mx-auto neutral-frosted rounded-full px-5 py-3 shadow-subtle flex items-center justify-between">
-        <!-- Brand & Official Badge -->
-        <a class="flex items-center gap-3 group" href="{{ route('landing') }}">
-            <img alt="Logo NU Banjaranyar" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1VVjAZeFl8x9UC1ygLyGJQ7s08PMheg8thGTpLjMGEDNy6dxehyc8qxHnJ3TWq0onXXPh6_HPNWDese-jycKUQ2eb98-bnO7YW_VY0GaCIEySrmJqvz-GHn0s7CMUqoutQaae-CsDK4XqFr1CTpqkfXyJQS3h0oeeJcHzC-gIHlGibUdsPPEn0o-vdxP46pPspwdFoEMDPWgm6H4UW6yedGPXqeoPVeyU2SVeokYJCsQ1wcEIIhfseMkPXD"/>
-            <div class="flex flex-col">
-                <span class="font-bold text-base sm:text-lg tracking-tight text-charcoal leading-tight">NU BANJARANYAR</span>
-                <span class="text-xs font-medium text-muted-charcoal tracking-wide">Kecamatan Cilongok, Banyumas</span>
-            </div>
-        </a>
-        <!-- Desktop Nav -->
-        <nav class="hidden lg:flex items-center gap-1 text-sm font-medium text-muted-charcoal">
-            <a class="px-4 py-2 rounded-full text-charcoal font-semibold bg-warm-beige/70 transition-colors" href="{{ route('landing') }}">Beranda</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#agenda">Agenda</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#berita">Warta Kabar</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#layanan">Layanan Warga</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="#tentang">Tentang NU</a>
-            <a class="px-4 py-2 rounded-full hover:text-charcoal hover:bg-warm-beige/50 transition-colors" href="{{ route('profil') }}">Pengurus</a>
-        </nav>
-        <!-- Action CTAs -->
-        <div class="flex items-center gap-2 sm:gap-3">
-            <a class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white font-medium text-sm hover:bg-[#113725] transition-all active:scale-95 shadow-sm" href="{{ route('members.register-form') }}">
-                <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
-                <span>Daftar Anggota</span>
-            </a>
-            <a class="inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-btn bg-warm-card hover:bg-warm-beige/60 text-charcoal font-semibold text-xs sm:text-sm border border-border-subtle transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
-                <span class="material-symbols-outlined text-muted-charcoal text-[18px]">chat</span>
-                <span class="hidden md:inline">Hubungi Kami</span>
-            </a>
-        </div>
-    </div>
-</header> --}}
 <x-navbar></x-navbar>
 <main class="w-full bg-warm-bg">
     <!-- 2. HERO / ORGANIZATION INTRODUCTION (EDITORIAL ART DIRECTION) -->
@@ -378,16 +345,16 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                                     <span>{{ $featuredNews->created_at->translatedFormat('d F Y') }}</span>
                                     <span>•</span>
                                     <span>Oleh {{ $featuredNews->user->name ?? 'Sekretariat PRNU' }}</span>
-                                    @if($featuredNews->kategori)
+                                    @if($featuredNews->jenis)
                                         <span>•</span>
-                                        <span class="text-nu-deep font-semibold">{{ $featuredNews->kategori }}</span>
+                                        <span class="text-nu-deep font-semibold">{{ $featuredNews->jenis }}</span>
                                     @endif
                                 </div>
                                 <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal mb-4 leading-snug group-hover:text-nu-deep transition-colors">
                                     <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
                                 </h3>
                                 <p class="text-base text-muted-charcoal leading-relaxed">
-                                    {{ Str::limit(strip_tags($featuredNews->konten), 250) }}
+                                    {{ Str::limit(strip_tags($featuredNews->isi), 250) }}
                                 </p>
                             </div>
                         </div>
@@ -411,12 +378,12 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                                 </div>
                                 <div class="flex flex-col justify-between flex-1">
                                     <div>
-                                        <span class="text-[11px] font-bold text-muted-charcoal uppercase tracking-wider">{{ $berita->kategori ?? 'Kaderisasi Banom' }}</span>
+                                        <span class="text-[11px] font-bold text-muted-charcoal uppercase tracking-wider">{{ $berita->jenis }}</span>
                                         <h4 class="text-base font-bold text-charcoal mt-1 mb-1 leading-snug group-hover:text-nu-deep transition-colors">
                                             <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
                                         </h4>
                                         <p class="text-xs text-muted-charcoal line-clamp-2 leading-relaxed">
-                                            {{ Str::limit(strip_tags($berita->konten), 120) }}
+                                            {{ Str::limit(strip_tags($berita->isi), 120) }}
                                         </p>
                                     </div>
                                     <div class="mt-3 flex items-center justify-between text-xs text-muted-charcoal font-medium">

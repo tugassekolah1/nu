@@ -9,6 +9,16 @@ class Infaq extends Model
 {
     use HasFactory;
 
+    /**
+     * Pilihan metode pembayaran yang diterima.
+     */
+    public const METODE = ['transfer_bank', 'qris', 'tunai'];
+
+    /**
+     * Pilihan status transaksi infaq.
+     */
+    public const STATUSES = ['pending', 'lunas', 'dibatalkan'];
+
     protected $fillable = [
         'kode_transaksi',
         'nama_donatur',

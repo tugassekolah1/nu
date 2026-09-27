@@ -36,6 +36,12 @@
                     <x-nav-link :href="route('agenda.index')" :active="request()->routeIs('member.*')">
                         {{ __('Agenda') }}
                     </x-nav-link>
+                    @if (Auth::user()->is_admin)
+                        <!-- Infaq -->
+                        <x-nav-link :href="route('admin.infaq.index')" :active="request()->routeIs('admin.infaq.*')">
+                            {{ __('Infaq') }}
+                        </x-nav-link>
+                    @endif
                     <!-- Kembali ke Beranda / Landing Page -->
                     <a href="{{ url('/') }}" target="_blank" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,6 +121,13 @@
             <x-responsive-nav-link :href="route('agenda.index')" :active="request()->routeIs('member.*')">
                 {{ __('Agenda') }}
             </x-responsive-nav-link>
+
+            @if (Auth::user()->is_admin)
+                <!-- Infaq Mobile -->
+                <x-responsive-nav-link :href="route('admin.infaq.index')" :active="request()->routeIs('admin.infaq.*')">
+                    {{ __('Infaq') }}
+                </x-responsive-nav-link>
+            @endif
 
             <!-- Kembali ke Beranda Mobile -->
             <x-responsive-nav-link :href="url('/')" target="_blank" class="text-indigo-600 font-medium">

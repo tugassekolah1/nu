@@ -30,7 +30,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {{-- Card: Total Infak --}}
-        <a href="#" 
+        <a href="{{ auth()->user()->is_admin ? route('admin.infaq.index') : route('infaq.index') }}"
            class="group relative p-6 rounded-2xl border border-slate-200/80 bg-white hover:bg-emerald-50/40 hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-xl hover:-translate-y-1.5 active:scale-[0.99]">
             
             <div class="flex items-start justify-between">
@@ -284,7 +284,78 @@
                 </svg>
                 <span>Kelola Agenda</span>
             </a>
+
+            @if (auth()->user()->is_admin)
+                <a href="{{ route('admin.infaq.create') }}"
+                   class="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm shadow-sm hover:shadow-emerald-300 hover:shadow-lg transition-all duration-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2-1.343-2-3-2zm0 8c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zM12 6V4m0 2v2m0 10v2m0-2v2"/>
+                    </svg>
+                    <span>Catat Infaq</span>
+                </a>
+            @endif
         </div>
     </div>
+
+    @if (auth()->user()->is_admin)
+        {{-- Section: Transaksi Infaq Terbaru --}}
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <h2 class="text-base font-bold text-slate-800">Transaksi Infaq Terbaru</h2>
+                </div>
+
+                <div class="flex items-center gap-3 text-xs font-bold">
+                    <a href="{{ route('admin.infaq.index') }}" class="text-emerald-700 hover:underline">Lihat semua</a>
+                    <a href="{{ route('admin.infaq.create') }}"
+                       class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors">
+                        Catat Infaq
+                    </a>
+                </div>
+            </div>
+
+            @if (($infaqTerbaru ?? collect())->isEmpty())
+                <p class="text-sm text-slate-500">Belum ada transaksi infaq. Yuk, catat transaksi pertama.</p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left">
+                        <thead>
+                            <tr class="text-xs uppercase font-bold text-slate-400 border-b border-slate-100">
+                                <th class="py-2 pr-4">Kode</th>
+                                <th class="py-2 pr-4">Donatur</th>
+                                <th class="py-2 pr-4">Tanggal</th>
+                                <th class="py-2 pr-4 text-right">Nominal</th>
+                                <th class="py-2 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            @foreach ($infaqTerbaru as $trx)
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="py-2.5 pr-4 font-mono text-xs text-slate-500">{{ $trx->kode_transaksi }}</td>
+                                    <td class="py-2.5 pr-4 font-semibold text-slate-700">{{ $trx->nama_donatur }}</td>
+                                    <td class="py-2.5 pr-4 text-slate-500">{{ ($trx->paid_at ?? $trx->created_at)->format('d M Y') }}</td>
+                                    <td class="py-2.5 pr-4 text-right font-bold text-slate-900">
+                                        Rp {{ number_format($trx->nominal, 0, ',', '.') }}
+                                    </td>
+                                    <td class="py-2.5 text-right">
+                                        @if ($trx->status === 'lunas')
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">Lunas</span>
+                                        @elseif ($trx->status === 'pending')
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">Pending</span>
+                                        @else
+                                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-700">Dibatalkan</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    @endif
 
 </div>

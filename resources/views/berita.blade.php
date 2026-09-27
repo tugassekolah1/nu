@@ -130,7 +130,7 @@
 <body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
 
 <x-navbar></x-navbar>
-<main class="w-full pt-30 bg-surface">
+<main class="w-full pt-10 bg-surface">
     <div class="flex flex-col w-full">
 
         {{-- Top Editorial Header & Date Stamp --}}
@@ -138,10 +138,103 @@
             {{-- ... header content ... --}}
         </section>
 
-        {{-- Category Filter Controls --}}
+        {{-- Search & Category Filter Controls --}}
         <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-32">
-            {{-- ... category buttons ... --}}
+            <form method="GET" action="{{ route('berita.public') }}"
+                  class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-16">
+                <div class="flex items-center gap-space-8 w-full lg:w-auto">
+                    <div class="relative flex-1 lg:w-80">
+                        <input type="search" name="q" value="{{ $q }}"
+                               placeholder="Cari berita..."
+                               aria-label="Cari berita"
+                               class="w-full px-space-16 py-space-8 pr-10 rounded-lg bg-surface-container-low border border-on-surface/10 text-body-md text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary transition-colors"/>
+                        <span class="material-symbols-outlined text-[20px] text-on-surface-variant absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                    </div>
+                    @if (!empty($jenis))
+                        <input type="hidden" name="jenis" value="{{ $jenis }}"/>
+                    @endif
+                    <button type="submit"
+                            class="px-space-16 py-space-8 rounded-lg bg-primary text-on-primary font-label-meta text-label-meta font-semibold hover:opacity-90 transition-opacity">
+                        Cari
+                    </button>
+                    @if (trim((string) $q) !== '' || !empty($jenis))
+                        <a href="{{ route('berita.public') }}"
+                           class="px-space-16 py-space-8 rounded-lg bg-surface-container-low text-on-surface font-label-meta text-label-meta font-semibold hover:bg-surface-container transition-colors">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+
+                <div class="flex flex-wrap gap-space-8">
+                    <a href="{{ route('berita.public', array_filter(['q' => $q])) }}"
+                       class="{{ empty($jenis) ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface' }} px-space-12 py-space-4 rounded-lg font-label-meta text-label-meta font-semibold transition-colors">
+                        Semua
+                    </a>
+                    @foreach (\App\Models\Berita::JENIS as $pilihan)
+                        <a href="{{ route('berita.public', array_filter(['q' => $q, 'jenis' => $pilihan])) }}"
+                           class="{{ ($jenis ?? '') === $pilihan ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface' }} px-space-12 py-space-4 rounded-lg font-label-meta text-label-meta font-semibold transition-colors">
+                            {{ $pilihan }}
+                        </a>
+                    @endforeach
+                </div>
+            </form>
         </section>
+
+        @if ($isFiltering)
+            {{-- ========================================== --}}
+            {{-- HASIL PENCARIAN / FILTER JENIS --}}
+            {{-- ========================================== --}}
+            <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop py-space-32">
+                <div class="flex items-baseline justify-between pb-space-16 border-b border-on-surface/10 mb-space-24">
+                    <h3 class="font-headline-md text-headline-md text-on-surface font-headline-md tracking-tight">
+                        Hasil Pencarian
+                    </h3>
+                    <span class="font-label-meta text-label-meta text-on-surface-variant">
+                        {{ $newsList->total() }} berita ditemukan
+                    </span>
+                </div>
+
+                @if ($newsList->isEmpty())
+                    <div class="p-space-24 rounded-lg bg-surface-container-low text-on-surface-variant">
+                        Tidak ada berita yang cocok dengan pencarian Anda.
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-24">
+                        @foreach ($newsList as $berita)
+                            <article class="group flex flex-col gap-space-12">
+                                <a href="{{ route('berita.show', $berita->slug) }}"
+                                   class="block w-full overflow-hidden rounded-lg bg-surface-container-high aspect-[16/10]">
+                                    @if ($berita->gambar)
+                                        <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}"
+                                             class="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-[1.015]" loading="lazy"/>
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-on-surface-variant">
+                                            <span class="material-symbols-outlined text-4xl">image</span>
+                                        </div>
+                                    @endif
+                                </a>
+                                <div class="flex items-center gap-space-8">
+                                    <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
+                                        {{ $berita->jenis }}
+                                    </span>
+                                    <span class="text-on-surface-variant/40">•</span>
+                                    <span class="font-label-meta text-label-meta text-on-surface-variant">
+                                        {{ $berita->created_at->translatedFormat('d F Y') }}
+                                    </span>
+                                </div>
+                                <h4 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">
+                                    <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
+                                </h4>
+                                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-3">
+                                    {{ Str::limit(strip_tags($berita->isi), 160) }}
+                                </p>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+
+        @else
 
         {{-- ========================================== --}}
         {{-- DINAMIS: Featured Lead Story (Berita Utama) --}}
@@ -175,6 +268,7 @@
                             {{-- Metadata --}}
                             <div class="flex items-center flex-wrap gap-space-8 mb-space-12">
                                 <span class="font-label-editorial text-label-editorial text-primary font-bold tracking-wider uppercase">
+                                    {{ strtoupper($featuredNews->jenis) }}
                                 </span>
                                 <span class="text-on-surface-variant/40">•</span>
                                 <span class="font-label-meta text-label-meta text-on-surface-variant font-medium">
@@ -191,7 +285,7 @@
                             </h2>
                             {{-- Excerpt --}}
                             <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-24">
-                                {{ Str::limit(strip_tags($featuredNews->konten), 200) }}
+                                {{ Str::limit(strip_tags($featuredNews->isi), 200) }}
                             </p>
                         </div>
                         {{-- Read Action --}}
@@ -244,6 +338,7 @@
                                     <div class="flex flex-col">
                                         <div class="flex items-center gap-space-8 mb-space-8">
                                             <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
+                                                {{ $berita->jenis }}
                                             </span>
                                             <span class="text-on-surface-variant/40">•</span>
                                             <span class="font-label-meta text-label-meta text-on-surface-variant">
@@ -254,7 +349,7 @@
                                             <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
                                         </h4>
                                         <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-16">
-                                            {{ Str::limit(strip_tags($berita->konten), 160) }}
+                                            {{ Str::limit(strip_tags($berita->isi), 160) }}
                                         </p>
                                         <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold self-start group/btn" href="{{ route('berita.show', $berita->slug) }}">
                                             <span>Baca berita</span>
@@ -274,6 +369,7 @@
                                         <div>
                                             <div class="flex items-center gap-space-8 mb-space-8">
                                                 <span class="font-label-editorial text-label-editorial text-secondary uppercase font-bold tracking-wider">
+                                                    {{ $berita->jenis }}
                                                 </span>
                                                 <span class="text-on-surface-variant/40">•</span>
                                                 <span class="font-label-meta text-label-meta text-on-surface-variant">
@@ -284,7 +380,7 @@
                                                 <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
                                             </h4>
                                             <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-3 mb-space-16">
-                                                {{ Str::limit(strip_tags($berita->konten), 200) }}
+                                                {{ Str::limit(strip_tags($berita->isi), 200) }}
                                             </p>
                                         </div>
                                         <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold group/btn" href="{{ route('berita.show', $berita->slug) }}">
@@ -302,10 +398,10 @@
                 <div class="md:col-span-5 flex flex-col gap-space-32">
                     @if($newsList->count() > 3)
                         @foreach($newsList->skip(3)->take(2) as $berita)
-                            <article class="group p-space-24 rounded-lg bg-surface-container-low transition-colors duration-200 hover:bg-surface-container" data-category-item="{{ $berita->kategori_slug ?? 'organisasi' }}">
+                            <article class="group p-space-24 rounded-lg bg-surface-container-low transition-colors duration-200 hover:bg-surface-container" data-category-item="{{ \Illuminate\Support\Str::slug($berita->jenis) }}">
                                 <div class="flex items-center gap-space-8 mb-space-8">
                                     <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
-                                        {{ $berita->kategori ?? 'ORGANISASI' }}
+                                        {{ $berita->jenis }}
                                     </span>
                                     <span class="text-on-surface-variant/40">•</span>
                                     <span class="font-label-meta text-label-meta text-on-surface-variant">
@@ -316,7 +412,7 @@
                                     <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
                                 </h4>
                                 <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-16">
-                                    {{ Str::limit(strip_tags($berita->konten), 150) }}
+                                    {{ Str::limit(strip_tags($berita->isi), 150) }}
                                 </p>
                                 <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold group/link" href="{{ route('berita.show', $berita->slug) }}">
                                     <span>Baca berita</span>
@@ -337,6 +433,8 @@
                 </div>
             </div>
         </section>
+
+        @endif
 
         {{-- ========================================== --}}
         {{-- PAGINATION --}}
@@ -395,36 +493,5 @@
 <footer class="w-full bg-surface-container-low mt-space-64">
     {{-- ... footer content ... --}}
 </footer>
-
-{{-- JavaScript for Category Filter --}}
-<script>
-    (function() {
-        const filterButtons = document.querySelectorAll('.category-btn');
-        const articles = document.querySelectorAll('[data-category-item]');
-
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const category = this.getAttribute('data-category');
-
-                filterButtons.forEach(b => {
-                    b.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm', 'active');
-                    b.classList.add('bg-surface-container-low', 'text-on-surface');
-                });
-
-                this.classList.remove('bg-surface-container-low', 'text-on-surface');
-                this.classList.add('bg-primary', 'text-on-primary', 'shadow-sm', 'active');
-
-                articles.forEach(article => {
-                    const itemCat = article.getAttribute('data-category-item');
-                    if (category === 'semua' || itemCat === category) {
-                        article.style.display = '';
-                    } else {
-                        article.style.display = 'none';
-                    }
-                });
-            });
-        });
-    })();
-</script>
 </body>
 </html>

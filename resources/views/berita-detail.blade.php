@@ -18,7 +18,7 @@
                 Kembali ke Beranda
             </a>
             <span class="text-xs font-semibold uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                {{ $berita->kategori->nama ?? 'Berita' }}
+                {{ $berita->jenis ?? 'Berita' }}
             </span>
         </div>
     </header>

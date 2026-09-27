@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InfaqController;
@@ -53,6 +54,7 @@ Route::get('/dashboard', function () {
         'totalNews'    => Berita::count(),
         'totalAgenda'  => Agenda::count(),
         'totalInfaq'   => Infaq::where('status', 'lunas')->sum('nominal'),
+        'infaqTerbaru' => Infaq::latest()->take(5)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -62,11 +64,21 @@ Route::get('/admin/dashboard', function () {
         'totalNews'    => Berita::count(),
         'totalAgenda'  => Agenda::count(),
         'totalInfaq'   => Infaq::where('status', 'lunas')->sum('nominal'),
+        'infaqTerbaru' => Infaq::latest()->take(5)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
 
 
 Route::middleware(['auth'])->group(function () {
+    // Infaq Management (admin only) — /admin/infaq agar tidak bentrok dengan /infaq publik
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+        Route::resource('infaq', AdminInfaqController::class)
+            ->parameters(['infaq' => 'infaq'])
+            ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+        Route::post('/infaq/{infaq}/lunas', [AdminInfaqController::class, 'markLunas'])
+            ->name('infaq.mark-lunas');
+    });
+
     // News & Gallery Management (Resource akan mendaftarkan /berita/create terlebih dahulu)
     Route::resource('berita', BeritaController::class)
         ->parameters(['berita' => 'berita'])

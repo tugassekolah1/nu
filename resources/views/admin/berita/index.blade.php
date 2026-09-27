@@ -31,6 +31,9 @@
 
     <div class="py-8 bg-slate-50 min-h-[calc(100vh-4rem)]">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
+            @php
+                $filtering = trim((string) $q) !== '' || !empty($jenis);
+            @endphp
 
             {{-- Alert Sukses --}}
             @if (session('success'))
@@ -42,12 +45,59 @@
                 </div>
             @endif
 
+            {{-- Pencarian & Filter --}}
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4">
+                <form method="GET" action="{{ route('berita.index') }}"
+                      class="flex flex-col sm:flex-row gap-3 sm:items-center">
+                    <div class="relative flex-1">
+                        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none"
+                             stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+                        </svg>
+                        <input type="search" name="q" value="{{ $q }}"
+                               placeholder="Cari judul, slug, atau isi berita..."
+                               class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-400 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                    </div>
+
+                    <select name="jenis"
+                            class="sm:w-48 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                        <option value="">Semua Jenis</option>
+                        @foreach (\App\Models\Berita::JENIS as $pilihan)
+                            <option value="{{ $pilihan }}" {{ ($jenis ?? '') === $pilihan ? 'selected' : '' }}>
+                                {{ $pilihan }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <div class="flex gap-2">
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z"/>
+                            </svg>
+                            <span>Cari</span>
+                        </button>
+
+                        @if ($filtering)
+                            <a href="{{ route('berita.index') }}"
+                               class="inline-flex items-center bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
+            </div>
+
             {{-- Main Table Card --}}
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-                    <h3 class="text-base font-bold text-slate-800">Daftar Seluruh Berita</h3>
+                    <h3 class="text-base font-bold text-slate-800">
+                        {{ $filtering ? 'Hasil Pencarian Berita' : 'Daftar Seluruh Berita' }}
+                    </h3>
                     <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">
-                        Total: {{ $beritas->total() ?? count($beritas) }} Data
+                        {{ $filtering ? 'Ditemukan' : 'Total' }}: {{ $beritas->total() }} Data
                     </span>
                 </div>
 
@@ -57,6 +107,7 @@
                             <tr class="bg-slate-50 border-b border-slate-200/80 text-xs uppercase font-bold text-slate-500 tracking-wider">
                                 <th class="px-6 py-4">Gambar</th>
                                 <th class="px-6 py-4">Judul</th>
+                                <th class="px-6 py-4">Jenis</th>
                                 <th class="px-6 py-4">Penulis</th>
                                 <th class="px-6 py-4">Status</th>
                                 <th class="px-6 py-4">Tanggal</th>
@@ -84,7 +135,14 @@
                                     {{-- Judul --}}
                                     <td class="px-6 py-4">
                                         <div class="font-bold text-slate-900 max-w-xs truncate">{{ $berita->judul }}</div>
-                                        <div class="text-xs text-slate-400 mt-0.5">ID: #{{ $berita->id }}</div>
+                                        <div class="text-xs text-slate-400 mt-0.5">/{{ $berita->slug }}</div>
+                                    </td>
+
+                                    {{-- Jenis --}}
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-100/80 text-blue-800">
+                                            {{ $berita->jenis }}
+                                        </span>
                                     </td>
 
                                     {{-- Penulis --}}
@@ -141,17 +199,29 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center py-12">
+                                    <td colspan="7" class="text-center py-12">
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <div class="p-4 bg-slate-100 text-slate-400 rounded-full">
                                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                                                 </svg>
                                             </div>
-                                            <p class="text-slate-500 font-medium">Belum ada berita yang ditambahkan.</p>
-                                            <a href="{{ route('berita.create') }}" class="text-xs font-bold text-blue-600 hover:underline">
-                                                + Klik di sini untuk menambah berita pertama
-                                            </a>
+                                            <p class="text-slate-500 font-medium">
+                                                @if ($filtering)
+                                                    Tidak ada berita yang cocok dengan pencarian Anda.
+                                                @else
+                                                    Belum ada berita yang ditambahkan.
+                                                @endif
+                                            </p>
+                                            @if ($filtering)
+                                                <a href="{{ route('berita.index') }}" class="text-xs font-bold text-blue-600 hover:underline">
+                                                    Reset pencarian
+                                                </a>
+                                            @else
+                                                <a href="{{ route('berita.create') }}" class="text-xs font-bold text-blue-600 hover:underline">
+                                                    + Klik di sini untuk menambah berita pertama
+                                                </a>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

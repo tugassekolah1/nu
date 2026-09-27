@@ -15,6 +15,29 @@
 </div>
 
 <div class="mb-4">
+    <x-input-label for="slug" value="Slug (URL)" />
+    <x-text-input id="slug" name="slug" type="text" class="mt-1 block w-full"
+                  value="{{ old('slug', $berita->slug ?? '') }}"
+                  placeholder="otomatis-dari-judul" />
+    <p class="text-xs text-gray-500 mt-1">
+        Terisi otomatis dari judul, boleh diubah. Kosongkan agar dibuat otomatis.
+    </p>
+</div>
+
+<div class="mb-4">
+    <x-input-label for="jenis" value="Jenis Berita" />
+    <select id="jenis" name="jenis" required
+            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+        @foreach (\App\Models\Berita::JENIS as $jenis)
+            <option value="{{ $jenis }}"
+                    {{ old('jenis', $berita->jenis ?? 'Berita') === $jenis ? 'selected' : '' }}>
+                {{ $jenis }}
+            </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="mb-4">
     <x-input-label for="isi" value="Isi Berita" />
     <textarea id="isi" name="isi" rows="8"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
@@ -39,3 +62,37 @@
            class="rounded border-gray-300 text-blue-600 shadow-sm">
     <x-input-label for="status" value="Publish sekarang" />
 </div>
+
+<script>
+    (function () {
+        const judul = document.getElementById('judul');
+        const slug = document.getElementById('slug');
+        if (!judul || !slug) return;
+
+        let manualEdit = false;
+        slug.addEventListener('input', function () {
+            manualEdit = true;
+        });
+
+        function slugify(value) {
+            return value
+                .toLowerCase()
+                .trim()
+                .replace(/['’]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function autoFill() {
+            if (!manualEdit || !slug.value) {
+                slug.value = slugify(judul.value);
+            }
+        }
+
+        judul.addEventListener('input', autoFill);
+
+        if (!slug.value) {
+            slug.value = slugify(judul.value);
+        }
+    })();
+</script>
