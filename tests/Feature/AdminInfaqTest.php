@@ -1,6 +1,11 @@
 <?php
 
+use App\Models\Agenda;
+use App\Models\Berita;
+use App\Models\Gallery;
 use App\Models\Infaq;
+use App\Models\NuMember;
+use App\Models\Pengurus;
 use App\Models\User;
 
 function infaqAdmin(): User
@@ -274,4 +279,70 @@ test('non admin cannot open infaq create form', function () {
     $this->actingAs(User::factory()->create())
         ->get(route('admin.infaq.create'))
         ->assertForbidden();
+});
+
+test('every dashboard card shows its real count', function () {
+    $owner = User::factory()->create();
+
+    foreach (range(1, 6) as $i) {
+        NuMember::create([
+            'nik' => str_pad((string) $i, 16, '0', STR_PAD_LEFT),
+            'full_name' => 'Anggota '.$i,
+            'phone' => '08120000000'.$i,
+            'gender' => 'L',
+            'address' => 'Jl. Contoh No.'.$i,
+        ]);
+    }
+
+    foreach (range(1, 7) as $i) {
+        Pengurus::create([
+            'nama' => 'Pengurus '.$i,
+            'jabatan' => 'Ketua',
+            'banom' => 'PR IPNU',
+            'label_banom' => 'PR IPNU',
+        ]);
+    }
+
+    foreach (range(1, 8) as $i) {
+        Gallery::create([
+            'judul' => 'Foto '.$i,
+            'foto' => 'galeri/'.$i.'.jpg',
+        ]);
+    }
+
+    foreach (range(1, 9) as $i) {
+        Agenda::create([
+            'title' => 'Agenda '.$i,
+            'event_date' => now()->addDays($i)->toDateString(),
+        ]);
+    }
+
+    foreach (range(1, 4) as $i) {
+        Berita::create([
+            'judul' => 'Berita '.$i,
+            'slug' => 'dashboard-berita-'.$i,
+            'isi' => 'Isi berita '.$i,
+            'user_id' => $owner->id,
+            'status' => true,
+        ]);
+    }
+
+    $html = $this->actingAs(infaqAdmin())
+        ->get('/dashboard')
+        ->assertOk()
+        ->getContent();
+
+    $cards = [
+        'Total Anggota' => 6,
+        'Pengurus & Banom' => 7,
+        'Total Publikasi' => 4,
+        'Galeri Kegiatan' => 8,
+        'Agenda Kegiatan' => 9,
+    ];
+
+    foreach ($cards as $title => $count) {
+        expect($html)->toMatch(
+            '/<h2[^>]*>\s*'.preg_quote($title, '/').'\s*<\/h2>.*?<h3[^>]*>\s*'.$count.'\s*<\/h3>/s'
+        );
+    }
 });

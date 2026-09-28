@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
+use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InfaqController;
@@ -10,10 +10,11 @@ use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Agenda;
 use App\Models\Berita;
+use App\Models\Gallery;
 use App\Models\Infaq;
 use App\Models\NuMember;
+use App\Models\Pengurus;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +43,7 @@ Route::get('/infaq/checkout/{kode}', [InfaqController::class, 'checkout'])->name
 Route::post('/infaq/simulate/{kode}', [InfaqController::class, 'simulatePayment'])->name('infaq.simulate');
 Route::get('/infaq/success/{kode}', [InfaqController::class, 'success'])->name('infaq.success');
 
-Route::get('/beritas', [BeritaController::class, 'index_publik'])->name('berita.public');
+Route::get('/berita', [BeritaController::class, 'index_publik'])->name('berita.public');
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes
@@ -51,9 +52,11 @@ Route::get('/beritas', [BeritaController::class, 'index_publik'])->name('berita.
 Route::get('/dashboard', function () {
     return view('dashboard', [
         'totalMembers' => NuMember::count(),
-        'totalNews'    => Berita::count(),
-        'totalAgenda'  => Agenda::count(),
-        'totalInfaq'   => Infaq::where('status', 'lunas')->sum('nominal'),
+        'totalPengurus' => Pengurus::count(),
+        'totalNews' => Berita::count(),
+        'totalGaleri' => Gallery::count(),
+        'totalAgenda' => Agenda::count(),
+        'totalInfaq' => Infaq::where('status', 'lunas')->sum('nominal'),
         'infaqTerbaru' => Infaq::latest()->take(5)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -61,13 +64,14 @@ Route::get('/dashboard', function () {
 Route::get('/admin/dashboard', function () {
     return view('dashboard', [
         'totalMembers' => NuMember::count(),
-        'totalNews'    => Berita::count(),
-        'totalAgenda'  => Agenda::count(),
-        'totalInfaq'   => Infaq::where('status', 'lunas')->sum('nominal'),
+        'totalPengurus' => Pengurus::count(),
+        'totalNews' => Berita::count(),
+        'totalGaleri' => Gallery::count(),
+        'totalAgenda' => Agenda::count(),
+        'totalInfaq' => Infaq::where('status', 'lunas')->sum('nominal'),
         'infaqTerbaru' => Infaq::latest()->take(5)->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
-
 
 Route::middleware(['auth'])->group(function () {
     // Infaq Management (admin only) — /admin/infaq agar tidak bentrok dengan /infaq publik
@@ -80,7 +84,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // News & Gallery Management (Resource akan mendaftarkan /berita/create terlebih dahulu)
-    Route::resource('berita', BeritaController::class)
+    Route::resource('admin/berita', BeritaController::class)
         ->parameters(['berita' => 'berita'])
         ->except(['show']);
     Route::resource('gallery', GalleryController::class);

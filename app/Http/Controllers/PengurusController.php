@@ -11,14 +11,50 @@ class PengurusController extends Controller
     // Halaman Utama Frontend
     public function index()
     {
-        $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
-        return view('profil', compact('pengurus'));
+        $pengurus = Pengurus::orderBy('urutan', 'asc')->orderBy('id', 'asc')->get();
+
+        $urutanBanom = ['ranting', 'ipnu', 'ippnu', 'ansor', 'fatayat', 'muslimat', 'banser'];
+        $labelCadangan = [
+            'ranting' => 'Ranting NU',
+            'ipnu' => 'PR IPNU',
+            'ippnu' => 'PR IPPNU',
+            'ansor' => 'GP Ansor',
+            'fatayat' => 'Fatayat NU',
+            'muslimat' => 'Muslimat NU',
+            'banser' => 'Banser',
+        ];
+
+        $sections = $pengurus
+            ->groupBy('banom')
+            ->map(function ($items, $slug) use ($labelCadangan) {
+                $label = $items->groupBy('label_banom')
+                    ->sortByDesc(fn ($group) => $group->count())
+                    ->keys()
+                    ->first() ?: ($labelCadangan[$slug] ?? $slug);
+
+                return [
+                    'slug' => $slug,
+                    'label' => $label,
+                    'jumlah' => $items->count(),
+                    'items' => $items->values(),
+                ];
+            })
+            ->sortBy(fn ($section) => ($index = array_search($section['slug'], $urutanBanom, true)) === false
+                ? count($urutanBanom)
+                : $index)
+            ->values();
+
+        return view('profil', [
+            'sections' => $sections,
+            'totalPengurus' => $pengurus->count(),
+        ]);
     }
 
     // Dashboard Admin - List Data
     public function adminIndex()
     {
         $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
+
         return view('pengurus.index', compact('pengurus'));
     }
 

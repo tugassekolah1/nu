@@ -1,9 +1,10 @@
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+<x-app-layout>
 
-<div class="p-6 bg-slate-100 min-h-screen space-y-8 font-sans antialiased">
+<div class="py-8 bg-slate-50 min-h-[calc(100vh-4rem)]">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 font-sans antialiased">
     
     {{-- Header Section dengan Sapaan & Tanggal --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 transition-all duration-300 hover:shadow-md">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-2xl shadow-xs border border-slate-200/80 transition-all duration-300 hover:shadow-md">
         <div class="flex items-center gap-4">
             <div class="p-3 bg-emerald-500/10 text-emerald-600 rounded-2xl hidden sm:block">
                 {{-- SVG Icon Dashboard Header --}}
@@ -13,7 +14,7 @@
             </div>
             <div>
                 <h1 class="text-2xl font-black text-slate-900 tracking-tight">Selamat Datang di Panel Admin 👋</h1>
-                <p class="text-sm text-slate-500 font-medium mt-1">Pilih menu di bawah untuk mengelola data anggota, pengurus, atau berita dengan mudah.</p>
+                <p class="text-sm text-slate-500 font-medium mt-1">Pilih menu di sidebar untuk mengelola data anggota, pengurus, atau berita dengan mudah.</p>
             </div>
         </div>
         
@@ -192,7 +193,7 @@
     <div class="flex items-end justify-between pt-2">
         <div>
             <h3 class="text-3xl font-black text-slate-900 group-hover:text-teal-900 transition-colors tracking-tight">
-              0
+              {{ $totalGaleri ?? 0 }}
             </h3>
             <p class="text-xs text-slate-400 mt-1">Foto diunggah</p>
         </div>
@@ -226,7 +227,7 @@
     <div class="flex items-end justify-between pt-2">
         <div>
             <h3 class="text-3xl font-black text-slate-900 group-hover:text-teal-900 transition-colors tracking-tight">
-              0
+              {{ $totalAgenda ?? 0 }}
             </h3>
             <p class="text-xs text-slate-400 mt-1">Agenda</p>
         </div>
@@ -359,3 +360,5 @@
     @endif
 
 </div>
+</div>
+</x-app-layout>

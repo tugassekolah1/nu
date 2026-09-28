@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galeri Kegiatan - NU Ranting Banjaranyar</title>
-    @vite('resources/css/app.css')
+    <x-public-head title="Galeri Kegiatan - NU Ranting Banjaranyar" />
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans antialiased selection:bg-emerald-500 selection:text-white">
@@ -82,6 +79,8 @@
 
         </div>
     </main>
+
+    <x-footer />
 
     <script>
         lucide.createIcons();

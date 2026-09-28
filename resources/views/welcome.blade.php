@@ -1,67 +1,8 @@
 <!DOCTYPE html>
 <html class="scroll-smooth" lang="id">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Nahdlatul Ulama Banjaranyar, Cilongok - Berkhidmat untuk Umat</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@200..700,0..1&display=swap" rel="stylesheet"/>
-    <!-- Tailwind CSS -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "warm-bg": "#F7F5EF",
-                "warm-card": "#FDFCF7",
-                "charcoal": "#171816",
-                "muted-charcoal": "#4F544E",
-                "nu-deep": "#16452F",
-                "nu-night": "#141815",
-                "muted-sage": "#E7ECE4",
-                "warm-beige": "#EDE8DD",
-                "muted-gold": "#B49352",
-                "border-neutral": "#E5E2D9",
-                "border-subtle": "#D5D2C8",
-              },
-              fontFamily: {
-                sans: ["Inter", "sans-serif"],
-                arabic: ["Amiri", "serif"],
-              },
-              borderRadius: {
-                "btn": "14px",
-                "card": "20px",
-                "container-r": "28px",
-              },
-              boxShadow: {
-                "subtle": "0 2px 10px rgba(23, 24, 22, 0.04), 0 1px 3px rgba(23, 24, 22, 0.03)",
-                "elevated": "0 10px 30px rgba(23, 24, 22, 0.06), 0 1px 3px rgba(23, 24, 22, 0.04)",
-              }
-            }
-          }
-        };
-    </script>
+    <x-public-head title="Nahdlatul Ulama Banjaranyar, Cilongok - Berkhidmat untuk Umat">
     <style>
-        @layer base {
-          body {
-            font-family: 'Inter', sans-serif;
-            color: #171816;
-            background-color: #F7F5EF;
-            -webkit-font-smoothing: antialiased;
-          }
-        }
-        .neutral-frosted {
-          background: rgba(247, 245, 239, 0.88);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(215, 210, 200, 0.7);
-        }
         .dark-editorial-panel {
           background: #16452F;
           border: 1px solid rgba(255, 255, 255, 0.12);
@@ -112,6 +53,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
   }
 }
     </style>
+    </x-public-head>
 </head>
 <body class="selection:bg-muted-sage selection:text-nu-deep bg-warm-bg text-charcoal">
 <x-navbar></x-navbar>
@@ -127,11 +69,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                     </p>
                 </div>
-                <!-- Institutional Tag -->
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted-sage text-charcoal font-medium text-xs sm:text-sm mb-6 w-fit border border-border-neutral">
-                    <span class="w-2 h-2 rounded-full bg-nu-deep"></span>
-                    <span>Website Resmi MWC NU Cilongok</span>
-                </div>
+
                 <!-- Headline -->
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-charcoal tracking-tight leading-[1.14] mb-6">
                     Nahdlatul Ulama <span class="block text-nu-deep">Kecamatan Cilongok</span>
@@ -353,7 +291,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                                 <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal mb-4 leading-snug group-hover:text-nu-deep transition-colors">
                                     <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
                                 </h3>
-                                <p class="text-base text-muted-charcoal leading-relaxed">
+                                <p class="text-base text-muted-charcoal break-words leading-relaxed">
                                     {{ Str::limit(strip_tags($featuredNews->isi), 250) }}
                                 </p>
                             </div>
@@ -775,62 +713,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
     </a>
 </div>
 
-<!-- 11. FOOTER (Deep Charcoal #141815) -->
-<footer class="w-full bg-nu-night text-white pt-16 pb-12 border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-white/10">
-            <!-- Col 1: Identity & Address (5 cols) -->
-            <div class="lg:col-span-5 flex flex-col">
-                <div class="flex items-center gap-3 mb-4">
-                    <img alt="Emblem NU" class="w-10 h-10 object-contain brightness-0 invert opacity-90" src="https://lh3.googleusercontent.com/aida/AEtjO1VVjAZeFl8x9UC1ygLyGJQ7s08PMheg8thGTpLjMGEDNy6dxehyc8qxHnJ3TWq0onXXPh6_HPNWDese-jycKUQ2eb98-bnO7YW_VY0GaCIEySrmJqvz-GHn0s7CMUqoutQaae-CsDK4XqFr1CTpqkfXyJQS3h0oeeJcHzC-gIHlGibUdsPPEn0o-vdxP46pPspwdFoEMDPWgm6H4UW6yedGPXqeoPVeyU2SVeokYJCsQ1wcEIIhfseMkPXD"/>
-                    <div>
-                        <span class="font-extrabold text-lg tracking-tight block leading-none text-white">NU BANJARANYAR</span>
-                        <span class="text-xs text-white/60 font-medium">Kecamatan Cilongok, Banyumas</span>
-                    </div>
-                </div>
-                <p class="text-sm text-white/70 leading-relaxed max-w-sm mb-6">
-                    Pengurus Ranting Nahdlatul Ulama Desa Banjaranyar, MWC NU Kecamatan Cilongok, PCNU Kabupaten Banyumas. Merawat akidah Ahlussunnah wal Jama'ah an-Nahdliyah.
-                </p>
-                <div class="flex items-start gap-2.5 text-xs text-white/60 leading-relaxed">
-                    <span class="material-symbols-outlined text-muted-gold text-[18px] shrink-0">location_on</span>
-                    <span>{{ $kontak['alamat'] ?? 'Gedung Sekretariat PRNU, Jl. Raya Cilongok No. 12, Banjaranyar, Banyumas, Jawa Tengah 53162' }}</span>
-                </div>
-            </div>
-            <!-- Col 2: Quick Links (3 cols) -->
-            <div class="lg:col-span-3 flex flex-col">
-                <span class="text-xs font-bold tracking-wider text-muted-gold uppercase mb-4">Tautan Navigasi</span>
-                <ul class="space-y-2.5 text-sm text-white/70">
-                    <li><a class="hover:text-white transition-colors" href="{{ route('landing') }}">Beranda Ranting</a></li>
-                    <li><a class="hover:text-white transition-colors" href="#agenda">Jadwal Agenda & Majelis</a></li>
-                    <li><a class="hover:text-white transition-colors" href="#berita">Warta & Kabar Terkini</a></li>
-                    <li><a class="hover:text-white transition-colors" href="#layanan">Layanan Kemaslahatan</a></li>
-                    <li><a class="hover:text-white transition-colors" href="{{ route('members.register-form') }}">Pendaftaran KARTANU</a></li>
-                </ul>
-            </div>
-            <!-- Col 3: Banom & Lembaga (4 cols) -->
-            <div class="lg:col-span-4 flex flex-col">
-                <span class="text-xs font-bold tracking-wider text-muted-gold uppercase mb-4">Badan Otonom & Lembaga</span>
-                <div class="grid grid-cols-2 gap-2.5 text-sm text-white/70">
-                    <a class="hover:text-white transition-colors" href="#">• Muslimat NU</a>
-                    <a class="hover:text-white transition-colors" href="#">• GP Ansor</a>
-                    <a class="hover:text-white transition-colors" href="#">• Fatayat NU</a>
-                    <a class="hover:text-white transition-colors" href="#">• Banser Satkoryon</a>
-                    <a class="hover:text-white transition-colors" href="#">• IPNU & IPPNU</a>
-                    <a class="hover:text-white transition-colors" href="{{ route('infaq.index') }}">• LAZISNU UPZIS</a>
-                </div>
-                <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/60">
-                    <p><strong class="text-white">Email:</strong> {{ $kontak['email'] ?? 'sekretariat@nubanjaranyar.or.id' }}</p>
-                    <p class="mt-1"><strong class="text-white">Jam Khidmat:</strong> {{ $kontak['jam_layanan'] ?? 'Setiap Hari Ahad & Rabu (08.00 - 16.00 WIB)' }}</p>
-                </div>
-            </div>
-        </div>
-        <!-- Copyright & Calligraphy sub -->
-        <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/60">
-            <p>© {{ now()->year }} Nahdlatul Ulama Banjaranyar, Cilongok, Banyumas. Khidmat untuk Umat & Bangsa.</p>
-            <p class="font-arabic text-lg text-muted-gold tracking-wide">مَنْ أَحَبَّ قَوْمًا حُشِرَ مَعَهُمْ</p>
-        </div>
-    </div>
-</footer>
+<x-footer />
 <script>
     document.addEventListener('DOMContentLoaded', function () {
   const observer = new IntersectionObserver((entries) => {

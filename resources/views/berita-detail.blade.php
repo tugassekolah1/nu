@@ -43,7 +43,7 @@
             </div>
         @endif
 
-        <div class="prose max-w-none text-[#293830] leading-relaxed text-base sm:text-lg">
+        <div class="prose max-w-none text-[#293830] leading-relaxed break-words text-base sm:text-lg">
             {!! nl2br(e($berita->isi)) !!}
         </div>
     </article>

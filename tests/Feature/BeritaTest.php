@@ -7,7 +7,7 @@ test('admin can create berita with jenis and slug', function () {
     $user = User::factory()->create();
 
     $this->actingAs($user)
-        ->post('/berita', [
+        ->post('/admin/berita', [
             'judul' => 'Rapat Kerja NU',
             'slug' => 'rapat-kerja-nu',
             'jenis' => 'Kegiatan',
@@ -15,7 +15,7 @@ test('admin can create berita with jenis and slug', function () {
             'status' => 1,
         ])
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/berita');
+        ->assertRedirect('/admin/berita');
 
     $berita = Berita::sole();
 
@@ -26,21 +26,21 @@ test('admin can create berita with jenis and slug', function () {
 
 test('slug is generated from judul when slug is left empty', function () {
     $this->actingAs(User::factory()->create())
-        ->post('/berita', [
+        ->post('/admin/berita', [
             'judul' => 'Syuriah Gelar Mubes',
             'slug' => '',
             'jenis' => 'Pengumuman',
             'isi' => 'Isi berita mubes.',
         ])
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/berita');
+        ->assertRedirect('/admin/berita');
 
     expect(Berita::sole()->slug)->toBe('syuriah-gelar-mubes');
 });
 
 test('invalid jenis is rejected', function () {
     $this->actingAs(User::factory()->create())
-        ->post('/berita', [
+        ->post('/admin/berita', [
             'judul' => 'Berita Validasi Jenis',
             'slug' => 'berita-validasi-jenis',
             'jenis' => 'Opini',
@@ -51,7 +51,7 @@ test('invalid jenis is rejected', function () {
 
 test('jenis is required', function () {
     $this->actingAs(User::factory()->create())
-        ->post('/berita', [
+        ->post('/admin/berita', [
             'judul' => 'Berita Tanpa Jenis',
             'slug' => 'berita-tanpa-jenis',
             'isi' => 'Isi berita.',
@@ -72,7 +72,7 @@ test('duplicate slug is rejected', function () {
     ]);
 
     $this->actingAs($user)
-        ->post('/berita', [
+        ->post('/admin/berita', [
             'judul' => 'Berita Kedua',
             'slug' => 'berita-pertama',
             'jenis' => 'Artikel',
@@ -94,7 +94,7 @@ test('admin can update jenis and slug of a berita', function () {
     ]);
 
     $this->actingAs($user)
-        ->put("/berita/{$berita->id}", [
+        ->put("/admin/berita/{$berita->id}", [
             'judul' => 'Berita Lama',
             'slug' => 'berita-lama-diubah',
             'jenis' => 'Pengumuman',
@@ -102,7 +102,7 @@ test('admin can update jenis and slug of a berita', function () {
             'status' => 1,
         ])
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/berita');
+        ->assertRedirect('/admin/berita');
 
     expect($berita->refresh()->slug)->toBe('berita-lama-diubah')
         ->and($berita->jenis)->toBe('Pengumuman');
@@ -121,7 +121,7 @@ test('slug can be left empty on update and is regenerated from judul', function 
     ]);
 
     $this->actingAs($user)
-        ->put("/berita/{$berita->id}", [
+        ->put("/admin/berita/{$berita->id}", [
             'judul' => 'Judul Baru',
             'slug' => '',
             'jenis' => 'Kegiatan',
@@ -135,7 +135,7 @@ test('slug can be left empty on update and is regenerated from judul', function 
 
 test('berita form shows jenis options and slug field', function () {
     $content = $this->actingAs(User::factory()->create())
-        ->get('/berita/create')
+        ->get('/admin/berita/create')
         ->assertOk()
         ->assertSee('name="slug"', false)
         ->assertSee('name="jenis"', false)
@@ -159,7 +159,7 @@ test('admin berita list shows jenis and slug', function () {
     ]);
 
     $this->actingAs($user)
-        ->get('/berita')
+        ->get('/admin/berita')
         ->assertOk()
         ->assertSee('Pengumuman')
         ->assertSee('/berita-ditampilkan', false);
@@ -220,20 +220,20 @@ test('admin can search berita by judul, slug, and isi', function () {
     $user = seedBeritasForSearch();
 
     $this->actingAs($user)
-        ->get('/berita?q=mubes')
+        ->get('/admin/berita?q=mubes')
         ->assertOk()
         ->assertSee('Syuriah Gelar Mubes')
         ->assertDontSee('Rapat Koordinasi')
         ->assertDontSee('Draft Internal');
 
     $this->actingAs($user)
-        ->get('/berita?q=rapat-koordinasi')
+        ->get('/admin/berita?q=rapat-koordinasi')
         ->assertOk()
         ->assertSee('Rapat Koordinasi')
         ->assertDontSee('Syuriah Gelar Mubes');
 
     $this->actingAs($user)
-        ->get('/berita?q=agenda+rapat')
+        ->get('/admin/berita?q=agenda+rapat')
         ->assertOk()
         ->assertSee('Rapat Koordinasi')
         ->assertDontSee('Syuriah Gelar Mubes');
@@ -243,7 +243,7 @@ test('admin can filter berita by jenis', function () {
     $user = seedBeritasForSearch();
 
     $this->actingAs($user)
-        ->get('/berita?jenis=Kegiatan')
+        ->get('/admin/berita?jenis=Kegiatan')
         ->assertOk()
         ->assertSee('Rapat Koordinasi')
         ->assertDontSee('Syuriah Gelar Mubes')
@@ -254,7 +254,7 @@ test('unknown jenis filter is ignored on the admin list', function () {
     $user = seedBeritasForSearch();
 
     $this->actingAs($user)
-        ->get('/berita?jenis=TidakAda')
+        ->get('/admin/berita?jenis=TidakAda')
         ->assertOk()
         ->assertSee('Rapat Koordinasi')
         ->assertSee('Syuriah Gelar Mubes')
@@ -265,7 +265,7 @@ test('admin search shows empty state when nothing matches', function () {
     $user = seedBeritasForSearch();
 
     $this->actingAs($user)
-        ->get('/berita?q=zzzzz')
+        ->get('/admin/berita?q=zzzzz')
         ->assertOk()
         ->assertDontSee('Rapat Koordinasi')
         ->assertSee('Tidak ada berita yang cocok dengan pencarian Anda.');
@@ -274,7 +274,7 @@ test('admin search shows empty state when nothing matches', function () {
 test('public berita list can be searched', function () {
     seedBeritasForSearch();
 
-    $this->get('/beritas?q=mubes')
+    $this->get('/berita?q=mubes')
         ->assertOk()
         ->assertSee('Hasil Pencarian')
         ->assertSee('Syuriah Gelar Mubes')
@@ -284,7 +284,7 @@ test('public berita list can be searched', function () {
 test('public berita list can be filtered by jenis', function () {
     seedBeritasForSearch();
 
-    $this->get('/beritas?jenis=Kegiatan')
+    $this->get('/berita?jenis=Kegiatan')
         ->assertOk()
         ->assertSee('Rapat Koordinasi')
         ->assertDontSee('Syuriah Gelar Mubes');
@@ -293,7 +293,7 @@ test('public berita list can be filtered by jenis', function () {
 test('public search never shows draft berita', function () {
     seedBeritasForSearch();
 
-    $this->get('/beritas?q=internal')
+    $this->get('/berita?q=internal')
         ->assertOk()
         ->assertDontSee('Draft Internal');
 });
@@ -301,7 +301,7 @@ test('public search never shows draft berita', function () {
 test('public search shows empty state when nothing matches', function () {
     seedBeritasForSearch();
 
-    $this->get('/beritas?q=zzzzz')
+    $this->get('/berita?q=zzzzz')
         ->assertOk()
         ->assertSee('Tidak ada berita yang cocok dengan pencarian Anda.');
 });
@@ -320,7 +320,7 @@ test('search and jenis filters are kept in the public pagination links', functio
         ]);
     }
 
-    $this->get('/beritas?q=berita&jenis=Artikel')
+    $this->get('/berita?q=berita&jenis=Artikel')
         ->assertOk()
         ->assertSee('page=2', false);
 });
@@ -328,7 +328,7 @@ test('search and jenis filters are kept in the public pagination links', functio
 test('public berita list renders the editorial layout when there is no search', function () {
     seedBeritasForSearch();
 
-    $this->get('/beritas')
+    $this->get('/berita')
         ->assertOk()
         ->assertSee('Kabar Lainnya')
         ->assertDontSee('Hasil Pencarian');

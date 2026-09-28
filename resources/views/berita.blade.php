@@ -284,7 +284,7 @@
                                 <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
                             </h2>
                             {{-- Excerpt --}}
-                            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-24">
+                            <p class="font-body-md text-body-md break-words text-on-surface-variant leading-relaxed mb-space-24">
                                 {{ Str::limit(strip_tags($featuredNews->isi), 200) }}
                             </p>
                         </div>
