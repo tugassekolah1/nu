@@ -55,7 +55,7 @@
     ];
 @endphp
 
-<nav class="flex-1 space-y-5 overflow-y-auto px-3 py-4">
+<nav data-sidebar-nav class="flex-1 space-y-5 overflow-y-auto px-3 py-4">
     @foreach ($menu as $group)
         <div>
             <p class="px-3 pb-2 text-xs font-bold uppercase tracking-widest text-slate-400">
@@ -67,6 +67,7 @@
                     <li>
                         <a href="{{ $item['href'] }}"
                            @if ($item['external'] ?? false) target="_blank" rel="noopener" @endif
+                           @if ($item['active']) aria-current="page" @endif
                            @class([
                                'group flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition-all active:scale-[0.98]',
                                'bg-emerald-600 text-white shadow-xs' => $item['active'],
@@ -90,7 +91,7 @@
     @endforeach
 </nav>
 
-<div class="border-t border-slate-200/80 p-3">
+<div class="shrink-0 border-t border-slate-200/80 p-3">
     <div class="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-3">
         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-sm font-black text-emerald-600">
             {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}

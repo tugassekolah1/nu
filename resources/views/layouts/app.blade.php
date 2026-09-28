@@ -102,5 +102,40 @@
                 </main>
             </div>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var storageKey = 'admin-sidebar-scroll';
+
+                document.querySelectorAll('[data-sidebar-nav]').forEach(function (nav, index) {
+                    var itemKey = storageKey + ':' + index;
+                    var activeItem = nav.querySelector('[aria-current="page"]');
+
+                    if (activeItem) {
+                        var navRect = nav.getBoundingClientRect();
+                        var itemRect = activeItem.getBoundingClientRect();
+                        nav.scrollTop += (itemRect.top - navRect.top) - (navRect.height - itemRect.height) / 2;
+                    } else {
+                        try {
+                            var savedScroll = window.sessionStorage.getItem(itemKey);
+
+                            if (savedScroll !== null) {
+                                nav.scrollTop = parseFloat(savedScroll);
+                            }
+                        } catch (error) {
+                            // sessionStorage bisa gagal di mode privat, abaikan.
+                        }
+                    }
+
+                    nav.addEventListener('scroll', function () {
+                        try {
+                            window.sessionStorage.setItem(itemKey, String(nav.scrollTop));
+                        } catch (error) {
+                            // abaikan
+                        }
+                    }, { passive: true });
+                });
+            });
+        </script>
     </body>
 </html>

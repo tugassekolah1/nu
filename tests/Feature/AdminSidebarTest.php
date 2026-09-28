@@ -41,3 +41,24 @@ test('profile page renders the sidebar shell', function () {
         ->assertSee('Manajemen Berita')
         ->assertSee('Profil');
 });
+
+test('sidebar marks the active menu item on both desktop and mobile sidebars', function () {
+    $html = $this->actingAs(User::factory()->admin()->create())
+        ->get('/admin/infaq')
+        ->assertOk()
+        ->getContent();
+
+    expect(preg_match_all('/<nav[^>]*data-sidebar-nav/', $html))->toBe(2)
+        ->and(preg_match_all('/<a[^>]*aria-current="page"/', $html))->toBe(2)
+        ->and($html)->toMatch('/<a href="[^"]*admin\/infaq"[^>]*aria-current="page"/');
+});
+
+test('sidebar marks the dashboard item instead when no other menu is active', function () {
+    $html = $this->actingAs(User::factory()->admin()->create())
+        ->get('/dashboard')
+        ->assertOk()
+        ->getContent();
+
+    expect(preg_match_all('/<a[^>]*aria-current="page"/', $html))->toBe(2)
+        ->and($html)->toMatch('/<a href="[^"]*\/dashboard"[^>]*aria-current="page"/');
+});
