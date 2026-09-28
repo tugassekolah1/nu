@@ -12,9 +12,10 @@ class InfaqController extends Controller
     public function index()
     {
         $totalInfaq = Infaq::where('status', 'lunas')->sum('nominal');
+        $totalDonatur = Infaq::where('status', 'lunas')->count();
         $infaqTerbaru = Infaq::where('status', 'lunas')->latest()->take(5)->get();
 
-        return view('infaq.index', compact('totalInfaq', 'infaqTerbaru'));
+        return view('infaq.index', compact('totalInfaq', 'totalDonatur', 'infaqTerbaru'));
     }
 
     // Proses Simpan Infak (Pending)
@@ -28,7 +29,7 @@ class InfaqController extends Controller
         ]);
 
         $infaq = Infaq::create([
-            'kode_transaksi' => 'INF-' . strtoupper(Str::random(8)),
+            'kode_transaksi' => 'INF-'.strtoupper(Str::random(8)),
             'nama_donatur' => $request->nama_donatur ?? 'Hamba Allah',
             'no_hp' => $request->no_hp,
             'nominal' => $request->nominal,
@@ -44,6 +45,7 @@ class InfaqController extends Controller
     public function checkout($kode)
     {
         $infaq = Infaq::where('kode_transaksi', $kode)->firstOrFail();
+
         return view('infaq.checkout', compact('infaq'));
     }
 
@@ -58,7 +60,7 @@ class InfaqController extends Controller
         ]);
 
         return redirect()->route('infaq.success', $infaq->kode_transaksi)
-                         ->with('success', 'Simulasi Pembayaran Berhasil!');
+            ->with('success', 'Simulasi Pembayaran Berhasil!');
     }
 
     // Halaman Pembayaran Berhasil
