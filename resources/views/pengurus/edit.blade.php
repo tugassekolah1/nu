@@ -48,31 +48,27 @@
                         <label for="jabatan" class="block text-sm font-medium text-gray-700 mb-1">Jabatan <span class="text-red-500">*</span></label>
                         <input type="text" name="jabatan" id="jabatan" value="{{ old('jabatan', $pengurus->jabatan) }}" required 
                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#214b35] focus:ring-[#214b35] text-sm">
+                        <p class="text-xs text-gray-500 mt-1">Satu jabatan hanya boleh diisi satu orang dalam satu organisasi.</p>
                     </div>
 
-                    {{-- Grid 2 Kolom: Banom & Label Banom --}}
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {{-- Kode/Key Banom --}}
-                        <div>
-                            <label for="banom" class="block text-sm font-medium text-gray-700 mb-1">Kode Banom <span class="text-red-500">*</span></label>
-                            <input type="text" name="banom" id="banom" value="{{ old('banom', $pengurus->banom) }}" placeholder="misal: ranting / ansor / fatayat" required 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#214b35] focus:ring-[#214b35] text-sm">
-                        </div>
-
-                        {{-- Label Banom (Tampilan Usability) --}}
-                        <div>
-                            <label for="label_banom" class="block text-sm font-medium text-gray-700 mb-1">Label Banom <span class="text-red-500">*</span></label>
-                            <input type="text" name="label_banom" id="label_banom" value="{{ old('label_banom', $pengurus->label_banom) }}" placeholder="misal: Ranting NU / GP Ansor" required 
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#214b35] focus:ring-[#214b35] text-sm">
-                        </div>
+                    {{-- Dropdown Organisasi / Banom --}}
+                    <div>
+                        <label for="banom" class="block text-sm font-medium text-gray-700 mb-1">Pilih Organisasi / Banom <span class="text-red-500">*</span></label>
+                        <select name="banom" id="banom" required
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#214b35] focus:ring-[#214b35] text-sm bg-white">
+                            @foreach ($banomOptions as $kode => $opsi)
+                                <option value="{{ $kode }}" data-label="{{ $opsi['label'] }}" @selected(old('banom', $pengurus->banom) === $kode)>{{ $opsi['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Label tampilan (<strong>{{ old('label_banom', $pengurus->label_banom) }}</strong>) diperbarui otomatis mengikuti pilihan ini.</p>
                     </div>
 
                     {{-- Urutan Tampilan --}}
                     <div>
                         <label for="urutan" class="block text-sm font-medium text-gray-700 mb-1">Urutan Posisi</label>
-                        <input type="number" name="urutan" id="urutan" value="{{ old('urutan', $pengurus->urutan) }}" 
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#214b35] focus:ring-[#214b35] text-sm" placeholder="1">
-                        <p class="text-xs text-gray-500 mt-1">Digunakan untuk mengurutkan posisi pengurus di halaman utama (opsional).</p>
+                        <input type="number" name="urutan" id="urutan" value="{{ old('urutan', $pengurus->urutan) }}" min="1" step="1"
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#214b35] focus:ring-[#214b35] text-sm" placeholder="otomatis">
+                        <p class="text-xs text-gray-500 mt-1">Angka lebih kecil tampil lebih awal. <strong>Kosongkan</strong> untuk mengisi nomor urut otomatis (angka berikutnya).</p>
                     </div>
 
                     {{-- Upload Foto --}}

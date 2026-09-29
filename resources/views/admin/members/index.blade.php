@@ -75,8 +75,21 @@
                                 <tr class="hover:bg-slate-50/80 transition-colors">
                                     {{-- NIK & Nama --}}
                                     <td class="px-6 py-4">
-                                        <div class="font-bold text-slate-900">{{ $member->full_name }}</div>
-                                        <div class="text-xs text-slate-400 font-mono mt-0.5">NIK: {{ $member->nik }}</div>
+                                        <div class="flex items-center gap-3">
+                                            @if ($member->photo)
+                                                <img src="{{ asset('storage/' . $member->photo) }}"
+                                                     alt="Foto {{ $member->full_name }}"
+                                                     class="w-10 h-10 shrink-0 rounded-full object-cover border border-slate-200 bg-slate-50">
+                                            @else
+                                                <span class="w-10 h-10 shrink-0 rounded-full bg-emerald-50 text-emerald-700 inline-flex items-center justify-center font-bold text-sm">
+                                                    {{ strtoupper(substr($member->full_name, 0, 1)) }}
+                                                </span>
+                                            @endif
+                                            <div>
+                                                <div class="font-bold text-slate-900">{{ $member->full_name }}</div>
+                                                <div class="text-xs text-slate-400 font-mono mt-0.5">NIK: {{ $member->nik }}</div>
+                                            </div>
+                                        </div>
                                     </td>
 
                                     {{-- Telepon --}}
@@ -144,6 +157,17 @@
                                                         </svg>
                                                     </button>
                                                 </form>
+                                            @endif
+
+                                            @if ($member->payment_status === 'paid')
+                                                <a href="{{ route('members.print-card', $member) }}"
+                                                   target="_blank" rel="noopener"
+                                                   title="Cetak Kartu Anggota"
+                                                   class="p-1.5 rounded-lg text-slate-600 hover:bg-white hover:text-emerald-600 transition-all">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                                    </svg>
+                                                </a>
                                             @endif
 
                                             <a href="{{ route('members.edit', $member) }}"

@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('members.update', $member) }}" method="POST">
+                <form action="{{ route('members.update', $member) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -59,6 +59,30 @@
                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('address', $member->address) }}</textarea>
                     </div>
 
+                    <div class="mb-6">
+                        <x-input-label for="photo" value="Foto Anggota (Opsional)" />
+
+                        @if ($member->photo)
+                            <div class="flex items-center gap-3 mb-2">
+                                <img src="{{ asset('storage/' . $member->photo) }}" alt="Foto saat ini"
+                                     class="w-20 h-32 object-cover rounded-lg border border-slate-200 bg-slate-50">
+                                <span class="text-xs text-slate-500">Foto saat ini. Pilih file baru untuk menggantinya.</span>
+                            </div>
+                        @endif
+
+                        <input id="photo" name="photo" type="file" accept="image/jpeg,image/png"
+                               class="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 file:text-sm file:font-semibold hover:file:bg-emerald-100 cursor-pointer"
+                               onchange="previewPhoto(this)">
+                        <p class="text-xs text-slate-500 mt-1">
+                            Format JPG/PNG, maksimal 2 MB. Kosongkan jika tidak ingin mengubah foto.
+                        </p>
+                        @error('photo')
+                            <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                        <img id="photoPreview" src="" alt="Preview Foto baru"
+                             class="hidden mt-3 w-24 h-32 object-cover rounded-lg border border-slate-200 bg-slate-50">
+                    </div>
+
                     <div class="flex gap-2">
                         <button type="submit"
                                 class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
@@ -74,4 +98,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                preview.src = URL.createObjectURL(input.files[0]);
+                preview.classList.remove('hidden');
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
+            }
+        }
+    </script>
 </x-app-layout>

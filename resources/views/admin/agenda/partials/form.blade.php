@@ -7,7 +7,9 @@
         </ul>
     </div>
 @endif
-
+<!-- CDN CSS & JS Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <div class="mb-4">
     <x-input-label for="title" value="Judul Agenda" />
     <x-text-input id="title" name="title" type="text" class="mt-1 block w-full"
@@ -21,11 +23,20 @@
                       value="{{ old('event_date', isset($agenda) ? $agenda->event_date->format('Y-m-d') : '') }}" required />
     </div>
     <div>
-        <x-input-label for="event_time" value="Waktu (opsional)" />
-        <x-text-input id="event_time" name="event_time" type="text" class="mt-1 block w-full"
-                      placeholder="Contoh: 19:30 WIB"
-                      value="{{ old('event_time', $agenda->event_time ?? '') }}" />
-    </div>
+    <x-input-label for="event_time" value="Waktu " />
+    <x-text-input id="event_time" name="event_time" type="text" class="mt-1 block w-full bg-white"
+                  placeholder="Pilih jam..."
+                  value="{{ old('event_time', isset($agenda->event_time) ? \Carbon\Carbon::parse($agenda->event_time)->format('H:i') : '') }}" />
+</div>
+
+<script>
+    flatpickr("#event_time", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true // <--- Memaksa format 24 Jam
+    });
+</script>
 </div>
 
 <div class="mb-4">
@@ -36,7 +47,7 @@
 </div>
 
 <div class="mb-4">
-    <x-input-label for="location" value="Lokasi (opsional)" />
+    <x-input-label for="location" value="Lokasi " />
     <x-text-input id="location" name="location" type="text" class="mt-1 block w-full"
                   value="{{ old('location', $agenda->location ?? '') }}" />
 </div>

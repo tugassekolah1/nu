@@ -144,6 +144,25 @@ public function searchCard(Request $request)
 }
 
     /**
+     * Cek status pendaftaran anggota berdasarkan NIK
+     */
+    public function statusCheck(Request $request)
+    {
+        $member = null;
+        $payment = null;
+
+        if ($request->filled('nik')) {
+            $member = NuMember::where('nik', $request->nik)->first();
+
+            if ($member) {
+                $payment = $member->payments()->latest()->first();
+            }
+        }
+
+        return view('members-status', compact('member', 'payment'));
+    }
+
+    /**
      * Cetak kartu anggota
      */
     public function printCard($id)

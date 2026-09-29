@@ -32,9 +32,13 @@ Route::post('/daftar/{member}/bukti', [MemberController::class, 'uploadProof'])-
 // Pencarian & Cetak Kartu Anggota (Publik)
 Route::get('/cek-kartu', [MemberController::class, 'searchCard'])->name('members.search');
 
+// Cek Status Pendaftaran Anggota (Publik)
+Route::get('/cek-status', [MemberController::class, 'statusCheck'])->name('members.status-check');
+
 // Public Pages (Non-conflicting)
 Route::get('/profil', [PengurusController::class, 'index'])->name('profil');
 Route::get('/galeri', [GalleryController::class, 'publicIndex'])->name('galeri.index');
+Route::get('/agenda', [AgendaController::class, 'publicIndex'])->name('agenda.public');
 
 // Infaq
 Route::get('/infaq', [InfaqController::class, 'index'])->name('infaq.index');
@@ -95,6 +99,8 @@ Route::middleware(['auth'])->group(function () {
         ->except(['show']);
     Route::patch('/members/{member}/confirm-payment', [MemberController::class, 'confirmPayment'])
         ->name('members.confirm-payment');
+    Route::get('/members/{member}/print-card', [MemberController::class, 'printCard'])
+        ->name('members.print-card');
 
     // Pengurus Management
     Route::get('/pengurus', [PengurusController::class, 'adminIndex'])->name('pengurus.index');
@@ -104,10 +110,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/pengurus/{pengurus}', [PengurusController::class, 'update'])->name('pengurus.update');
     Route::delete('/pengurus/{pengurus}', [PengurusController::class, 'destroy'])->name('pengurus.destroy');
 
-    // Agenda Management
-    Route::resource('agenda', AgendaController::class)
-        ->parameters(['agenda' => 'agenda'])
-        ->except(['show']);
+    // Agenda Management (URL /admin/agenda — halaman publik memakai /agenda)
+    Route::prefix('admin')->group(function () {
+        Route::resource('agenda', AgendaController::class)
+            ->parameters(['agenda' => 'agenda'])
+            ->except(['show']);
+    });
 
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -10,7 +10,7 @@
 
             <!-- Brand & Official Badge -->
             <a class="flex items-center gap-3 group" href="{{ route('landing') }}">
-                <img alt="Logo NU Banjaranyar" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida/AEtjO1VVjAZeFl8x9UC1ygLyGJQ7s08PMheg8thGTpLjMGEDNy6dxehyc8qxHnJ3TWq0onXXPh6_HPNWDese-jycKUQ2eb98-bnO7YW_VY0GaCIEySrmJqvz-GHn0s7CMUqoutQaae-CsDK4XqFr1CTpqkfXyJQS3h0oeeJcHzC-gIHlGibUdsPPEn0o-vdxP46pPspwdFoEMDPWgm6H4UW6yedGPXqeoPVeyU2SVeokYJCsQ1wcEIIhfseMkPXD"/>
+                <img alt="Logo NU Banjaranyar" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300 rounded" src="{{ asset('images/logo.webp') }}"/>
                 <div class="flex flex-col">
                     <span class="font-bold text-base sm:text-lg tracking-tight text-[#171816] leading-tight">PWC NU</span>
                     <span class="text-xs font-medium text-[#4F544E] tracking-wide">Kecamatan Cilongok, Banyumas</span>
@@ -22,7 +22,7 @@
                 <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('landing') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('landing') }}">
                     Beranda
                 </a>
-                <a class="px-4 py-2 rounded-full hover:text-[#171816] hover:bg-[#EDE8DD]/50 transition-colors" href="{{ route('landing') }}#agenda">Agenda</a>
+                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('agenda.public') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('agenda.public') }}">Agenda</a>
                 <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('berita.public') || request()->routeIs('berita.show') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('berita.public') }}">
                     Warta Kabar
                 </a>
@@ -34,6 +34,9 @@
                 </a>
                 <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('profil') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('profil') }}">
                     Pengurus
+                </a>
+                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('members.status-check') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.status-check') }}">
+                    Cek Status
                 </a>
             </nav>
 
@@ -59,11 +62,12 @@
         <div id="mobile-menu" class="hidden lg:hidden mt-2 neutral-frosted rounded-2xl p-5 shadow-[0_10px_30px_rgba(23,24,22,0.06),0_1px_3px_rgba(23,24,22,0.04)] border border-[#E5E2D9] flex-col gap-3 transition-all">
             <nav class="flex flex-col gap-1 text-sm font-medium text-[#4F544E]">
                 <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('landing') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('landing') }}">Beranda</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl hover:text-[#171816] hover:bg-[#EDE8DD]/50 transition-colors" href="{{ route('landing') }}#agenda">Agenda</a>
+                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('agenda.public') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('agenda.public') }}">Agenda</a>
                 <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('berita.public') || request()->routeIs('berita.show') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('berita.public') }}">Warta Kabar</a>
                 <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('infaq.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('infaq.index') }}">Infaq</a>
                 <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('galeri.index') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('galeri.index') }}">Galeri</a>
                 <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('profil') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('profil') }}">Pengurus</a>
+                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('members.status-check') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.status-check') }}">Cek Status Pendaftaran</a>
             </nav>
 
             <div class="pt-3 border-t border-[#D5D2C8] flex flex-col gap-2">
@@ -105,7 +109,7 @@
 
     /* STATE 1: FLOATING (default di atas & saat scroll ke ATAS) */
     #main-navbar.header-floating .navbar-wrapper {
-        max-width: 80rem;
+        max-width: 90rem;
         padding-left: 1rem;
         padding-right: 1rem;
         padding-top: 1rem;

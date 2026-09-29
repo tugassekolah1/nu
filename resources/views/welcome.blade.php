@@ -59,8 +59,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
 <x-navbar></x-navbar>
 <main class="w-full bg-warm-bg">
     <!-- 2. HERO / ORGANIZATION INTRODUCTION (EDITORIAL ART DIRECTION) -->
-<section class="relative pt-[190px] sm:pt-9 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto" id="beranda">            <!-- Left: Monumental Editorial Text & CTAs -->
-            <div class="lg:col-span-6 flex flex-col justify-center text-left">
+<section class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-[190px] sm:pt-9 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto" id="beranda">            <div class="lg:col-span-6 flex flex-col justify-center text-left">
                 <!-- Basmalah Calligraphy -->
                 <div class="mb-5 inline-flex items-center">
                     <p class="font-arabic text-2xl sm:text-3xl text-muted-gold tracking-wide select-none font-normal">
@@ -114,20 +113,10 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
             <!-- Right: Authentic Photographic Container -->
             <div class="lg:col-span-6 relative">
                 <div class="relative rounded-container-r overflow-hidden shadow-elevated bg-warm-card border border-border-neutral">
-                    <img alt="Masjid Komunitas Nahdlatul Ulama Jawa Tengah" class="w-full h-[380px] sm:h-[460px] lg:h-[500px] object-cover hover:scale-[1.02] transition-transform duration-700 ease-out" src="https://lh3.googleusercontent.com/aida/AEtjO1XjdFNzwEN44vo6uvXmdLOU24k5K44IEpb0OdCUfG-RxXEdQXf913ZWxoz2dmsD08PciwI6DqHPNugh6LIkGV6DML8vlIq4Td7eZcePFKwHudAZXw-kBdKWOLygVJrjuiqfsCG7K1uwIVBKQqNUbU5CLocxDxT-cfUbaK6qOaW8uIUdZ5R0nlAt21NXXJ-iN5va7vrnDkQI69kXYqON9WyK6wAEmWLJAv8FSyrhPKecmmEQ10fQAKjuGZE3"/>
+                    <img alt="" class="w-full h-[380px] sm:h-[460px] lg:h-[500px] object-cover hover:scale-[1.02] transition-transform duration-700 ease-out" src="{{ asset('images/home.jpg') }}"/>
                     <div class="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent"></div>
                     <!-- Bottom Overlay on Image -->
-                    <div class="absolute bottom-4 left-4 right-4 p-4 sm:p-5 rounded-card bg-warm-card/95 border border-border-neutral text-charcoal shadow-subtle">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-muted-sage text-charcoal flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-[22px]">mosque</span>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-xs font-bold uppercase tracking-wider text-nu-deep">Pusat Amaliyah & Khidmat</p>
-                                <p class="text-sm font-semibold text-charcoal line-clamp-1">Masjid Jami' Al-Ikhlas</p>
-                            </div>
-                        </div>
-                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -146,7 +135,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Agenda Terdekat</h2>
                     <p class="text-base text-muted-charcoal mt-1">Ikuti kegiatan & pengajian NU yang akan datang di wilayah Banjaranyar.</p>
                 </div>
-                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="#agenda">
+                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('agenda.public') }}">
                     <span>Lihat Semua Agenda</span>
                     <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </a>
@@ -264,45 +253,53 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                 <!-- ONE LARGE FEATURED STORY (Left) -->
+                
                 @if($newsList->isNotEmpty())
-                    @php $featuredNews = $newsList->first(); @endphp
-                    <article class="lg:col-span-7 bg-warm-card rounded-container-r border border-border-neutral overflow-hidden flex flex-col justify-between shadow-subtle group">
-                        <div>
-                            <div class="relative h-64 sm:h-80 w-full overflow-hidden">
-                                <img alt="{{ $featuredNews->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ $featuredNews->gambar ? Storage::url($featuredNews->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuALJW36SfuHdqaIUBnAV33yc_p3mURfwwxP-zISe3TI_oxyOpGcbYYs31ulyiDy4QChMr9yTHggIvicAsmVx6hsW4WW0WmI3evkBVt2UljE3wn7qNo-yN8xigpyzZ4E4Qowhq5xm347RUfevQm4nC8Sd3lOFHwRgQeGkkDgckRn-NnLo3_EgLpE_9XJt2XfwJ2_cuz1EqdF7qlRqrTSlnRR_xGHmxw7X9r867rxPKhq0fF5osmjZQ94jw' }}"/>
-                                <div class="absolute top-4 left-4">
-                                    <span class="px-3.5 py-1 rounded-full bg-charcoal/90 text-white text-xs font-semibold backdrop-blur-md">
-                                        Laporan Utama
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="p-6 sm:p-8">
-                                <div class="flex items-center gap-3 text-xs text-muted-charcoal font-medium mb-3">
-                                    <span>{{ $featuredNews->created_at->translatedFormat('d F Y') }}</span>
-                                    <span>•</span>
-                                    <span>Oleh {{ $featuredNews->user->name ?? 'Sekretariat PRNU' }}</span>
-                                    @if($featuredNews->jenis)
-                                        <span>•</span>
-                                        <span class="text-nu-deep font-semibold">{{ $featuredNews->jenis }}</span>
-                                    @endif
-                                </div>
-                                <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal mb-4 leading-snug group-hover:text-nu-deep transition-colors">
-                                    <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
-                                </h3>
-                                <p class="text-base text-muted-charcoal break-words leading-relaxed">
-                                    {{ Str::limit(strip_tags($featuredNews->isi), 250) }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="px-6 sm:px-8 pb-6 sm:pb-8 pt-2 flex items-center justify-between">
-                            <a class="inline-flex items-center gap-2 text-sm font-bold text-nu-deep hover:underline" href="{{ route('berita.show', $featuredNews->slug) }}">
-                                <span>Baca Selengkapnya</span>
-                                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                            </a>
-                            <span class="text-xs text-muted-charcoal">4 menit baca</span>
-                        </div>
-                    </article>
-                @endif
+    @php $featuredNews = $newsList->first(); @endphp
+    <article class="lg:col-span-7 bg-warm-card rounded-container-r border border-border-neutral overflow-hidden flex flex-col justify-between shadow-subtle group min-w-0">
+        <div>
+            <div class="relative h-64 sm:h-80 w-full overflow-hidden">
+                <img alt="{{ $featuredNews->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="{{ $featuredNews->gambar ? Storage::url($featuredNews->gambar) : 'https://lh3.googleusercontent.com/aida-public/AB6AXuALJW36SfuHdqaIUBnAV33yc_p3mURfwwxP-zISe3TI_oxyOpGcbYYs31ulyiDy4QChMr9yTHggIvicAsmVx6hsW4WW0WmI3evkBVt2UljE3wn7qNo-yN8xigpyzZ4E4Qowhq5xm347RUfevQm4nC8Sd3lOFHwRgQeGkkDgckRn-NnLo3_EgLpE_9XJt2XfwJ2_cuz1EqdF7qlRqrTSlnRR_xGHmxw7X9r867rxPKhq0fF5osmjZQ94jw' }}"/>
+                <div class="absolute top-4 left-4">
+                    <span class="px-3.5 py-1 rounded-full bg-charcoal/90 text-white text-xs font-semibold backdrop-blur-md">
+                        Laporan Utama
+                    </span>
+                </div>
+            </div>
+            
+            <div class="p-6 sm:p-8 min-w-0">
+                {{-- PERBAIKAN 1: Tambahkan flex-wrap dan min-w-0 di baris metadata --}}
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-charcoal font-medium mb-3 min-w-0">
+                    <span class="shrink-0">{{ $featuredNews->created_at->translatedFormat('d F Y') }}</span>
+                    <span>•</span>
+                    <span class="truncate">Oleh {{ $featuredNews->user->name ?? 'Sekretariat PRNU' }}</span>
+                    @if($featuredNews->jenis)
+                        <span>•</span>
+                        <span class="text-nu-deep font-semibold shrink-0">{{ $featuredNews->jenis }}</span>
+                    @endif
+                </div>
+
+                {{-- PERBAIKAN 2: Tambahkan break-words pada judul --}}
+                <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal mb-4 leading-snug group-hover:text-nu-deep transition-colors break-words">
+                    <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
+                </h3>
+
+                {{-- PERBAIKAN 3: Pastikan paragraf punya class pembatas kata --}}
+                <p class="text-base text-muted-charcoal break-words leading-relaxed">
+                    {{ Str::limit(strip_tags($featuredNews->isi), 250) }}
+                </p>
+            </div>
+        </div>
+
+        <div class="px-6 sm:px-8 pb-6 sm:pb-8 pt-2 flex items-center justify-between">
+            <a class="inline-flex items-center gap-2 text-sm font-bold text-nu-deep hover:underline" href="{{ route('berita.show', $featuredNews->slug) }}">
+                <span>Baca Selengkapnya</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </a>
+            <span class="text-xs text-muted-charcoal shrink-0">4 menit baca</span>
+        </div>
+    </article>
+@endif
 
                 <!-- TWO/THREE SECONDARY STORIES (Right Stacked) -->
                 <div class="lg:col-span-5 flex flex-col gap-6 ">
@@ -366,7 +363,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                     </div>
                 </a>
                 <!-- Card 2: Agenda & Jadwal Majelis -->
-                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="#agenda">
+                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="{{ route('agenda.public') }}">
                     <div>
                         <div class="w-14 h-14 rounded-card bg-muted-sage flex items-center justify-center text-charcoal mb-6">
                             <span class="material-symbols-outlined text-[30px]">calendar_month</span>

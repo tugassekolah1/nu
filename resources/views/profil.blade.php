@@ -108,7 +108,6 @@
                 </div>
 
                 <p class="mt-2 px-1 text-sm text-[#526158]">
-                    Ketuk salah satu judul di atas untuk langsung ke bagian yang ingin dibaca.
                 </p>
             </nav>
         </div>

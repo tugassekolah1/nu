@@ -491,7 +491,7 @@
 </main>
 
 <footer class="w-full bg-surface-container-low mt-space-64">
-    {{-- ... footer content ... --}}
+    <x-footer />
 </footer>
 </body>
 </html>

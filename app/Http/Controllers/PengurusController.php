@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengurus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PengurusController extends Controller
 {
@@ -53,7 +54,7 @@ class PengurusController extends Controller
     // Dashboard Admin - List Data
     public function adminIndex()
     {
-        $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
+        $pengurus = Pengurus::orderBy('urutan', 'asc')->orderBy('id', 'asc')->get();
 
         return view('pengurus.index', compact('pengurus'));
     }
@@ -61,23 +62,27 @@ class PengurusController extends Controller
     // Form Tambah
     public function create()
     {
-        return view('pengurus.create');
+        return view('pengurus.create', [
+            'banomOptions' => Pengurus::BANOMS,
+        ]);
     }
 
     // Store Data
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
-            'banom' => 'required|string',
-            'label_banom' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'urutan' => 'nullable|numeric',
-        ]);
+        $banom = $request->input('banom');
+
+        $validated = $request->validate($this->rules($banom), $this->messages($banom));
 
         if ($request->hasFile('foto')) {
             $validated['foto'] = $request->file('foto')->store('pengurus', 'public');
+        }
+
+        $validated['jabatan'] = trim($validated['jabatan']);
+        $validated['label_banom'] = Pengurus::BANOMS[$validated['banom']]['label'];
+
+        if (! $request->filled('urutan')) {
+            $validated['urutan'] = $this->urutanOtomatis();
         }
 
         Pengurus::create($validated);
@@ -88,26 +93,42 @@ class PengurusController extends Controller
     // Form Edit
     public function edit(Pengurus $pengurus)
     {
-        return view('pengurus.edit', compact('pengurus'));
+        $banomOptions = Pengurus::BANOMS;
+
+        // Kode lama yang sudah tidak ada di daftar dropdown tetap bisa dipilih saat edit
+        if (! isset($banomOptions[$pengurus->banom])) {
+            $banomOptions[$pengurus->banom] = [
+                'label' => $pengurus->label_banom,
+                'name' => "{$pengurus->label_banom} ({$pengurus->banom})",
+            ];
+        }
+
+        return view('pengurus.edit', compact('pengurus', 'banomOptions'));
     }
 
     // Update Data
     public function update(Request $request, Pengurus $pengurus)
     {
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'jabatan' => 'required|string|max:255',
-            'banom' => 'required|string',
-            'label_banom' => 'required|string',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'urutan' => 'nullable|numeric',
-        ]);
+        $banom = $request->input('banom');
+
+        $validated = $request->validate(
+            $this->rules($banom, $pengurus->banom, $pengurus->id),
+            $this->messages($banom)
+        );
 
         if ($request->hasFile('foto')) {
             if ($pengurus->foto) {
                 Storage::disk('public')->delete($pengurus->foto);
             }
             $validated['foto'] = $request->file('foto')->store('pengurus', 'public');
+        }
+
+        $validated['jabatan'] = trim($validated['jabatan']);
+        $validated['label_banom'] = Pengurus::BANOMS[$validated['banom']]['label']
+            ?? $pengurus->label_banom;
+
+        if (! $request->filled('urutan')) {
+            $validated['urutan'] = $this->urutanOtomatis();
         }
 
         $pengurus->update($validated);
@@ -124,5 +145,86 @@ class PengurusController extends Controller
         $pengurus->delete();
 
         return redirect()->route('pengurus.index')->with('success', 'Data pengurus berhasil dihapus.');
+    }
+
+    /**
+     * Aturan validasi form tambah / edit pengurus.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    private function rules(?string $banomDipilih, ?string $banomTersimpan = null, ?int $kecualiId = null): array
+    {
+        $banomDiizinkan = array_keys(Pengurus::BANOMS);
+
+        if ($banomTersimpan !== null && ! in_array($banomTersimpan, $banomDiizinkan, true)) {
+            $banomDiizinkan[] = $banomTersimpan;
+        }
+
+        return [
+            'nama' => ['required', 'string', 'max:255'],
+            'jabatan' => ['required', 'string', 'max:255', $this->jabatanUnikDalamBanom($banomDipilih, $kecualiId)],
+            'banom' => ['required', 'string', Rule::in($banomDiizinkan)],
+            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'urutan' => ['nullable', 'integer', 'min:1'],
+        ];
+    }
+
+    /**
+     * Pesan error validasi berbahasa Indonesia.
+     *
+     * @return array<string, string>
+     */
+    private function messages(?string $banomDipilih): array
+    {
+        $labelBanom = Pengurus::BANOMS[$banomDipilih]['label'] ?? ($banomDipilih ?: 'organisasi ini');
+
+        return [
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'nama.max' => 'Nama lengkap maksimal 255 karakter.',
+            'jabatan.required' => 'Jabatan wajib diisi.',
+            'jabatan.max' => 'Jabatan maksimal 255 karakter.',
+            'banom.required' => 'Pilih organisasi / banom terlebih dahulu.',
+            'banom.in' => 'Organisasi / banom tidak dikenali. Silakan pilih dari daftar yang tersedia.',
+            'foto.image' => 'Foto harus berupa gambar (JPG, PNG, atau WebP).',
+            'foto.mimes' => 'Foto harus berformat JPG, JPEG, PNG, atau WebP.',
+            'foto.max' => 'Ukuran foto maksimal 2 MB.',
+            'urutan.integer' => 'Nomor urut harus berupa angka bulat.',
+            'urutan.min' => 'Nomor urut minimal 1.',
+        ];
+    }
+
+    /**
+     * Cegah satu organisasi (banom) punya dua orang dengan jabatan sama,
+     * mis. dua Ketua dalam satu PAC. Berlaku tanpa memperhatikan huruf besar/kecil.
+     */
+    private function jabatanUnikDalamBanom(?string $banom, ?int $kecualiId = null): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($banom, $kecualiId) {
+            if (blank($banom)) {
+                return;
+            }
+
+            $nilai = trim((string) $value);
+
+            $duplikat = Pengurus::query()
+                ->where('banom', $banom)
+                ->when($kecualiId, fn ($query) => $query->where('id', '!=', $kecualiId))
+                ->whereRaw('lower(trim(jabatan)) = ?', [mb_strtolower($nilai)])
+                ->exists();
+
+            if ($duplikat) {
+                $label = Pengurus::BANOMS[$banom]['label'] ?? $banom;
+
+                $fail("Jabatan \"{$nilai}\" sudah dipakai di {$label}. Satu organisasi hanya boleh punya satu orang dengan jabatan yang sama.");
+            }
+        };
+    }
+
+    /**
+     * Nomor urut berikutnya untuk pengisian otomatis (field urutan dikosongkan).
+     */
+    private function urutanOtomatis(): int
+    {
+        return (int) Pengurus::max('urutan') + 1;
     }
 }

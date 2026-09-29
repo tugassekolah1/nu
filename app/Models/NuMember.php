@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class NuMember extends Model
 {
     protected $fillable = [
-        'nik', 'full_name', 'phone', 'gender', 'address',
+        'nik', 'full_name', 'phone', 'gender', 'address', 'photo',
         'member_card_no', 'status', 'payment_status',
     ];
 

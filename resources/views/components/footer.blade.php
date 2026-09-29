@@ -26,11 +26,12 @@
                 <span class="text-xs font-bold tracking-wider text-[#B49352] uppercase mb-4">Tautan Navigasi</span>
                 <ul class="space-y-2.5 text-sm text-white/70">
                     <li><a class="hover:text-white transition-colors" href="{{ route('landing') }}">Beranda Ranting</a></li>
-                    <li><a class="hover:text-white transition-colors" href="{{ route('landing') }}#agenda">Jadwal Agenda & Majelis</a></li>
+                    <li><a class="hover:text-white transition-colors" href="{{ route('agenda.public') }}">Jadwal Agenda & Majelis</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('landing') }}#berita">Warta & Kabar Terkini</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('berita.public') }}">Semua Warta Kabar</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('profil') }}">Profil & Struktur Pengurus</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('members.register-form') }}">Pendaftaran KARTANU</a></li>
+                    <li><a class="hover:text-white transition-colors" href="{{ route('members.status-check') }}">Cek Status Pendaftaran</a></li>
                 </ul>
             </div>
 

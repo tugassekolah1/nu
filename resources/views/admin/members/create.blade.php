@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('members.store') }}" method="POST">
+                <form action="{{ route('members.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-4">
@@ -56,6 +56,21 @@
                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('address') }}</textarea>
                     </div>
 
+                    <div class="mb-4">
+                        <x-input-label for="photo" value="Foto Anggota (Opsional)" />
+                        <input id="photo" name="photo" type="file" accept="image/jpeg,image/png"
+                               class="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-50 file:text-emerald-700 file:text-sm file:font-semibold hover:file:bg-emerald-100 cursor-pointer"
+                               onchange="previewPhoto(this)">
+                        <p class="text-xs text-slate-500 mt-1">
+                            Format JPG/PNG, maksimal 2 MB. Foto akan tampil pada kartu tanda anggota.
+                        </p>
+                        @error('photo')
+                            <p class="text-xs text-rose-600 mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                        <img id="photoPreview" src="" alt="Preview Foto"
+                             class="hidden mt-3 w-24 h-32 object-cover rounded-lg border border-slate-200 bg-slate-50">
+                    </div>
+
                     <div class="mb-6">
                         <x-input-label for="payment_option" value="Status Bayar" />
                         <select id="payment_option" name="payment_option" required
@@ -85,4 +100,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                preview.src = URL.createObjectURL(input.files[0]);
+                preview.classList.remove('hidden');
+            } else {
+                preview.src = '';
+                preview.classList.add('hidden');
+            }
+        }
+    </script>
 </x-app-layout>

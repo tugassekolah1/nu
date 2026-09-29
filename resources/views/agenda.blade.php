@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <x-public-head title="Agenda Kegiatan — NU Banjaranyar" />
+
+    <style>
+        /* Entrance animation (hormati reduced motion) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0ms; }
+        .reveal-stagger.revealed > *:nth-child(2) { transition-delay: 60ms; }
+        .reveal-stagger.revealed > *:nth-child(3) { transition-delay: 120ms; }
+        .reveal-stagger.revealed > *:nth-child(4) { transition-delay: 180ms; }
+        .reveal-stagger.revealed > *:nth-child(5) { transition-delay: 240ms; }
+        .reveal-stagger.revealed > *:nth-child(6) { transition-delay: 300ms; }
+        .reveal-stagger.revealed > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal,
+            .reveal-stagger > * {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-warm-bg text-charcoal antialiased selection:bg-muted-sage selection:text-nu-deep">
+    <x-navbar />
+
+    <main>
+        <!-- HERO -->
+        <header class="relative overflow-hidden bg-nu-deep text-white pt-32 sm:pt-36 pb-14 sm:pb-16">
+            <div class="absolute -top-16 -right-10 w-80 h-80 rounded-full bg-[#8bc14b]/10 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-10 w-72 h-72 rounded-full bg-muted-gold/10 blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
+                <!-- Breadcrumb -->
+                <nav aria-label="Navigasi balik" class="mb-5 text-sm text-white/70">
+                    <ol class="flex flex-wrap items-center gap-2">
+                        <li><a class="hover:text-white hover:underline underline-offset-4" href="{{ route('landing') }}">Beranda</a></li>
+                        <li aria-hidden="true">›</li>
+                        <li class="text-white font-semibold" aria-current="page">Agenda</li>
+                    </ol>
+                </nav>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+                    <div class="lg:col-span-7">
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
+                            <span class="material-symbols-outlined text-[16px]">event_upcoming</span>
+                            <span>Jadwal Kegiatan Ranting</span>
+                        </span>
+
+                        <h1 class="mt-5 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15]">
+                            Agenda &amp; Majelis Taklim
+                        </h1>
+
+                        <p class="mt-4 text-base sm:text-lg text-white/80 leading-relaxed max-w-2xl">
+                            Ikuti kegiatan rutin, pengajian kitab, dan agenda sosial Nahdlatul Ulama Desa Banjaranyar.
+                            Semua kegiatan terbuka untuk warga dan jamaah.
+                        </p>
+                    </div>
+
+                    <!-- Ringkasan glass (Liquid Glass sebagai aksen) -->
+                    <div class="lg:col-span-5">
+                        <div class="rounded-container-r bg-white/10 border border-white/15 backdrop-blur-md p-6 grid grid-cols-2 gap-6">
+                            <div>
+                                <span class="block text-3xl font-extrabold text-white">{{ $upcomingAgenda->total() }}</span>
+                                <span class="block text-xs font-semibold uppercase tracking-wider text-white/70 mt-1">Agenda Mendatang</span>
+                            </div>
+                            <div>
+                                <span class="block text-3xl font-extrabold text-muted-gold">{{ $pastAgenda->count() }}</span>
+                                <span class="block text-xs font-semibold uppercase tracking-wider text-white/70 mt-1">Terakhir Berlangsung</span>
+                            </div>
+                            <div class="col-span-2 pt-4 border-t border-white/15 flex items-center gap-2.5 text-xs text-white/75">
+                                <span class="material-symbols-outlined text-[18px] text-muted-gold">groups</span>
+                                <span>Terbuka untuk umum — putra &amp; putri, tanpa biaya tiket.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- AGENDA TERDEKAT -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 reveal" id="terdekat">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">calendar_month</span>
+                        <span>Agenda Terdekat</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Kegiatan yang Akan Datang</h2>
+                    <p class="text-base text-muted-charcoal mt-1">Susunan acara terbaru dari sekretariat PRNU Banjaranyar.</p>
+                </div>
+                <span class="text-sm font-semibold text-muted-charcoal">
+                    {{ $upcomingAgenda->total() }} agenda terjadwal
+                </span>
+            </div>
+
+            @if ($upcomingAgenda->isNotEmpty())
+                @php $featured = $upcomingAgenda->first(); @endphp
+
+                <!-- FEATURED: tanggal besar + detail -->
+                <article class="bg-warm-card rounded-container-r border border-border-neutral shadow-subtle overflow-hidden mb-8 grid grid-cols-1 lg:grid-cols-12">
+                    <!-- Panel tanggal -->
+                    <div class="lg:col-span-4 bg-nu-deep text-white p-7 sm:p-8 flex flex-col justify-center">
+                        <span class="text-xs font-bold uppercase tracking-widest text-muted-gold mb-4">Agenda Utama Terdekat</span>
+                        <span class="block text-6xl sm:text-7xl font-extrabold leading-none">{{ $featured->event_date->format('d') }}</span>
+                        <span class="block text-xl font-bold uppercase tracking-widest mt-2 text-white/85">
+                            {{ strtoupper($featured->event_date->locale('id')->translatedFormat('M')) }}
+                        </span>
+                        <span class="block text-sm font-semibold text-white/70 mt-1.5">
+                            {{ $featured->event_date->locale('id')->translatedFormat('l') }}
+                        </span>
+                        <span class="inline-flex w-fit items-center gap-1.5 mt-6 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold">
+                            <span class="material-symbols-outlined text-[15px]">schedule</span>
+                            {{ $featured->event_time ?? 'Waktu menyusul' }}
+                        </span>
+                    </div>
+
+                    <!-- Detail -->
+                    <div class="lg:col-span-8 p-7 sm:p-8 flex flex-col">
+                        <div class="flex flex-wrap items-center gap-2 mb-3">
+                            <span class="px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-bold uppercase tracking-wider border border-border-neutral">
+                                {{ $featured->category ?: 'Kegiatan' }}
+                            </span>
+                            <span class="text-xs text-muted-charcoal">
+                                {{ $featured->event_date->locale('id')->translatedFormat('d F Y') }}
+                            </span>
+                        </div>
+
+                        <h3 class="text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight leading-snug">
+                            {{ $featured->title }}
+                        </h3>
+
+                        @if ($featured->description)
+                            <p class="text-sm sm:text-base text-muted-charcoal leading-relaxed mt-3">
+                                {{ Str::limit($featured->description, 320) }}
+                            </p>
+                        @endif
+
+                        <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-card bg-warm-bg border border-border-neutral text-sm">
+                            @if ($featured->location)
+                                <div class="flex items-start gap-2.5">
+                                    <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">location_on</span>
+                                    <span class="font-medium text-charcoal">{{ $featured->location }}</span>
+                                </div>
+                            @endif
+                            <div class="flex items-start gap-2.5">
+                                <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">event</span>
+                                <span class="font-medium text-charcoal">
+                                    {{ $featured->event_date->locale('id')->translatedFormat('l, d F Y') }}
+                                    @if ($featured->event_time) • {{ $featured->event_time }} @endif
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-6 flex flex-wrap items-center justify-between gap-4">
+                            <span class="text-xs font-medium text-muted-charcoal">Terbuka untuk umum</span>
+                            <a class="inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95"
+                               href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, saya ingin bertanya tentang agenda: ' . $featured->title) }}"
+                               rel="noopener noreferrer" target="_blank">
+                                <span>Tanya Jadwal</span>
+                                <span class="material-symbols-outlined text-[18px]">chat</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Grid agenda lainnya -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
+                    @foreach ($upcomingAgenda->skip(1) as $agenda)
+                        <article class="bg-warm-card rounded-card border border-border-neutral shadow-subtle p-6 flex flex-col hover:-translate-y-1 hover:shadow-elevated hover:border-border-subtle transition-all">
+                            <div class="flex items-start justify-between gap-3 mb-4">
+                                <div class="w-16 shrink-0 py-2 rounded-[16px] bg-nu-deep text-white text-center">
+                                    <span class="block text-2xl font-extrabold leading-none">{{ $agenda->event_date->format('d') }}</span>
+                                    <span class="block text-[10px] font-bold uppercase tracking-widest mt-1 text-white/75">
+                                        {{ strtoupper($agenda->event_date->locale('id')->translatedFormat('M')) }}
+                                    </span>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-full bg-warm-beige text-charcoal text-[11px] font-bold uppercase tracking-wider border border-border-subtle text-right">
+                                    {{ $agenda->category ?: 'Kegiatan' }}
+                                </span>
+                            </div>
+
+                            <span class="text-xs font-semibold text-muted-charcoal">
+                                {{ $agenda->event_date->locale('id')->translatedFormat('l, d F Y') }}
+                            </span>
+
+                            <h3 class="text-lg font-bold text-charcoal leading-snug mt-1.5 hover:text-nu-deep transition-colors">
+                                {{ $agenda->title }}
+                            </h3>
+
+                            @if ($agenda->description)
+                                <p class="text-sm text-muted-charcoal leading-relaxed mt-2 line-clamp-3">
+                                    {{ Str::limit($agenda->description, 150) }}
+                                </p>
+                            @endif
+
+                            <div class="mt-auto pt-4 mt-4 border-t border-border-neutral flex flex-col gap-2 text-xs font-medium text-muted-charcoal">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                    <span>{{ $agenda->event_time ?? 'Waktu menyusul' }}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                    <span class="truncate">{{ $agenda->location ?? 'Sekretariat PRNU Banjaranyar' }}</span>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                {{-- Pagination --}}
+                @if ($upcomingAgenda->hasPages())
+                    <nav class="mt-10 flex flex-col items-center gap-2" aria-label="Navigasi halaman agenda">
+                        <div class="flex flex-wrap items-center justify-center gap-2">
+                            @if ($upcomingAgenda->onFirstPage())
+                                <span class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-btn bg-warm-beige/60 text-muted-charcoal text-sm font-semibold border border-border-subtle cursor-not-allowed opacity-60">‹ Sebelumnya</span>
+                            @else
+                                <a href="{{ $upcomingAgenda->previousPageUrl() }}" rel="prev" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-btn bg-warm-card text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-colors">‹ Sebelumnya</a>
+                            @endif
+
+                            @for ($page = max(1, $upcomingAgenda->currentPage() - 2); $page <= min($upcomingAgenda->lastPage(), $upcomingAgenda->currentPage() + 2); $page++)
+                                @if ($page == $upcomingAgenda->currentPage())
+                                    <span aria-current="page" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-btn bg-nu-deep text-white text-sm font-bold">{{ $page }}</span>
+                                @else
+                                    <a href="{{ $upcomingAgenda->url($page) }}" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-btn bg-warm-card text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-colors">{{ $page }}</a>
+                                @endif
+                            @endfor
+
+                            @if ($upcomingAgenda->hasMorePages())
+                                <a href="{{ $upcomingAgenda->nextPageUrl() }}" rel="next" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-btn bg-warm-card text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-colors">Selanjutnya ›</a>
+                            @else
+                                <span class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-btn bg-warm-beige/60 text-muted-charcoal text-sm font-semibold border border-border-subtle cursor-not-allowed opacity-60">Selanjutnya ›</span>
+                            @endif
+                        </div>
+                        <span class="text-xs text-muted-charcoal">
+                            Halaman {{ $upcomingAgenda->currentPage() }} dari {{ $upcomingAgenda->lastPage() }}
+                        </span>
+                    </nav>
+                @endif
+            @else
+                <!-- Empty state -->
+                <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-subtle p-12 flex flex-col items-center text-center">
+                    <span class="material-symbols-outlined text-muted-charcoal text-5xl mb-3">event_busy</span>
+                    <p class="text-lg font-bold text-charcoal">Belum ada agenda terdekat</p>
+                    <p class="text-sm text-muted-charcoal mt-1.5 max-w-md">
+                        Jadwal kegiatan berikutnya akan segera diumumkan. Silakan hubungi sekretariat untuk informasi kegiatan rutin mingguan.
+                    </p>
+                    <a class="mt-6 inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-btn bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] transition-all active:scale-95"
+                       href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, mohon info jadwal kegiatan NU Banjaranyar') }}"
+                       rel="noopener noreferrer" target="_blank">
+                        <span class="material-symbols-outlined text-[18px]">chat</span>
+                        <span>Tanya Jadwal via WhatsApp</span>
+                    </a>
+                </div>
+            @endif
+        </section>
+
+        <!-- ARSIP AGENDA LAMAR -->
+        <section class="w-full bg-warm-card border-y border-border-neutral py-14 sm:py-20 reveal" id="arsip">
+            <div class="max-w-7xl mx-auto px-4 sm:px-8">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                            <span class="material-symbols-outlined text-[16px] text-muted-charcoal">history</span>
+                            <span>Arsip Kegiatan</span>
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Agenda Telah Berlangsung</h2>
+                        <p class="text-base text-muted-charcoal mt-1">Rangkaian kegiatan terakhir bersama jamaah Banjaranyar.</p>
+                    </div>
+                </div>
+
+                @if ($pastAgenda->isNotEmpty())
+                    <div class="flex flex-col gap-4">
+                        @foreach ($pastAgenda as $agenda)
+                            <article class="bg-warm-bg rounded-card border border-border-neutral p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 hover:border-border-subtle transition-colors">
+                                <div class="flex items-center gap-4 sm:w-64 shrink-0">
+                                    <div class="w-14 shrink-0 py-1.5 rounded-[14px] bg-warm-beige border border-border-subtle text-charcoal text-center">
+                                        <span class="block text-xl font-extrabold leading-none">{{ $agenda->event_date->format('d') }}</span>
+                                        <span class="block text-[10px] font-bold uppercase tracking-widest mt-0.5 text-muted-charcoal">
+                                            {{ strtoupper($agenda->event_date->locale('id')->translatedFormat('M')) }}
+                                        </span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <span class="block text-xs font-semibold text-muted-charcoal">
+                                            {{ $agenda->event_date->locale('id')->translatedFormat('l, d F Y') }}
+                                        </span>
+                                        <span class="px-2.5 py-0.5 inline-block mt-1 rounded-full bg-muted-sage text-charcoal text-[11px] font-bold uppercase tracking-wider border border-border-neutral">
+                                            {{ $agenda->category ?: 'Kegiatan' }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="text-base sm:text-lg font-bold text-charcoal leading-snug">{{ $agenda->title }}</h3>
+                                    @if ($agenda->description)
+                                        <p class="text-sm text-muted-charcoal leading-relaxed mt-1 line-clamp-2">{{ Str::limit($agenda->description, 160) }}</p>
+                                    @endif
+                                </div>
+
+                                <div class="shrink-0 flex flex-col gap-1.5 text-xs font-medium text-muted-charcoal sm:text-right sm:w-56">
+                                    <div class="flex items-center gap-2 sm:justify-end">
+                                        <span class="material-symbols-outlined text-[16px]">schedule</span>
+                                        <span>{{ $agenda->event_time ?? 'Waktu menyusul' }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 sm:justify-end">
+                                        <span class="material-symbols-outlined text-[16px]">location_on</span>
+                                        <span class="truncate">{{ $agenda->location ?? 'Sekretariat PRNU Banjaranyar' }}</span>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="bg-warm-bg rounded-card border border-border-neutral p-10 text-center">
+                        <span class="material-symbols-outlined text-muted-charcoal text-4xl mb-2">history</span>
+                        <p class="text-sm font-semibold text-charcoal">Belum ada arsip kegiatan.</p>
+                    </div>
+                @endif
+            </div>
+        </section>
+
+        <!-- CTA SEKRETARIAT -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 reveal">
+            <div class="rounded-container-r bg-warm-beige/70 border border-border-subtle p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+                <div class="max-w-xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-bold uppercase tracking-wider mb-3 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">support_agent</span>
+                        <span>Layanan Sekretariat</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight mb-3">
+                        Ingin Ikut Kegiatan atau Mengusulkan Agenda?
+                    </h2>
+                    <p class="text-base text-muted-charcoal leading-relaxed">
+                        Hubungi pengurus untuk informasi tempat, waktu, dan kebutuhan kepanitiaan. Kami siap membantu jamaah.
+                    </p>
+                </div>
+                <div class="shrink-0">
+                    <a class="inline-flex items-center justify-center gap-3 px-7 py-4 min-h-[48px] rounded-btn bg-nu-deep hover:bg-[#113725] text-white font-bold text-base shadow-subtle transition-all active:scale-95"
+                       href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, saya ingin ikut / mengusulkan agenda kegiatan NU Banjaranyar') }}"
+                       rel="noopener noreferrer" target="_blank">
+                        <span class="material-symbols-outlined text-[22px]">chat</span>
+                        <span>Hubungi Sekretariat</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Floating WhatsApp (secondary action) -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <a aria-label="Hubungi WhatsApp Pengurus"
+           class="flex items-center gap-2.5 px-4 py-3 min-h-[44px] rounded-full bg-warm-card/95 border border-border-subtle text-charcoal shadow-subtle hover:shadow-elevated hover:-translate-y-0.5 active:scale-95 transition-all"
+           href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+            <div class="w-8 h-8 rounded-full bg-nu-deep text-white flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[19px]">chat</span>
+            </div>
+            <span class="hidden sm:inline text-xs font-bold text-charcoal">Sekretariat NU</span>
+        </a>
+    </div>
+
+    <x-footer />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+
+            if (reduceMotion || !('IntersectionObserver' in window)) {
+                targets.forEach((el) => el.classList.add('revealed'));
+                return;
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+            targets.forEach((el) => observer.observe(el));
+        });
+    </script>
+</body>
+</html>

@@ -7,6 +7,21 @@ use Illuminate\Http\Request;
 
 class AgendaController extends Controller
 {
+    public function publicIndex()
+    {
+        $upcomingAgenda = Agenda::where('event_date', '>=', today())
+            ->orderBy('event_date')
+            ->paginate(9)
+            ->withQueryString();
+
+        $pastAgenda = Agenda::where('event_date', '<', today())
+            ->orderByDesc('event_date')
+            ->take(6)
+            ->get();
+
+        return view('agenda', compact('upcomingAgenda', 'pastAgenda'));
+    }
+
     public function index()
     {
         $agendaList = Agenda::orderBy('event_date')->paginate(10);
@@ -37,12 +52,12 @@ class AgendaController extends Controller
             ->with('success', 'Agenda berhasil ditambahkan.');
     }
 
-    public function edit(Agenda $agendum)
+    public function edit(Agenda $agenda)
     {
-        return view('admin.agenda.edit', ['agenda' => $agendum]);
+        return view('admin.agenda.edit', compact('agenda'));
     }
 
-    public function update(Request $request, Agenda $agendum)
+    public function update(Request $request, Agenda $agenda)
     {
         $validated = $request->validate([
             'title'       => 'required|max:255',
@@ -53,16 +68,16 @@ class AgendaController extends Controller
             'description' => 'nullable',
         ]);
 
-        $agendum->update($validated);
+        $agenda->update($validated);
 
         return redirect()
             ->route('agenda.index')
             ->with('success', 'Agenda berhasil diperbarui.');
     }
 
-    public function destroy(Agenda $agendum)
+    public function destroy(Agenda $agenda)
     {
-        $agendum->delete();
+        $agenda->delete();
 
         return redirect()
             ->route('agenda.index')
