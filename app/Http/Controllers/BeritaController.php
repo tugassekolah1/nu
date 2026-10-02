@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Agenda;
 use App\Models\Berita;
 use App\Models\Pengurus;
@@ -54,21 +53,24 @@ class BeritaController extends Controller
         }
 
         Berita::create($validated);
+
         return redirect()->route('berita.index')->with('success', 'Berita ditambahkan');
     }
 
     public function show(Berita $berita)
     {
-        abort_if(!$berita->status, 404); // draft gak boleh diakses publik
+        abort_if(! $berita->status, 404); // draft gak boleh diakses publik
 
-       $newsList = Berita::where('status', true)
-        ->where('id', '!=', $berita->id)
-        ->latest()
-        ->take(5)
-        ->get();
+        // Hitung pembaca untuk sidebar "Terpopuler"
+        Berita::whereKey($berita->id)->increment('views');
 
-    // 3. Kirim kedua variabel ($berita dan $newsList) ke view berita-detail
-    return view('berita-detail', compact('berita', 'newsList'));
+        $newsList = Berita::where('status', true)
+            ->where('id', '!=', $berita->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('berita-detail', compact('berita', 'newsList'));
     }
 
     public function edit(Berita $berita)
@@ -98,12 +100,14 @@ class BeritaController extends Controller
         }
 
         $berita->update($validated);
+
         return redirect()->route('berita.index')->with('success', 'Berita diperbarui');
     }
 
     public function destroy(Berita $berita)
     {
         $berita->delete();
+
         return redirect()->route('berita.index')->with('success', 'Berita dihapus');
     }
 
@@ -115,23 +119,40 @@ class BeritaController extends Controller
             ->take(3)
             ->get();
         $pengurus = Pengurus::orderBy('urutan', 'asc')->get();
+
         return view('welcome', compact('newsList', 'upcomingAgenda', 'pengurus'));
     }
-public function index_publik(Request $request)
-{
-    $q = (string) $request->query('q', '');
-    $jenis = $request->query('jenis');
 
-    $newsList = Berita::filter($q, $jenis)
-        ->where('status', true)
-        ->latest()
-        ->paginate(5)
-        ->withQueryString();
+    public function index_publik(Request $request)
+    {
+        $q = (string) $request->query('q', '');
+        $jenis = $request->query('jenis');
 
-    $isFiltering = trim($q) !== '' || in_array($jenis, Berita::JENIS, true);
+        $newsList = Berita::filter($q, $jenis)
+            ->where('status', true)
+            ->latest()
+            ->paginate(5)
+            ->withQueryString();
 
-    return view('berita', compact('newsList', 'q', 'jenis', 'isFiltering'));
-}
+        $isFiltering = trim($q) !== '' || in_array($jenis, Berita::JENIS, true);
+
+        // Sidebar: berita paling banyak dibaca
+        $popular = Berita::where('status', true)
+            ->orderByDesc('views')
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
+
+        // Sidebar: jumlah berita per kanal/jenis
+        $kanalCounts = Berita::where('status', true)
+            ->groupBy('jenis')
+            ->selectRaw('jenis, COUNT(*) as total')
+            ->pluck('total', 'jenis');
+
+        $totalBerita = Berita::where('status', true)->count();
+
+        return view('berita', compact('newsList', 'q', 'jenis', 'isFiltering', 'popular', 'kanalCounts', 'totalBerita'));
+    }
 
     /**
      * Aturan validasi slug: wajib format slug dan unik (abaikan ID saat update).
@@ -154,7 +175,7 @@ public function index_publik(Request $request)
     private function generateUniqueSlug($judul, $ignoreId = null)
     {
         $slug = Str::slug($judul);
-        
+
         // Cek apakah slug sudah ada di database (abaikan ID berita jika sedang update)
         $query = Berita::where('slug', 'LIKE', "{$slug}%");
         if ($ignoreId) {
@@ -163,7 +184,6 @@ public function index_publik(Request $request)
 
         $count = $query->count();
 
-        return $count ? "{$slug}-" . ($count + 1) : $slug;
+        return $count ? "{$slug}-".($count + 1) : $slug;
     }
-    
 }

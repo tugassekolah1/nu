@@ -1,179 +1,160 @@
 <!DOCTYPE html>
-
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    
-    {{-- Google Fonts --}}
-    <link href="https://fonts.googleapis.com" rel="preconnect"/>
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
-    {{-- Tailwind CSS CDN --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "on-secondary-container": "#785d21",
-                        "on-secondary-fixed": "#261900",
-                        "tertiary": "#232823",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container": "#efeeea",
-                        "error-container": "#ffdad6",
-                        "primary-fixed": "#bceecf",
-                        "primary-container": "#16452f",
-                        "secondary": "#765a1f",
-                        "on-primary": "#ffffff",
-                        "inverse-on-surface": "#f2f1ed",
-                        "tertiary-container": "#393e39",
-                        "on-primary-fixed-variant": "#214f38",
-                        "secondary-fixed": "#ffdea3",
-                        "on-surface-variant": "#414943",
-                        "on-secondary-fixed-variant": "#5b4307",
-                        "on-tertiary": "#ffffff",
-                        "tertiary-fixed-dim": "#c3c8c0",
-                        "background": "#fbf9f5",
-                        "surface": "#fbf9f5",
-                        "primary": "#002e1b",
-                        "on-secondary": "#ffffff",
-                        "secondary-fixed-dim": "#e6c27c",
-                        "on-primary-container": "#82b296",
-                        "surface-container-high": "#e9e8e4",
-                        "inverse-surface": "#30312e",
-                        "on-error": "#ffffff",
-                        "outline": "#717973",
-                        "on-tertiary-container": "#a4a9a2",
-                        "on-tertiary-fixed": "#181d18",
-                        "surface-container-low": "#f5f3f0",
-                        "on-error-container": "#93000a",
-                        "inverse-primary": "#a0d2b4",
-                        "primary-fixed-dim": "#a0d2b4",
-                        "on-primary-fixed": "#002112",
-                        "outline-variant": "#c0c9c1",
-                        "surface-bright": "#fbf9f5",
-                        "error": "#ba1a1a",
-                        "surface-tint": "#3a674f",
-                        "surface-dim": "#dbdad6",
-                        "on-background": "#1b1c1a",
-                        "on-surface": "#1b1c1a",
-                        "surface-container-highest": "#e4e2df",
-                        "on-tertiary-fixed-variant": "#434842",
-                        "secondary-container": "#fed890",
-                        "tertiary-fixed": "#dfe4dc",
-                        "surface-variant": "#e4e2df"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    spacing: {
-                        "max-width-editorial": "720px",
-                        "max-width-canvas": "1280px",
-                        "space-16": "1rem",
-                        "space-2": "0.125rem",
-                        "gutter-desktop": "2rem",
-                        "space-96": "6rem",
-                        "space-12": "0.75rem",
-                        "space-32": "2rem",
-                        "space-24": "1.5rem",
-                        "space-64": "4rem",
-                        "space-48": "3rem",
-                        "space-8": "0.5rem",
-                        "space-4": "0.25rem",
-                        "gutter-mobile": "1rem"
-                    },
-                    fontFamily: {
-                        "headline-md": ["Newsreader"],
-                        "label-meta": ["Inter"],
-                        "body-lead": ["Newsreader"],
-                        "body-md": ["Inter"],
-                        "headline-sm": ["Inter"],
-                        "quote-pull": ["Newsreader"],
-                        "label-editorial": ["Inter"],
-                        "headline-lg-mobile": ["Newsreader"],
-                        "headline-lg": ["Newsreader"],
-                        "headline-xl-mobile": ["Newsreader"],
-                        "headline-xl": ["Newsreader"],
-                        "display-hero-mobile": ["Newsreader"],
-                        "body-lg": ["Inter"],
-                        "display-hero": ["Newsreader"]
-                    },
-                    fontSize: {
-                        "headline-md": ["22px", {"lineHeight": "30px", "fontWeight": "500"}],
-                        "label-meta": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
-                        "body-lead": ["21px", {"lineHeight": "34px", "letterSpacing": "0.005em", "fontWeight": "400"}],
-                        "body-md": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
-                        "headline-sm": ["18px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "quote-pull": ["26px", {"lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
-                        "label-editorial": ["12px", {"lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "600"}],
-                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "0em", "fontWeight": "500"}],
-                        "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
-                        "headline-xl-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
-                        "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.015em", "fontWeight": "400"}],
-                        "display-hero-mobile": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "500"}],
-                        "body-lg": ["18px", {"lineHeight": "30px", "fontWeight": "400"}],
-                        "display-hero": ["56px", {"lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400"}]
-                    }
-                }
+    <x-public-head title="Berita & Warta NU — Banjaranyar" />
+
+    <style>
+        /* Entrance animation (hormati reduced motion) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0ms; }
+        .reveal-stagger.revealed > *:nth-child(2) { transition-delay: 60ms; }
+        .reveal-stagger.revealed > *:nth-child(3) { transition-delay: 120ms; }
+        .reveal-stagger.revealed > *:nth-child(4) { transition-delay: 180ms; }
+        .reveal-stagger.revealed > *:nth-child(5) { transition-delay: 240ms; }
+        .reveal-stagger.revealed > *:nth-child(6) { transition-delay: 300ms; }
+        .reveal-stagger.revealed > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal,
+            .reveal-stagger > * {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
             }
         }
-    </script>
+
+        .bg-grid-light {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0);
+            background-size: 22px 22px;
+        }
+    </style>
 </head>
-<body class="bg-surface font-body-md text-body-md text-on-surface antialiased min-h-screen">
 
-<x-navbar></x-navbar>
-<main class="w-full pt-10 bg-surface">
-    <div class="flex flex-col w-full">
+<body class="bg-warm-bg text-charcoal antialiased selection:bg-muted-sage selection:text-nu-deep">
+    <x-navbar></x-navbar>
 
-        {{-- Top Editorial Header & Date Stamp --}}
-        <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-32 md:pt-space-48">
-            {{-- ... header content ... --}}
-        </section>
+    <main>
+        <!-- HERO -->
+        <header class="relative overflow-hidden bg-nu-deep text-white pt-32 sm:pt-36 pb-16 sm:pb-20">
+            <div class="absolute inset-0 bg-grid-light pointer-events-none"></div>
+            <div class="absolute -top-20 -right-16 w-96 h-96 rounded-full bg-nu-500/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-28 -left-16 w-80 h-80 rounded-full bg-muted-gold/15 blur-3xl pointer-events-none"></div>
 
-        {{-- Search & Category Filter Controls --}}
-        <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-32">
-            <form method="GET" action="{{ route('berita.public') }}"
-                  class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-space-16">
-                <div class="flex items-center gap-space-8 w-full lg:w-auto">
-                    <div class="relative flex-1 lg:w-80">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-8">
+                <nav aria-label="Navigasi balik" class="mb-6 text-sm text-white/70">
+                    <ol class="flex flex-wrap items-center gap-2">
+                        <li><a class="hover:text-white hover:underline underline-offset-4 transition-colors" href="{{ route('landing') }}">Beranda</a></li>
+                        <li aria-hidden="true">›</li>
+                        <li class="text-white font-semibold" aria-current="page">Berita</li>
+                    </ol>
+                </nav>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
+                    <div class="lg:col-span-7">
+                        <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
+                            <span class="material-symbols-outlined text-[16px] text-muted-gold">newspaper</span>
+                            <span>Warta &amp; Informasi Resmi</span>
+                        </span>
+
+                        <h1 class="mt-6 font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1]">
+                            Berita &amp; Warta NU
+                        </h1>
+
+                        <p class="mt-5 text-base sm:text-lg text-white/80 leading-relaxed max-w-xl">
+                            Informasi kegiatan, pengumuman, dan tulisan dari PRNU Banjaranyar dan
+                            lembaga di bawah naungannya — disusun rapi dan mudah dibaca.
+                        </p>
+                    </div>
+
+                    <div class="lg:col-span-5">
+                        <div class="rounded-container-r bg-white/10 border border-white/15 backdrop-blur-md p-6 sm:p-8 shadow-elevated">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <span class="block text-4xl font-extrabold text-white leading-none">{{ $totalBerita }}</span>
+                                    <span class="block text-xs font-semibold uppercase tracking-wider text-white/70 mt-2">Berita Terbit</span>
+                                </div>
+                                <div>
+                                    <span class="block text-4xl font-extrabold text-muted-gold leading-none">{{ $kanalCounts->count() }}</span>
+                                    <span class="block text-xs font-semibold uppercase tracking-wider text-white/70 mt-2">Kanal Redaksi</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-5 border-t border-white/15 flex items-center gap-2.5 text-xs text-white/75">
+                                <span class="material-symbols-outlined text-[18px] text-muted-gold">verified</span>
+                                <span>Dikelola sekretariat PRNU Banjaranyar.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- KANAL + PENCARIAN (pil judul melayang di batas hero) -->
+        <section class="relative max-w-7xl mx-auto px-4 sm:px-8 pt-16 pb-2 reveal">
+            <span class="absolute left-1/2 -translate-x-1/2 -top-5 z-20 inline-flex items-center gap-1.5 rounded-full bg-warm-card px-4 py-2 text-charcoal text-xs font-bold uppercase tracking-wider border border-border-neutral shadow-elevated">
+                <span class="material-symbols-outlined text-[16px] text-muted-charcoal">filter_alt</span>
+                <span>Kanal &amp; Pencarian</span>
+            </span>
+
+            <form method="GET" action="{{ route('berita.public') }}" class="flex flex-col gap-5">
+                {{-- Pencarian --}}
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div class="relative flex-1">
                         <input type="search" name="q" value="{{ $q }}"
-                               placeholder="Cari berita..."
+                               placeholder="Cari berita... misal: pengajian, banjir, qurban"
                                aria-label="Cari berita"
-                               class="w-full px-space-16 py-space-8 pr-10 rounded-lg bg-surface-container-low border border-on-surface/10 text-body-md text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:border-primary transition-colors"/>
-                        <span class="material-symbols-outlined text-[20px] text-on-surface-variant absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
+                               class="w-full min-h-[48px] pl-5 pr-12 py-3 rounded-full bg-warm-card border border-border-neutral text-base text-charcoal placeholder:text-muted-charcoal/70 focus:outline-none focus:border-nu-deep focus:ring-2 focus:ring-nu-deep/15 transition-all"/>
+                        <span class="material-symbols-outlined text-[20px] text-muted-charcoal absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">search</span>
                     </div>
                     @if (!empty($jenis))
                         <input type="hidden" name="jenis" value="{{ $jenis }}"/>
                     @endif
                     <button type="submit"
-                            class="px-space-16 py-space-8 rounded-lg bg-primary text-on-primary font-label-meta text-label-meta font-semibold hover:opacity-90 transition-opacity">
+                            class="min-h-[48px] px-7 rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95">
                         Cari
                     </button>
                     @if (trim((string) $q) !== '' || !empty($jenis))
                         <a href="{{ route('berita.public') }}"
-                           class="px-space-16 py-space-8 rounded-lg bg-surface-container-low text-on-surface font-label-meta text-label-meta font-semibold hover:bg-surface-container transition-colors">
+                           class="min-h-[48px] px-6 inline-flex items-center justify-center rounded-full bg-warm-card border border-border-neutral text-charcoal text-sm font-semibold hover:bg-warm-beige/60 transition-colors">
                             Reset
                         </a>
                     @endif
                 </div>
 
-                <div class="flex flex-wrap gap-space-8">
+                {{-- Tab kanal --}}
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <span class="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-charcoal mr-1">
+                        <span class="material-symbols-outlined text-[16px]">label</span>
+                        Kanal:
+                    </span>
                     <a href="{{ route('berita.public', array_filter(['q' => $q])) }}"
-                       class="{{ empty($jenis) ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface' }} px-space-12 py-space-4 rounded-lg font-label-meta text-label-meta font-semibold transition-colors">
+                       class="{{ empty($jenis) ? 'bg-nu-deep text-white border-nu-deep' : 'bg-warm-card text-charcoal border-border-neutral hover:bg-warm-beige/60' }} min-h-[44px] inline-flex items-center gap-2 px-5 rounded-full border text-sm font-semibold transition-colors">
                         Semua
                     </a>
                     @foreach (\App\Models\Berita::JENIS as $pilihan)
                         <a href="{{ route('berita.public', array_filter(['q' => $q, 'jenis' => $pilihan])) }}"
-                           class="{{ ($jenis ?? '') === $pilihan ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface' }} px-space-12 py-space-4 rounded-lg font-label-meta text-label-meta font-semibold transition-colors">
+                           class="{{ ($jenis ?? '') === $pilihan ? 'bg-nu-deep text-white border-nu-deep' : 'bg-warm-card text-charcoal border-border-neutral hover:bg-warm-beige/60' }} min-h-[44px] inline-flex items-center gap-2 px-5 rounded-full border text-sm font-semibold transition-colors">
                             {{ $pilihan }}
+                            @isset($kanalCounts[$pilihan])
+                                <span class="{{ ($jenis ?? '') === $pilihan ? 'bg-white/20 text-white' : 'bg-muted-sage text-muted-charcoal' }} text-[11px] font-bold px-2 py-0.5 rounded-full">{{ $kanalCounts[$pilihan] }}</span>
+                            @endisset
                         </a>
                     @endforeach
                 </div>
@@ -182,53 +163,44 @@
 
         @if ($isFiltering)
             {{-- ========================================== --}}
-            {{-- HASIL PENCARIAN / FILTER JENIS --}}
+            {{-- HASIL PENCARIAN / FILTER KANAL --}}
             {{-- ========================================== --}}
-            <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop py-space-32">
-                <div class="flex items-baseline justify-between pb-space-16 border-b border-on-surface/10 mb-space-24">
-                    <h3 class="font-headline-md text-headline-md text-on-surface font-headline-md tracking-tight">
-                        Hasil Pencarian
-                    </h3>
-                    <span class="font-label-meta text-label-meta text-on-surface-variant">
+            <section class="max-w-7xl mx-auto px-4 sm:px-8 py-10 reveal">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-3">
+                    <div>
+                        <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight">
+                            Hasil Pencarian
+                        </h2>
+                        <p class="text-sm text-muted-charcoal mt-1">
+                            @if (trim((string) $q) !== '')
+                                Kata kunci “{{ $q }}”{{ !empty($jenis) ? ' · kanal ' . $jenis : '' }}
+                            @else
+                                Kanal {{ $jenis }}
+                            @endif
+                        </p>
+                    </div>
+                    <span class="w-fit text-sm font-semibold text-muted-charcoal bg-warm-card border border-border-neutral rounded-full px-4 py-1.5">
                         {{ $newsList->total() }} berita ditemukan
                     </span>
                 </div>
 
                 @if ($newsList->isEmpty())
-                    <div class="p-space-24 rounded-lg bg-surface-container-low text-on-surface-variant">
-                        Tidak ada berita yang cocok dengan pencarian Anda.
+                    <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-subtle p-12 flex flex-col items-center text-center">
+                        <span class="material-symbols-outlined text-muted-charcoal text-5xl mb-3">search_off</span>
+                        <p class="text-lg font-bold text-charcoal">Tidak ada berita yang cocok</p>
+                        <p class="text-sm text-muted-charcoal mt-1.5 max-w-md">
+                            Coba kata kunci lain, atau pilih kanal “Semua” untuk melihat seluruh berita.
+                        </p>
+                        <a class="mt-6 inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] transition-all active:scale-95"
+                           href="{{ route('berita.public') }}">
+                            <span class="material-symbols-outlined text-[18px]">refresh</span>
+                            <span>Lihat Semua Berita</span>
+                        </a>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-24">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
                         @foreach ($newsList as $berita)
-                            <article class="group flex flex-col gap-space-12">
-                                <a href="{{ route('berita.show', $berita->slug) }}"
-                                   class="block w-full overflow-hidden rounded-lg bg-surface-container-high aspect-[16/10]">
-                                    @if ($berita->gambar)
-                                        <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}"
-                                             class="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-[1.015]" loading="lazy"/>
-                                    @else
-                                        <div class="w-full h-full flex items-center justify-center text-on-surface-variant">
-                                            <span class="material-symbols-outlined text-4xl">image</span>
-                                        </div>
-                                    @endif
-                                </a>
-                                <div class="flex items-center gap-space-8">
-                                    <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
-                                        {{ $berita->jenis }}
-                                    </span>
-                                    <span class="text-on-surface-variant/40">•</span>
-                                    <span class="font-label-meta text-label-meta text-on-surface-variant">
-                                        {{ $berita->created_at->translatedFormat('d F Y') }}
-                                    </span>
-                                </div>
-                                <h4 class="font-headline-md text-headline-md text-on-surface group-hover:text-primary transition-colors">
-                                    <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
-                                </h4>
-                                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-3">
-                                    {{ Str::limit(strip_tags($berita->isi), 160) }}
-                                </p>
-                            </article>
+                            <x-news-card :berita="$berita" />
                         @endforeach
                     </div>
                 @endif
@@ -236,262 +208,226 @@
 
         @else
 
-        {{-- ========================================== --}}
-        {{-- DINAMIS: Featured Lead Story (Berita Utama) --}}
-        {{-- ========================================== --}}
-        @if($newsList->isNotEmpty())
-            @php $featuredNews = $newsList->first(); @endphp
-            <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-48 py-10 pb-space-32">
-                <article class="group relative flex flex-col lg:grid lg:grid-cols-12 gap-space-32 items-start">
-                    {{-- Media Well --}}
-                    <div class="w-full lg:col-span-8 overflow-hidden rounded-xl bg-surface-container-high relative aspect-[16/10] sm:aspect-[16/9]">
-                        @if($featuredNews->gambar)
-                            <img class="w-full h-full object-cover transform transition-transform duration-700 ease-out group-hover:scale-[1.015]"
-                                 src="{{ Storage::url($featuredNews->gambar) }}"
-                                 alt="{{ $featuredNews->judul }}"
-                                 loading="eager"/>
-                        @else
-                            {{-- Placeholder jika tidak ada gambar --}}
-                            <div class="w-full h-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
-                                <span class="material-symbols-outlined text-6xl">image</span>
-                            </div>
-                        @endif
-                        <div class="absolute top-space-16 left-space-16">
-                            <span class="inline-flex items-center px-space-12 py-space-4 bg-primary text-on-primary font-label-editorial text-[11px] font-semibold tracking-wider uppercase rounded-lg shadow-sm">
-                                BERITA UTAMA
+            {{-- ========================================== --}}
+            {{-- LEAD STORY (Berita Utama) --}}
+            {{-- ========================================== --}}
+            @if ($newsList->isNotEmpty())
+                @php $featuredNews = $newsList->first(); @endphp
+                <section class="max-w-7xl mx-auto px-4 sm:px-8 py-10 reveal">
+                    <article class="group bg-warm-card rounded-container-r border border-border-neutral shadow-subtle overflow-hidden lg:grid lg:grid-cols-12 hover:shadow-elevated transition-shadow duration-300">
+                        <div class="lg:col-span-8 relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-warm-beige">
+                            @if ($featuredNews->gambar)
+                                <img src="{{ Storage::url($featuredNews->gambar) }}"
+                                     alt="{{ $featuredNews->judul }}"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-muted-charcoal/60">
+                                    <span class="material-symbols-outlined text-7xl">article</span>
+                                </div>
+                            @endif
+                            <span class="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-nu-deep/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 border border-white/15">
+                                <span class="w-1.5 h-1.5 rounded-full bg-muted-gold"></span>
+                                Berita Utama
                             </span>
                         </div>
-                    </div>
-                    {{-- Narrative Well --}}
-                    <div class="w-full lg:col-span-4 flex flex-col justify-between self-stretch pt-space-8 lg:pt-0">
-                        <div>
-                            {{-- Metadata --}}
-                            <div class="flex items-center flex-wrap gap-space-8 mb-space-12">
-                                <span class="font-label-editorial text-label-editorial text-primary font-bold tracking-wider uppercase">
-                                    {{ strtoupper($featuredNews->jenis) }}
+
+                        <div class="lg:col-span-4 p-7 sm:p-9 flex flex-col">
+                            <div class="flex flex-wrap items-center gap-2.5 mb-3">
+                                <span class="px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-bold uppercase tracking-wider border border-border-neutral">
+                                    {{ $featuredNews->jenis }}
                                 </span>
-                                <span class="text-on-surface-variant/40">•</span>
-                                <span class="font-label-meta text-label-meta text-on-surface-variant font-medium">
-                                    {{ $featuredNews->created_at->translatedFormat('d F Y') }}
-                                </span>
-                                <span class="text-on-surface-variant/40">•</span>
-                                <span class="font-label-meta text-label-meta text-on-surface-variant font-medium">
-                                    MWC NU KECAMATAN
+                                <span class="text-xs font-semibold text-muted-charcoal">
+                                    {{ $featuredNews->created_at->locale('id')->translatedFormat('d F Y') }}
                                 </span>
                             </div>
-                            {{-- Headline --}}
-                            <h2 class="font-headline-lg text-headline-lg md:text-[34px] md:leading-[42px] text-on-surface font-headline-md group-hover:text-primary transition-colors duration-200 mb-space-16">
+
+                            <h2 class="font-heading text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight leading-snug group-hover:text-nu-deep transition-colors">
                                 <a href="{{ route('berita.show', $featuredNews->slug) }}">{{ $featuredNews->judul }}</a>
                             </h2>
-                            {{-- Excerpt --}}
-                            <p class="font-body-md text-body-md break-words text-on-surface-variant leading-relaxed mb-space-24">
+
+                            <p class="text-sm sm:text-base text-muted-charcoal leading-relaxed mt-3">
                                 {{ Str::limit(strip_tags($featuredNews->isi), 200) }}
                             </p>
-                        </div>
-                        {{-- Read Action --}}
-                        <div class="pt-space-16 border-t border-on-surface/10 mt-auto">
-                            <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold group/link" href="{{ route('berita.show', $featuredNews->slug) }}">
-                                <span>Baca berita selengkapnya</span>
-                                <span class="material-symbols-outlined text-[20px] transition-transform duration-200 group-hover/link:translate-x-1">arrow_forward</span>
-                            </a>
-                        </div>
-                    </div>
-                </article>
-            </section>
-        @endif
 
-        {{-- Editorial Section Title & Hairline --}}
-        <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pt-space-48">
-            <div class="flex items-center justify-between pb-space-16 border-b border-on-surface/10">
-                <div class="flex items-baseline gap-space-12">
-                    <h3 class="font-headline-md text-headline-md text-on-surface font-headline-md tracking-tight">
-                        Kabar Lainnya
-                    </h3>
-                    <span class="font-label-meta text-label-meta text-on-surface-variant hidden sm:inline">
-                        Dihimpun dari 12 Ranting dan Banom
+                            <div class="mt-auto pt-7">
+                                <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95"
+                                   href="{{ route('berita.show', $featuredNews->slug) }}">
+                                    <span>Baca selengkapnya</span>
+                                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+            @endif
+
+            {{-- ========================================== --}}
+            {{-- BERITA TERBARU + SIDEBAR --}}
+            {{-- ========================================== --}}
+            <section class="max-w-7xl mx-auto px-4 sm:px-8 py-6 pb-4 reveal">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-3 border border-border-neutral">
+                            <span class="material-symbols-outlined text-[16px] text-muted-charcoal">history</span>
+                            Terbaru dari Redaksi
+                        </span>
+                        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Berita Terbaru</h2>
+                        <p class="text-base text-muted-charcoal mt-2">Kabar terkini dari ranting dan lembaga Banjaranyar.</p>
+                    </div>
+                    <span class="text-sm font-semibold text-muted-charcoal bg-warm-card border border-border-neutral rounded-full px-4 py-1.5">
+                        {{ $newsList->total() }} berita
                     </span>
                 </div>
-                <div class="flex items-center gap-space-8 text-on-surface-variant font-label-meta text-label-meta">
-                    <span class="w-2 h-2 rounded-full bg-primary"></span>
-                    <span>Terverifikasi Redaksi</span>
-                </div>
-            </div>
-        </section>
 
-        {{-- ========================================== --}}
-        {{-- DINAMIS: Kabar Lainnya List --}}
-        {{-- ========================================== --}}
-        <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop py-space-32">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-space-32 lg:gap-space-48 items-start">
-                {{-- Primary 7-Column Editorial Column --}}
-                <div class="md:col-span-7 flex flex-col gap-space-48">
-                    @if($newsList->count() > 1)
-                        @foreach($newsList->skip(1)->take(2) as $index => $berita)
-                            @if($index % 2 === 0)
-                                {{-- Format Feature (gambar besar di atas) --}}
-                                <article class="group flex flex-col gap-space-16 pb-space-40 border-b border-on-surface/10" >
-                                    <div class="w-full overflow-hidden rounded-lg bg-surface-container-high aspect-[16/10]">
-                                        @if($berita->gambar)
-                                            <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-[1.015]" loading="lazy"/>
-                                        @endif
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <div class="flex items-center gap-space-8 mb-space-8">
-                                            <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
-                                                {{ $berita->jenis }}
-                                            </span>
-                                            <span class="text-on-surface-variant/40">•</span>
-                                            <span class="font-label-meta text-label-meta text-on-surface-variant">
-                                                {{ $berita->created_at->translatedFormat('d F Y') }}
-                                            </span>
-                                        </div>
-                                        <h4 class="font-headline-md text-headline-md md:text-[26px] md:leading-[34px] text-on-surface font-headline-md group-hover:text-primary transition-colors duration-200 mb-space-12">
-                                            <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
-                                        </h4>
-                                        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-16">
-                                            {{ Str::limit(strip_tags($berita->isi), 160) }}
-                                        </p>
-                                        <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold self-start group/btn" href="{{ route('berita.show', $berita->slug) }}">
-                                            <span>Baca berita</span>
-                                            <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
-                                        </a>
-                                    </div>
-                                </article>
-                            @else
-                                {{-- Format Sosial Impact (gambar kecil di kiri) --}}
-                                <article class="group flex flex-col sm:flex-row gap-space-24 pb-space-40 border-b border-on-surface/10 items-start">
-                                    <div class="w-full sm:w-5/12 overflow-hidden rounded-lg bg-surface-container-high shrink-0 aspect-[4/3]">
-                                        @if($berita->gambar)
-                                            <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover transform transition-transform duration-500 ease-out group-hover:scale-[1.015]" loading="lazy"/>
-                                        @endif
-                                    </div>
-                                    <div class="w-full sm:w-7/12 flex flex-col justify-between">
-                                        <div>
-                                            <div class="flex items-center gap-space-8 mb-space-8">
-                                                <span class="font-label-editorial text-label-editorial text-secondary uppercase font-bold tracking-wider">
-                                                    {{ $berita->jenis }}
-                                                </span>
-                                                <span class="text-on-surface-variant/40">•</span>
-                                                <span class="font-label-meta text-label-meta text-on-surface-variant">
-                                                    {{ $berita->created_at->translatedFormat('d F Y') }}
-                                                </span>
-                                            </div>
-                                            <h4 class="font-headline-md text-headline-md text-on-surface font-headline-md group-hover:text-primary transition-colors duration-200 mb-space-8">
-                                                <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
-                                            </h4>
-                                            <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed line-clamp-3 mb-space-16">
-                                                {{ Str::limit(strip_tags($berita->isi), 200) }}
-                                            </p>
-                                        </div>
-                                        <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold group/btn" href="{{ route('berita.show', $berita->slug) }}">
-                                            <span>Baca berita</span>
-                                            <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover/btn:translate-x-1">arrow_forward</span>
-                                        </a>
-                                    </div>
-                                </article>
-                            @endif
-                        @endforeach
-                    @endif
-                </div>
-
-                {{-- Secondary 5-Column Lateral Column --}}
-                <div class="md:col-span-5 flex flex-col gap-space-32">
-                    @if($newsList->count() > 3)
-                        @foreach($newsList->skip(3)->take(2) as $berita)
-                            <article class="group p-space-24 rounded-lg bg-surface-container-low transition-colors duration-200 hover:bg-surface-container" data-category-item="{{ \Illuminate\Support\Str::slug($berita->jenis) }}">
-                                <div class="flex items-center gap-space-8 mb-space-8">
-                                    <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider">
-                                        {{ $berita->jenis }}
-                                    </span>
-                                    <span class="text-on-surface-variant/40">•</span>
-                                    <span class="font-label-meta text-label-meta text-on-surface-variant">
-                                        {{ $berita->created_at->translatedFormat('d F Y') }}
-                                    </span>
-                                </div>
-                                <h4 class="font-headline-md text-headline-md text-on-surface font-headline-md group-hover:text-primary transition-colors duration-200 mb-space-12">
-                                    <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>
-                                </h4>
-                                <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed mb-space-16">
-                                    {{ Str::limit(strip_tags($berita->isi), 150) }}
-                                </p>
-                                <a class="inline-flex items-center gap-space-8 text-primary font-body-md text-body-md font-semibold group/link" href="{{ route('berita.show', $berita->slug) }}">
-                                    <span>Baca berita</span>
-                                    <span class="material-symbols-outlined text-[18px] transition-transform duration-200 group-hover/link:translate-x-1">arrow_forward</span>
-                                </a>
-                            </article>
-                        @endforeach
-                    @endif
-
-                    {{-- Authentic Bulletin Snippet --}}
-                    <div class="p-space-24 rounded-lg bg-surface-container-high/60 border-l-4 border-primary">
-                        <span class="font-label-editorial text-label-editorial text-primary uppercase font-bold tracking-wider block mb-space-4">KUTIPAN MWC</span>
-                        <blockquote class="font-body-lead text-body-lead text-on-surface font-Newsreader italic leading-snug mb-space-8">
-                            "Merawat kebersamaan ranting adalah menyalakan obor ketentraman di setiap sudut desa kita."
-                        </blockquote>
-                        <span class="font-label-meta text-label-meta text-on-surface-variant">— Rais Syuriyah MWC NU Kecamatan</span>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    {{-- Kolom utama: kartu seragam --}}
+                    <div class="lg:col-span-8">
+                        @if ($newsList->count() > 1)
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 reveal-stagger">
+                                @foreach ($newsList->skip(1) as $berita)
+                                    <x-news-card :berita="$berita" />
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-subtle p-10 text-center">
+                                <span class="material-symbols-outlined text-muted-charcoal text-4xl mb-2">construction</span>
+                                <p class="text-sm font-semibold text-charcoal">Belum ada berita lain untuk ditampilkan.</p>
+                            </div>
+                        @endif
                     </div>
-                </div>
-            </div>
-        </section>
 
+                    {{-- Sidebar --}}
+                    <aside class="lg:col-span-4 flex flex-col gap-6">
+                        {{-- Terpopuler --}}
+                        <div class="bg-warm-card rounded-card border border-border-neutral shadow-subtle p-6">
+                            <h3 class="flex items-center gap-2 font-heading text-lg font-extrabold text-charcoal mb-4">
+                                <span class="material-symbols-outlined text-[20px] text-muted-gold">trending_up</span>
+                                Paling Banyak Dibaca
+                            </h3>
+
+                            @if ($popular->isEmpty())
+                                <p class="text-sm text-muted-charcoal">Belum ada data pembaca.</p>
+                            @else
+                                <ol class="flex flex-col">
+                                    @foreach ($popular as $index => $berita)
+                                        <li class="{{ $loop->first ? '' : 'border-t border-border-neutral' }}">
+                                            <a class="group flex items-start gap-3.5 py-3.5" href="{{ route('berita.show', $berita->slug) }}">
+                                                <span class="font-heading text-2xl font-extrabold leading-none w-7 shrink-0 {{ $index < 3 ? 'text-muted-gold' : 'text-border-subtle' }}">
+                                                    {{ $index + 1 }}
+                                                </span>
+                                                <span class="min-w-0">
+                                                    <span class="block text-sm font-bold text-charcoal leading-snug group-hover:text-nu-deep transition-colors">{{ $berita->judul }}</span>
+                                                    <span class="mt-1 block text-[11px] font-semibold text-muted-charcoal">
+                                                        {{ $berita->created_at->locale('id')->translatedFormat('d F Y') }}
+                                                        · {{ number_format($berita->views) }} dibaca
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            @endif
+                        </div>
+
+                        {{-- Kanal --}}
+                        <div class="bg-warm-card rounded-card border border-border-neutral shadow-subtle p-6">
+                            <h3 class="flex items-center gap-2 font-heading text-lg font-extrabold text-charcoal mb-4">
+                                <span class="material-symbols-outlined text-[20px] text-muted-gold">grid_view</span>
+                                Jelajahi Kanal
+                            </h3>
+                            <ul class="flex flex-col">
+                                @foreach (\App\Models\Berita::JENIS as $pilihan)
+                                    <li class="{{ $loop->first ? '' : 'border-t border-border-neutral' }}">
+                                        <a class="flex items-center justify-between py-3 group" href="{{ route('berita.public', array_filter(['jenis' => $pilihan])) }}">
+                                            <span class="text-sm font-semibold text-charcoal group-hover:text-nu-deep transition-colors">{{ $pilihan }}</span>
+                                            <span class="inline-flex items-center gap-2 text-xs font-bold text-muted-charcoal">
+                                                {{ $kanalCounts[$pilihan] ?? 0 }} berita
+                                                <span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">chevron_right</span>
+                                            </span>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        {{-- Kutipan --}}
+                        <div class="rounded-card bg-warm-beige/70 border border-border-subtle p-6 border-l-4 border-l-muted-gold">
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-nu-deep block mb-3">Kutipan Pengurus</span>
+                            <blockquote class="font-heading text-lg text-charcoal leading-snug mb-2">
+                                “Merawat kebersamaan ranting adalah menyalakan obor ketentraman di setiap sudut desa kita.”
+                            </blockquote>
+                            <span class="text-xs font-semibold text-muted-charcoal">— Rais Syuriyah MWC NU Kecamatan</span>
+                        </div>
+                    </aside>
+                </div>
+            </section>
         @endif
 
         {{-- ========================================== --}}
         {{-- PAGINATION --}}
         {{-- ========================================== --}}
-        @if($newsList instanceof \Illuminate\Pagination\LengthAwarePaginator && $newsList->hasPages())
-            <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop py-space-32 flex flex-col items-center justify-center">
-                <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center gap-space-8">
-                    {{-- Previous Page Link --}}
+        @if ($newsList instanceof \Illuminate\Pagination\LengthAwarePaginator && $newsList->hasPages())
+            <section class="max-w-7xl mx-auto px-4 sm:px-8 py-10 flex flex-col items-center gap-3 reveal">
+                <nav role="navigation" aria-label="Navigasi halaman berita" class="flex flex-wrap items-center justify-center gap-2">
                     @if ($newsList->onFirstPage())
-                        <span class="px-space-16 py-space-8 rounded-lg bg-surface-container-low text-on-surface-variant cursor-not-allowed opacity-50">‹ Sebelumnya</span>
+                        <span class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-full bg-warm-beige/60 text-muted-charcoal text-sm font-semibold border border-border-subtle cursor-not-allowed opacity-60">‹ Sebelumnya</span>
                     @else
-                        <a href="{{ $newsList->previousPageUrl() }}" rel="prev" class="px-space-16 py-space-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors">‹ Sebelumnya</a>
+                        <a href="{{ $newsList->previousPageUrl() }}" rel="prev" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-full bg-warm-card text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-colors">‹ Sebelumnya</a>
                     @endif
 
-                    {{-- Pagination Elements --}}
-                    <div class="flex items-center gap-space-4">
+                    <div class="flex flex-wrap items-center justify-center gap-2">
                         @foreach ($newsList->links()->elements as $element)
-                            {{-- "Three Dots" Separator --}}
                             @if (is_string($element))
-                                <span class="px-space-8 py-space-4 text-on-surface-variant">{{ $element }}</span>
+                                <span class="px-2 text-muted-charcoal text-sm">{{ $element }}</span>
                             @endif
-
-                            {{-- Array Of Links --}}
                             @if (is_array($element))
                                 @foreach ($element as $page => $url)
                                     @if ($page == $newsList->currentPage())
-                                        <span class="px-space-16 py-space-8 rounded-lg bg-primary text-on-primary font-semibold">{{ $page }}</span>
+                                        <span aria-current="page" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-full bg-nu-deep text-white text-sm font-bold">{{ $page }}</span>
                                     @else
-                                        <a href="{{ $url }}" class="px-space-16 py-space-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors">{{ $page }}</a>
+                                        <a href="{{ $url }}" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-full bg-warm-card text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-colors">{{ $page }}</a>
                                     @endif
                                 @endforeach
                             @endif
                         @endforeach
                     </div>
 
-                    {{-- Next Page Link --}}
                     @if ($newsList->hasMorePages())
-                        <a href="{{ $newsList->nextPageUrl() }}" rel="next" class="px-space-16 py-space-8 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface transition-colors">Selanjutnya ›</a>
+                        <a href="{{ $newsList->nextPageUrl() }}" rel="next" class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-full bg-warm-card text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-colors">Selanjutnya ›</a>
                     @else
-                        <span class="px-space-16 py-space-8 rounded-lg bg-surface-container-low text-on-surface-variant cursor-not-allowed opacity-50">Selanjutnya ›</span>
+                        <span class="px-4 py-2.5 min-h-[44px] inline-flex items-center rounded-full bg-warm-beige/60 text-muted-charcoal text-sm font-semibold border border-border-subtle cursor-not-allowed opacity-60">Selanjutnya ›</span>
                     @endif
                 </nav>
-                <span class="font-label-meta text-label-meta text-on-surface-variant mt-space-8">
-                    Menampilkan {{ $newsList->firstItem() ?? 0 }}-{{ $newsList->lastItem() ?? 0 }} dari {{ $newsList->total() }} warta
+                <span class="text-xs text-muted-charcoal">
+                    Menampilkan {{ $newsList->firstItem() ?? 0 }}–{{ $newsList->lastItem() ?? 0 }} dari {{ $newsList->total() }} berita
                 </span>
             </section>
         @endif
+    </main>
 
-        {{-- Editorial Redaksi & Layanan Informasi Box --}}
-        <section class="w-full max-w-[1280px] mx-auto px-gutter-mobile md:px-gutter-desktop pb-space-64">
-            {{-- ... redaksi box ... --}}
-        </section>
-    </div>
-</main>
-
-<footer class="w-full bg-surface-container-low mt-space-64">
     <x-footer />
-</footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+
+            if (reduceMotion || !('IntersectionObserver' in window)) {
+                targets.forEach((el) => el.classList.add('revealed'));
+                return;
+            }
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+            targets.forEach((el) => observer.observe(el));
+        });
+    </script>
 </body>
 </html>

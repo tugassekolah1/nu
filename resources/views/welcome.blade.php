@@ -59,7 +59,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
 <x-navbar></x-navbar>
 <main class="w-full bg-warm-bg">
     <!-- 2. HERO / ORGANIZATION INTRODUCTION (EDITORIAL ART DIRECTION) -->
-<section class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-[190px] sm:pt-9 lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto" id="beranda">            <div class="lg:col-span-6 flex flex-col justify-center text-left">
+<section class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-[160px]  lg:pt-40 pb-20 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto" id="beranda">            <div class="lg:col-span-6 flex flex-col justify-center text-left">
                 <!-- Basmalah Calligraphy -->
                 <div class="mb-5 inline-flex items-center">
                     <p class="font-arabic text-2xl sm:text-3xl text-muted-gold tracking-wide select-none font-normal">
