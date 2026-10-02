@@ -1,101 +1,238 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $berita->judul }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <x-public-head title="{{ $berita->judul }} — Berita NU Banjaranyar" />
+
+    <style>
+        /* Entrance animation (hormati reduced motion) */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+                        transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-stagger.revealed > * { opacity: 1; transform: translateY(0); transition-delay: calc(var(--i, 0) * 60ms); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal, .reveal-stagger > * {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+
+        .bg-grid-light {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0);
+            background-size: 22px 22px;
+        }
+
+        /* Konten artikel: nyaman dibaca (design.md §8 Body) */
+        .article-body {
+            font-size: 18px;
+            line-height: 1.75;
+            color: #2b332d;
+        }
+        .article-body[data-size="sedang"] { font-size: 20px; }
+        .article-body[data-size="besar"]  { font-size: 22px; }
+        .article-body p { margin-bottom: 1.1em; }
+        .article-body p:last-child { margin-bottom: 0; }
+        .article-body a { color: #1F5A3F; text-decoration: underline; text-underline-offset: 3px; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 antialiased">
 
-    <!-- Header / Navbar Sederhana -->
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <a href="{{ route('berita.public') }}" class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-blue-600 transition">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                Kembali ke Beranda
-            </a>
-            <span class="text-xs font-semibold uppercase tracking-widest text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                {{ $berita->jenis ?? 'Berita' }}
-            </span>
-        </div>
-    </header>
+<body class="bg-warm-bg text-charcoal antialiased selection:bg-muted-sage selection:text-nu-deep">
+    <x-navbar></x-navbar>
 
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    
-    <!-- Konten Berita Utama -->
-    <article class="bg-white p-6 sm:p-10 rounded-[24px] shadow-[0_18px_45px_rgba(23,57,45,0.06)] border border-[#d7e2d7]">
-        <h1 class="text-3xl sm:text-4xl font-extrabold text-[#214b35] leading-tight mb-4">
-            {{ $berita->judul }}
-        </h1>
+    <main>
+        <!-- HEADER ARTIKEL -->
+        <header class="relative overflow-hidden bg-nu-deep text-white pt-32 sm:pt-36 pb-14 sm:pb-16">
+            <div class="absolute inset-0 bg-grid-light pointer-events-none"></div>
+            <div class="absolute -top-20 -right-16 w-96 h-96 rounded-full bg-nu-500/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-muted-gold/15 blur-3xl pointer-events-none"></div>
 
-        <div class="flex items-center space-x-3 text-sm text-[#4b5c53] border-b border-[#e5ebd5] pb-4 mb-6">
-            <span class="font-semibold text-[#16372c]">{{ $berita->user->name ?? 'Admin' }}</span>
-            <span>•</span>
-            <span>{{ $berita->created_at->translatedFormat('d F Y') }}</span>
-        </div>
+            <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-8">
+                <nav aria-label="Navigasi balik" class="mb-6 text-sm text-white/70">
+                    <ol class="flex flex-wrap items-center gap-2">
+                        <li><a class="hover:text-white hover:underline underline-offset-4 transition-colors" href="{{ route('landing') }}">Beranda</a></li>
+                        <li aria-hidden="true">›</li>
+                        <li><a class="hover:text-white hover:underline underline-offset-4 transition-colors" href="{{ route('berita.public') }}">Berita</a></li>
+                        <li aria-hidden="true">›</li>
+                        <li class="text-white font-semibold truncate max-w-[40ch]" aria-current="page">{{ Str::limit($berita->judul, 40) }}</li>
+                    </ol>
+                </nav>
 
-        @if ($berita->gambar)
-            <div class="mb-8 rounded-2xl overflow-hidden">
-                <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-auto max-h-[500px] object-cover">
+                <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest backdrop-blur-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-muted-gold"></span>
+                    {{ $berita->jenis ?? 'Berita' }}
+                </span>
+
+                <h1 class="mt-5 font-heading text-3xl sm:text-4xl lg:text-[42px] lg:leading-[1.15] font-extrabold tracking-tight">
+                    {{ $berita->judul }}
+                </h1>
+
+                <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-white/75">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[17px]">account_circle</span>
+                        {{ $berita->user->name ?? 'Sekretariat PRNU' }}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[17px]">event</span>
+                        {{ $berita->created_at->locale('id')->translatedFormat('d F Y') }}
+                    </span>
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[17px]">visibility</span>
+                        {{ number_format($berita->views) }} kali dibaca
+                    </span>
+                </div>
             </div>
-        @endif
+        </header>
 
-        <div class="prose max-w-none text-[#293830] leading-relaxed break-words text-base sm:text-lg">
-            {!! nl2br(e($berita->isi)) !!}
-        </div>
-    </article>
+        <!-- KONTEN ARTIKEL -->
+        <article class="max-w-3xl mx-auto px-4 sm:px-8 -mt-8 pb-4 reveal">
+            <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-elevated overflow-hidden">
+                @if ($berita->gambar)
+                    <div class="aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-warm-beige">
+                        <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover">
+                    </div>
+                @endif
 
-</main>
+                <div class="p-6 sm:p-10">
+                    {{-- Kontrol ukuran teks (ramah pengguna yang sulit membaca) --}}
+                    <div class="flex flex-wrap items-center justify-between gap-3 pb-5 mb-6 border-b border-border-neutral">
+                        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-charcoal">
+                            <span class="material-symbols-outlined text-[17px] text-muted-gold">menu_book</span>
+                            Isi Berita
+                        </span>
 
-<!-- Section Warta Terbaru (Ditaruh di Bawah Konten) -->
-<section class="bg-[#f7faf7] py-14 border-t border-[#d7e2d7] mt-12">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-[#214b35]">Warta Terbaru Lainnya</h2>
-            <a href="{{ route('landing') }}" class="text-sm font-bold text-[#214b35] hover:underline">Lihat Semua &rarr;</a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @forelse ($newsList as $item)
-                <article class="rounded-[18px] overflow-hidden bg-white shadow-[0_18px_45px_rgba(23,57,45,0.08)] border border-[#d7e2d7] flex flex-col justify-between">
-                    <a href="{{ route('berita.show', $item->slug) }}" class="block flex-1">
-                        <div class="aspect-[4/3] p-4 text-white flex flex-col justify-end gap-2 relative overflow-hidden @if($loop->iteration % 3 == 1) bg-gradient-to-br from-[#102a20] via-[#213d2f] to-[#365946] @elseif($loop->iteration % 3 == 2) bg-gradient-to-br from-[#294738] via-[#375844] to-[#22372c] @else bg-gradient-to-br from-[#274134] via-[#355648] to-[#4f6d50] @endif"
-                             @if ($item->gambar)
-                                 style="background-image: linear-gradient(rgba(16,42,32,0.35), rgba(16,42,32,0.85)), url('{{ Storage::url($item->gambar) }}'); background-size: cover; background-position: center;"
-                             @endif
-                        >
-                            <div class="text-xs font-bold text-white/80">Warta NU</div>
-                            <h3 class="m-0 font-serif text-lg leading-snug line-clamp-2">{{ $item->judul }}</h3>
-                            <div class="text-xs text-white/80">
-                                {{ $item->created_at->translatedFormat('d M Y') }}
-                            </div>
+                        <div class="flex items-center gap-2" role="group" aria-label="Ukuran teks">
+                            <span class="hidden sm:inline text-xs font-semibold text-muted-charcoal mr-1">Ukuran teks:</span>
+                            <button type="button" id="teks-kecil" aria-label="Perkecil ukuran teks"
+                                    class="min-w-[44px] min-h-[44px] px-3 rounded-full bg-warm-bg border border-border-neutral text-charcoal text-sm font-bold hover:bg-warm-beige/70 transition-colors">A−</button>
+                            <button type="button" id="teks-normal" aria-label="Kembalikan ukuran teks normal"
+                                    class="min-w-[44px] min-h-[44px] px-3 rounded-full bg-warm-bg border border-border-neutral text-charcoal text-sm font-bold hover:bg-warm-beige/70 transition-colors">A</button>
+                            <button type="button" id="teks-besar" aria-label="Perbesar ukuran teks"
+                                    class="min-w-[44px] min-h-[44px] px-3 rounded-full bg-warm-bg border border-border-neutral text-charcoal text-sm font-bold hover:bg-warm-beige/70 transition-colors">A+</button>
                         </div>
-                    </a>
-                    <a href="{{ route('berita.show', $item->slug) }}" class="px-4 py-3 bg-[#8bc14b] text-[#16372c] font-bold text-sm block">
-                        Baca selengkapnya
-                    </a>
-                </article>
-            @empty
-                <p class="text-[#4b5c53] col-span-3">Belum ada berita lainnya.</p>
-            @endforelse
-        </div>
+                    </div>
 
-    </div>
-</section>
+                    <div class="article-body" id="article-body" data-size="normal">
+                        {!! nl2br(e($berita->isi)) !!}
+                    </div>
 
-        </div>
+                    {{-- Bagikan --}}
+                    <div class="mt-8 pt-6 border-t border-border-neutral flex flex-wrap items-center gap-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-muted-charcoal">Bagikan:</span>
+                        <a class="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95"
+                           href="https://wa.me/?text={{ urlencode($berita->judul . ' — ' . route('berita.show', $berita->slug)) }}"
+                           rel="noopener noreferrer" target="_blank">
+                            <span class="material-symbols-outlined text-[18px]">chat</span>
+                            <span>WhatsApp</span>
+                        </a>
+                        <button type="button" id="salin-tautan"
+                                class="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-full bg-warm-bg border border-border-neutral text-charcoal text-sm font-semibold hover:bg-warm-beige/60 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">link</span>
+                            <span id="salin-label">Salin Tautan</span>
+                        </button>
+                        <a class="inline-flex items-center gap-2 min-h-[44px] px-5 rounded-full bg-warm-bg border border-border-neutral text-charcoal text-sm font-semibold hover:bg-warm-beige/60 transition-colors"
+                           href="{{ route('berita.public') }}">
+                            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                            <span>Kembali ke Berita</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- WARTA TERBARU -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 py-14 sm:py-20 reveal">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-3 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">history</span>
+                        Warta Terbaru
+                    </span>
+                    <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Berita Lainnya</h2>
+                    <p class="text-base text-muted-charcoal mt-2">Kabar terkini dari ranting dan lembaga Banjaranyar.</p>
+                </div>
+                <a href="{{ route('berita.public') }}"
+                   class="w-fit text-sm font-semibold text-nu-deep bg-warm-card border border-border-neutral rounded-full px-4 py-1.5 hover:bg-warm-beige/60 transition-colors">
+                    Lihat Semua ›
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
+                @forelse ($newsList as $index => $item)
+                    <x-news-card :berita="$item" style="--i: {{ $index }}" />
+                @empty
+                    <div class="col-span-full bg-warm-card rounded-container-r border border-border-neutral shadow-subtle p-10 text-center">
+                        <span class="material-symbols-outlined text-muted-charcoal text-4xl mb-2">article</span>
+                        <p class="text-sm font-semibold text-charcoal">Belum ada berita lainnya saat ini.</p>
+                    </div>
+                @endforelse
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-16 py-8">
-        <div class="max-w-6xl mx-auto px-4 text-center text-sm text-gray-500">
-            &copy; {{ date('Y') }} Portal Berita. All rights reserved.
-        </div>
-    </footer>
+    <x-footer />
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            /* --- Entrance animation --- */
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const targets = document.querySelectorAll('.reveal, .reveal-stagger');
+
+            if (reduceMotion || !('IntersectionObserver' in window)) {
+                targets.forEach((el) => el.classList.add('revealed'));
+            } else {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('revealed');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+                targets.forEach((el) => observer.observe(el));
+            }
+
+            /* --- Kontrol ukuran teks (teringat preferensi pengunjung) --- */
+            const body = document.getElementById('article-body');
+            const levels = ['normal', 'sedang', 'besar'];
+            const saved = localStorage.getItem('ukuranTeks');
+            if (levels.includes(saved)) body.setAttribute('data-size', saved);
+
+            const setSize = (size) => {
+                body.setAttribute('data-size', size);
+                localStorage.setItem('ukuranTeks', size);
+            };
+            const currentIndex = () => Math.max(0, levels.indexOf(body.getAttribute('data-size')));
+            document.getElementById('teks-kecil').addEventListener('click', () => setSize(levels[Math.max(0, currentIndex() - 1)]));
+            document.getElementById('teks-normal').addEventListener('click', () => setSize('normal'));
+            document.getElementById('teks-besar').addEventListener('click', () => setSize(levels[Math.min(levels.length - 1, currentIndex() + 1)]));
+
+            /* --- Salin tautan --- */
+            const salinBtn = document.getElementById('salin-tautan');
+            const salinLabel = document.getElementById('salin-label');
+            salinBtn.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText('{{ route('berita.show', $berita->slug) }}');
+                    salinLabel.textContent = 'Tautan tersalin!';
+                } catch (e) {
+                    salinLabel.textContent = 'Gagal menyalin';
+                }
+                setTimeout(() => { salinLabel.textContent = 'Salin Tautan'; }, 2000);
+            });
+        });
+    </script>
 </body>
 </html>

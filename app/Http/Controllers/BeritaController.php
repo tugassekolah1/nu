@@ -63,6 +63,7 @@ class BeritaController extends Controller
 
         // Hitung pembaca untuk sidebar "Terpopuler"
         Berita::whereKey($berita->id)->increment('views');
+        $berita->refresh();
 
         $newsList = Berita::where('status', true)
             ->where('id', '!=', $berita->id)
