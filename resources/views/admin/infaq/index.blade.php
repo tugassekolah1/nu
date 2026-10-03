@@ -11,7 +11,7 @@
                     <h2 class="font-bold text-xl text-slate-800 leading-tight">
                         Manajemen Infaq
                     </h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Catat dan pantau transaksi infaq masuk.</p>
+                    <p class="text-xs text-slate-500 mt-0.5">Catat dan pantau kas masuk & kas keluar infaq.</p>
                 </div>
             </div>
 
@@ -28,7 +28,7 @@
     <div class="py-8 bg-slate-50 min-h-[calc(100vh-4rem)]">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
             @php
-                $filtering = trim((string) $q) !== '' || !empty($status);
+                $filtering = trim((string) $q) !== '' || !empty($status) || !empty($arah);
             @endphp
 
             {{-- Alert --}}
@@ -51,17 +51,26 @@
             @endif
 
             {{-- Kartu Rekap --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Lunas</p>
-                    <p class="text-2xl font-black text-slate-900 mt-2">Rp {{ number_format($rekap['total_lunas'], 0, ',', '.') }}</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Saldo Kas</p>
+                    <p class="text-2xl text-blue-600 font-black text-slate-900 mt-2">Rp {{ number_format($rekap['saldo'], 0, ',', '.') }}</p>
                 </div>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Masuk (Lunas)</p>
+                    <p class="text-2xl font-black text-emerald-700 mt-2">Rp {{ number_format($rekap['total_lunas'], 0, ',', '.') }}</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Total Keluar (Lunas)</p>
+                    <p class="text-2xl font-black text-rose-600 mt-2">Rp {{ number_format($rekap['total_keluar'], 0, ',', '.') }}</p>
+                </div>
+                
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
                     <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Masuk Hari Ini</p>
-                    <p class="text-2xl font-black text-emerald-700 mt-2">Rp {{ number_format($rekap['hari_ini'], 0, ',', '.') }}</p>
+                    <p class="text-2xl font-black text-slate-900 mt-2">Rp {{ number_format($rekap['hari_ini'], 0, ',', '.') }}</p>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Bulan Ini</p>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Masuk Bulan Ini</p>
                     <p class="text-2xl font-black text-slate-900 mt-2">Rp {{ number_format($rekap['bulan_ini'], 0, ',', '.') }}</p>
                 </div>
                 <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-5">
@@ -84,6 +93,16 @@
                                placeholder="Cari kode, nama donatur, atau no HP..."
                                class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 placeholder:text-slate-400 focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none transition-all" />
                     </div>
+
+                    <select name="arah"
+                            class="sm:w-44 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none transition-all">
+                        <option value="">Masuk + Keluar</option>
+                        @foreach (\App\Models\Infaq::ARAH as $item)
+                            <option value="{{ $item }}" {{ ($arah ?? '') === $item ? 'selected' : '' }}>
+                                {{ $item === 'masuk' ? 'Kas Masuk' : 'Kas Keluar' }}
+                            </option>
+                        @endforeach
+                    </select>
 
                     <select name="status"
                             class="sm:w-48 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none transition-all">
@@ -132,7 +151,8 @@
                             <tr class="bg-slate-50 border-b border-slate-200/80 text-xs uppercase font-bold text-slate-500 tracking-wider">
                                 <th class="px-6 py-4">Kode</th>
                                 <th class="px-6 py-4">Tanggal</th>
-                                <th class="px-6 py-4">Donatur</th>
+                                <th class="px-6 py-4">Arah</th>
+                                <th class="px-6 py-4">Donatur / Keperluan</th>
                                 <th class="px-6 py-4">Metode</th>
                                 <th class="px-6 py-4 text-right">Nominal</th>
                                 <th class="px-6 py-4">Status</th>
@@ -149,9 +169,38 @@
                                     </td>
 
                                     <td class="px-6 py-4">
+                                        @if (($infaq->arah ?? 'masuk') === 'keluar')
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100/80 text-rose-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                Keluar
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100/80 text-emerald-800">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                Masuk
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    <td class="px-6 py-4">
                                         <div class="font-bold text-slate-900">{{ $infaq->nama_donatur }}</div>
-                                        @if ($infaq->no_hp)
-                                            <div class="text-xs text-slate-400 mt-0.5">{{ $infaq->no_hp }}</div>
+                                        @if (($infaq->arah ?? 'masuk') === 'keluar')
+                                            @if ($infaq->kategori)
+                                                <div class="text-xs text-slate-500 mt-0.5">{{ ucwords(str_replace('_', ' ', $infaq->kategori)) }}</div>
+                                            @endif
+                                            @if ($infaq->catatan)
+                                                <div class="text-xs text-slate-400 mt-0.5 line-clamp-2">{{ $infaq->catatan }}</div>
+                                            @endif
+                                            @if ($infaq->penanggung_jawab)
+                                                <div class="text-xs text-slate-400 mt-0.5">PJ: {{ $infaq->penanggung_jawab }}</div>
+                                            @endif
+                                            @if ($infaq->bukti_path)
+                                                <a href="{{ asset('storage/' . $infaq->bukti_path) }}" target="_blank" rel="noopener" class="text-xs font-bold text-blue-600 hover:underline">Lihat bukti</a>
+                                            @endif
+                                        @else
+                                            @if ($infaq->no_hp)
+                                                <div class="text-xs text-slate-400 mt-0.5">{{ $infaq->no_hp }}</div>
+                                            @endif
                                         @endif
                                     </td>
 
@@ -221,7 +270,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-12">
+                                    <td colspan="8" class="text-center py-12">
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <div class="p-4 bg-slate-100 text-slate-400 rounded-full">
                                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

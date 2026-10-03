@@ -21,8 +21,7 @@ class BeritaFactory extends Factory
     'judul' => fake()->sentence(8),
     'slug' => fake()->unique()->slug(),
     'isi' => fake()->paragraphs(5, true),
-    'gambar' => null,
-    'user_id' => 1,
+'gambar' => 'https://picsum.photos/800/600?random=' . $this->faker->unique()->numberBetween(1, 1000),    'user_id' => 1,
     'status' => true,
 ];
 

@@ -217,7 +217,7 @@
                     <article class="group bg-warm-card rounded-container-r border border-border-neutral shadow-subtle overflow-hidden lg:grid lg:grid-cols-12 hover:shadow-elevated transition-shadow duration-300">
                         <div class="lg:col-span-8 relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-warm-beige">
                             @if ($featuredNews->gambar)
-                                <img src="{{ Storage::url($featuredNews->gambar) }}"
+                                <img src="{{ $featuredNews->gambar }}"
                                      alt="{{ $featuredNews->judul }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
                             @else

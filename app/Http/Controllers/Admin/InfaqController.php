@@ -18,6 +18,7 @@ class InfaqController extends Controller
     {
         $q = (string) $request->query('q', '');
         $status = $request->query('status');
+        $arah = $request->query('arah');
 
         $infaqs = Infaq::query()
             ->when(trim($q) !== '', function (Builder $query) use ($q) {
@@ -26,18 +27,26 @@ class InfaqController extends Controller
                 $query->where(function (Builder $query) use ($like) {
                     $query->where('kode_transaksi', 'like', $like)
                         ->orWhere('nama_donatur', 'like', $like)
+                        ->orWhere('penanggung_jawab', 'like', $like)
+                        ->orWhere('kategori', 'like', $like)
                         ->orWhere('no_hp', 'like', $like);
                 });
             })
             ->when(in_array($status, Infaq::STATUSES, true), fn (Builder $query) => $query->where('status', $status))
+            ->when(in_array($arah, Infaq::ARAH, true), fn (Builder $query) => $query->where('arah', $arah))
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
+        $totalMasuk = Infaq::where('arah', 'masuk')->where('status', 'lunas')->sum('nominal');
+        $totalKeluar = Infaq::where('arah', 'keluar')->where('status', 'lunas')->sum('nominal');
+
         $rekap = [
-            'total_lunas' => Infaq::where('status', 'lunas')->sum('nominal'),
-            'hari_ini' => Infaq::where('status', 'lunas')->whereDate('paid_at', today())->sum('nominal'),
-            'bulan_ini' => Infaq::where('status', 'lunas')
+            'total_lunas' => $totalMasuk,
+            'total_keluar' => $totalKeluar,
+            'saldo' => $totalMasuk - $totalKeluar,
+            'hari_ini' => Infaq::where('arah', 'masuk')->where('status', 'lunas')->whereDate('paid_at', today())->sum('nominal'),
+            'bulan_ini' => Infaq::where('arah', 'masuk')->where('status', 'lunas')
                 ->whereBetween('paid_at', [now()->startOfMonth(), now()->endOfMonth()])
                 ->sum('nominal'),
             'pending' => Infaq::where('status', 'pending')->count(),
@@ -48,6 +57,7 @@ class InfaqController extends Controller
             'rekap' => $rekap,
             'q' => $q,
             'status' => in_array($status, Infaq::STATUSES, true) ? $status : null,
+            'arah' => in_array($arah, Infaq::ARAH, true) ? $arah : null,
         ]);
     }
 
@@ -63,7 +73,13 @@ class InfaqController extends Controller
         $validated['kode_transaksi'] = $this->generateKode();
         $validated['nama_donatur'] = ($validated['nama_donatur'] ?? '') ?: 'Hamba Allah';
         $validated['status'] = $validated['status'] ?? 'pending';
+        $validated['arah'] = $validated['arah'] ?? 'masuk';
         $validated['paid_at'] = $this->resolvePaidAt($validated['status'], $validated['paid_at'] ?? null);
+
+        if ($request->hasFile('bukti')) {
+            $validated['bukti_path'] = $request->file('bukti')->store('infaq-bukti', 'public');
+        }
+        unset($validated['bukti']);
 
         Infaq::create($validated);
 
@@ -81,7 +97,18 @@ class InfaqController extends Controller
 
         $validated['nama_donatur'] = ($validated['nama_donatur'] ?? '') ?: 'Hamba Allah';
         $validated['status'] = $validated['status'] ?? 'pending';
+        $validated['arah'] = $validated['arah'] ?? $infaq->arah;
         $validated['paid_at'] = $this->resolvePaidAt($validated['status'], $validated['paid_at'] ?? null);
+
+        if ($request->hasFile('bukti')) {
+            if ($infaq->bukti_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($infaq->bukti_path);
+            }
+            $validated['bukti_path'] = $request->file('bukti')->store('infaq-bukti', 'public');
+        } else {
+            unset($validated['bukti_path']);
+        }
+        unset($validated['bukti']);
 
         $infaq->update($validated);
 
@@ -90,6 +117,10 @@ class InfaqController extends Controller
 
     public function destroy(Infaq $infaq)
     {
+        if ($infaq->bukti_path) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($infaq->bukti_path);
+        }
+
         $infaq->delete();
 
         return redirect()->route('admin.infaq.index')->with('success', 'Transaksi infaq dihapus');
@@ -127,6 +158,10 @@ class InfaqController extends Controller
             'nama_donatur' => 'nullable|string|max:100',
             'no_hp' => 'nullable|string|max:20',
             'status' => ['nullable', Rule::in(Infaq::STATUSES)],
+            'arah' => ['nullable', Rule::in(Infaq::ARAH)],
+            'kategori' => ['nullable', Rule::in(Infaq::KATEGORI_KELUAR)],
+            'penanggung_jawab' => 'nullable|string|max:100',
+            'bukti' => 'nullable|image|max:2048',
             'paid_at' => 'nullable|date',
             'catatan' => 'nullable|string',
         ], [

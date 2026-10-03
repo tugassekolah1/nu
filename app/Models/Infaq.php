@@ -19,6 +19,23 @@ class Infaq extends Model
      */
     public const STATUSES = ['pending', 'lunas', 'dibatalkan'];
 
+    /**
+     * Arah kas: masuk (donasi) atau keluar (penyaluran/belanja).
+     */
+    public const ARAH = ['masuk', 'keluar'];
+
+    /**
+     * Kategori penggunaan untuk kas keluar.
+     */
+    public const KATEGORI_KELUAR = [
+        'santunan_yatim',
+        'bantuan_dhuafa',
+        'operasional_majelis',
+        'dakwah_kaderisasi',
+        'sarana_prasarana',
+        'lainnya',
+    ];
+
     protected $fillable = [
         'kode_transaksi',
         'nama_donatur',
@@ -26,6 +43,10 @@ class Infaq extends Model
         'nominal',
         'metode_pembayaran',
         'status',
+        'arah',
+        'kategori',
+        'penanggung_jawab',
+        'bukti_path',
         'catatan',
         'paid_at'
     ];

@@ -35,8 +35,16 @@
 
                 <dl class="mt-7 flex flex-wrap gap-3">
                     <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-3 backdrop-blur-sm">
-                        <dt class="text-xs font-semibold uppercase tracking-wider text-white/60">Total Terkumpul</dt>
-                        <dd class="text-2xl font-extrabold">Rp {{ number_format($totalInfaq, 0, ',', '.') }}</dd>
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-white/60">Total Masuk</dt>
+                        <dd class="text-2xl font-extrabold">Rp {{ number_format($totalMasuk ?? $totalInfaq, 0, ',', '.') }}</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-3 backdrop-blur-sm">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-white/60">Total Disalurkan</dt>
+                        <dd class="text-2xl font-extrabold">Rp {{ number_format($totalKeluar ?? 0, 0, ',', '.') }}</dd>
+                    </div>
+                    <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-3 backdrop-blur-sm">
+                        <dt class="text-xs font-semibold uppercase tracking-wider text-white/60">Saldo Kas</dt>
+                        <dd class="text-2xl font-extrabold">Rp {{ number_format($saldo ?? $totalInfaq, 0, ',', '.') }}</dd>
                     </div>
                     <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-3 backdrop-blur-sm">
                         <dt class="text-xs font-semibold uppercase tracking-wider text-white/60">Donasi Tercatat</dt>
@@ -201,6 +209,69 @@
                     @endif
                 </div>
             </aside>
+        </section>
+
+        <!-- TRANSPARANSI KAS KELUAR -->
+        <section class="mx-auto max-w-6xl px-5 pb-12">
+            <div class="rounded-[28px] border border-[#DCE4DE] bg-white p-6 sm:p-8 shadow-[0_8px_24px_rgba(23,24,22,0.05)]">
+                <div class="flex flex-wrap items-end justify-between gap-3 border-b border-[#DCE4DE] pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-[#17392D] sm:text-2xl">Penyaluran & Kas Keluar</h2>
+                        <p class="mt-1 text-sm leading-relaxed text-[#526158]">
+                            Untuk apa saja dana infak dipakai. Diperbarui oleh pengurus setiap ada penyaluran.
+                        </p>
+                    </div>
+                    <span class="shrink-0 rounded-full border border-[#DCE4DE] bg-[#F5F7F4] px-3 py-1 text-xs font-bold text-[#1F5A3F]">
+                        Total disalurkan: Rp {{ number_format($totalKeluar ?? 0, 0, ',', '.') }}
+                    </span>
+                </div>
+
+                @if (($kasKeluar ?? collect())->isNotEmpty())
+                    <ul class="divide-y divide-[#DCE4DE]">
+                        @foreach ($kasKeluar as $keluar)
+                            <li class="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="flex min-w-0 items-start gap-3">
+                                    @if ($keluar->bukti_path)
+                                        <a href="{{ asset('storage/' . $keluar->bukti_path) }}" target="_blank" rel="noopener" class="shrink-0">
+                                            <img src="{{ asset('storage/' . $keluar->bukti_path) }}" alt="Bukti {{ $keluar->catatan }}" class="h-14 w-14 rounded-xl border border-[#DCE4DE] object-cover" />
+                                        </a>
+                                    @else
+                                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-[#DCE4DE] bg-[#F5F7F4] text-lg font-bold text-[#C99A2E]">Rp</span>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-bold text-[#17392D]">
+                                            {{ $keluar->catatan ?: ucwords(str_replace('_', ' ', $keluar->kategori ?? 'Penyaluran')) }}
+                                        </p>
+                                        <p class="mt-0.5 text-xs text-[#7B8780]">
+                                            {{ $keluar->paid_at?->isoFormat('D MMMM Y') ?? $keluar->created_at->isoFormat('D MMMM Y') }}
+                                            @if ($keluar->kategori)
+                                                · {{ ucwords(str_replace('_', ' ', $keluar->kategori)) }}
+                                            @endif
+                                            @if ($keluar->penanggung_jawab)
+                                                · PJ: {{ $keluar->penanggung_jawab }}
+                                            @endif
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex shrink-0 items-center gap-3 pl-[68px] sm:pl-0">
+                                    <span class="text-sm font-bold text-[#B42318]">
+                                        − Rp {{ number_format($keluar->nominal, 0, ',', '.') }}
+                                    </span>
+                                    @if ($keluar->bukti_path)
+                                        <a href="{{ asset('storage/' . $keluar->bukti_path) }}" target="_blank" rel="noopener" class="rounded-full border border-[#DCE4DE] px-3 py-1.5 text-xs font-bold text-[#1F5A3F] hover:bg-[#E8F2EA]">
+                                            Bukti
+                                        </a>
+                                    @endif
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="py-8 text-center text-sm text-[#7B8780]">
+                        Belum ada penyaluran yang dicatat. Data penyaluran akan tampil di sini agar transparan.
+                    </p>
+                @endif
+            </div>
         </section>
     </main>
 

@@ -11,11 +11,15 @@ class InfaqController extends Controller
     // Halaman Form Infak
     public function index()
     {
-        $totalInfaq = Infaq::where('status', 'lunas')->sum('nominal');
-        $totalDonatur = Infaq::where('status', 'lunas')->count();
-        $infaqTerbaru = Infaq::where('status', 'lunas')->latest()->take(5)->get();
+        $totalMasuk = Infaq::where('arah', 'masuk')->where('status', 'lunas')->sum('nominal');
+        $totalKeluar = Infaq::where('arah', 'keluar')->where('status', 'lunas')->sum('nominal');
+        $totalInfaq = $totalMasuk;
+        $totalDonatur = Infaq::where('arah', 'masuk')->where('status', 'lunas')->count();
+        $infaqTerbaru = Infaq::where('arah', 'masuk')->where('status', 'lunas')->latest()->take(5)->get();
+        $kasKeluar = Infaq::where('arah', 'keluar')->where('status', 'lunas')->latest('paid_at')->take(10)->get();
+        $saldo = $totalMasuk - $totalKeluar;
 
-        return view('infaq.index', compact('totalInfaq', 'totalDonatur', 'infaqTerbaru'));
+        return view('infaq.index', compact('totalInfaq', 'totalMasuk', 'totalKeluar', 'saldo', 'totalDonatur', 'infaqTerbaru', 'kasKeluar'));
     }
 
     // Proses Simpan Infak (Pending)
@@ -35,6 +39,7 @@ class InfaqController extends Controller
             'nominal' => $request->nominal,
             'metode_pembayaran' => $request->metode_pembayaran,
             'catatan' => $request->catatan,
+            'arah' => 'masuk',
             'status' => 'pending',
         ]);
 

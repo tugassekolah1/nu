@@ -15,7 +15,7 @@
                     <span class="text-xs text-slate-400">(tidak dapat diubah)</span>
                 </div>
 
-                <form action="{{ route('admin.infaq.update', $infaq) }}" method="POST">
+                <form action="{{ route('admin.infaq.update', $infaq) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     @include('admin.infaq.p.form')
