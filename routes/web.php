@@ -3,17 +3,12 @@
 use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InfaqController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Agenda;
-use App\Models\Berita;
-use App\Models\Gallery;
-use App\Models\Infaq;
-use App\Models\NuMember;
-use App\Models\Pengurus;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -53,33 +48,14 @@ Route::get('/berita', [BeritaController::class, 'index_publik'])->name('berita.p
 | Authenticated Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function () {
-    return view('dashboard', [
-        'totalMembers' => NuMember::count(),
-        'totalPengurus' => Pengurus::count(),
-        'totalNews' => Berita::count(),
-        'totalGaleri' => Gallery::count(),
-        'totalAgenda' => Agenda::count(),
-        'totalInfaq' => Infaq::where('status', 'lunas')->sum('nominal'),
-        'infaqTerbaru' => Infaq::latest()->take(5)->get(),
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::redirect('/admin/dashboard', '/dashboard')->name('admin.dashboard');
+});
 
-Route::get('/admin/dashboard', function () {
-    return view('dashboard', [
-        'totalMembers' => NuMember::count(),
-        'totalPengurus' => Pengurus::count(),
-        'totalNews' => Berita::count(),
-        'totalGaleri' => Gallery::count(),
-        'totalAgenda' => Agenda::count(),
-        'totalInfaq' => Infaq::where('status', 'lunas')->sum('nominal'),
-        'infaqTerbaru' => Infaq::latest()->take(5)->get(),
-    ]);
-})->middleware(['auth', 'verified'])->name('admin.dashboard');
-
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     // Infaq Management (admin only) — /admin/infaq agar tidak bentrok dengan /infaq publik
-    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('infaq', AdminInfaqController::class)
             ->parameters(['infaq' => 'infaq'])
             ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
@@ -116,7 +92,9 @@ Route::middleware(['auth'])->group(function () {
             ->parameters(['agenda' => 'agenda'])
             ->except(['show']);
     });
+});
 
+Route::middleware(['auth'])->group(function () {
     // Profile Management
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

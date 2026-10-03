@@ -3,7 +3,7 @@
 use App\Models\User;
 
 test('debug flash lifecycle', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->from(route('pengurus.create'))
         ->post(route('pengurus.store'), [
             'nama' => 'Budi Santoso',

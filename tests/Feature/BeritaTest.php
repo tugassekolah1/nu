@@ -4,7 +4,7 @@ use App\Models\Berita;
 use App\Models\User;
 
 test('admin can create berita with jenis and slug', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $this->actingAs($user)
         ->post('/admin/berita', [
@@ -25,7 +25,7 @@ test('admin can create berita with jenis and slug', function () {
 });
 
 test('slug is generated from judul when slug is left empty', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post('/admin/berita', [
             'judul' => 'Syuriah Gelar Mubes',
             'slug' => '',
@@ -39,7 +39,7 @@ test('slug is generated from judul when slug is left empty', function () {
 });
 
 test('invalid jenis is rejected', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post('/admin/berita', [
             'judul' => 'Berita Validasi Jenis',
             'slug' => 'berita-validasi-jenis',
@@ -50,7 +50,7 @@ test('invalid jenis is rejected', function () {
 });
 
 test('jenis is required', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post('/admin/berita', [
             'judul' => 'Berita Tanpa Jenis',
             'slug' => 'berita-tanpa-jenis',
@@ -60,7 +60,7 @@ test('jenis is required', function () {
 });
 
 test('duplicate slug is rejected', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     Berita::create([
         'judul' => 'Berita Pertama',
@@ -82,7 +82,7 @@ test('duplicate slug is rejected', function () {
 });
 
 test('admin can update jenis and slug of a berita', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $berita = Berita::create([
         'judul' => 'Berita Lama',
@@ -109,7 +109,7 @@ test('admin can update jenis and slug of a berita', function () {
 });
 
 test('slug can be left empty on update and is regenerated from judul', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $berita = Berita::create([
         'judul' => 'Judul Baru Sekali',
@@ -134,7 +134,7 @@ test('slug can be left empty on update and is regenerated from judul', function 
 });
 
 test('berita form shows jenis options and slug field', function () {
-    $content = $this->actingAs(User::factory()->create())
+    $content = $this->actingAs(User::factory()->admin()->create())
         ->get('/admin/berita/create')
         ->assertOk()
         ->assertSee('name="slug"', false)
@@ -147,7 +147,7 @@ test('berita form shows jenis options and slug field', function () {
 });
 
 test('admin berita list shows jenis and slug', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     Berita::create([
         'judul' => 'Berita Ditampilkan',
@@ -166,7 +166,7 @@ test('admin berita list shows jenis and slug', function () {
 });
 
 test('public berita detail page shows jenis', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     $berita = Berita::create([
         'judul' => 'Berita Publik',
@@ -184,7 +184,7 @@ test('public berita detail page shows jenis', function () {
 
 function seedBeritasForSearch(): User
 {
-    $user = User::factory()->create();
+    $user = User::factory()->admin()->create();
 
     Berita::create([
         'judul' => 'Rapat Koordinasi',

@@ -4,7 +4,7 @@ use App\Models\Pengurus;
 use App\Models\User;
 
 test('create form shows the organization dropdown without raw code inputs', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->get(route('pengurus.create'))
         ->assertOk()
         ->assertSee('name="banom"', false)
@@ -13,7 +13,7 @@ test('create form shows the organization dropdown without raw code inputs', func
 });
 
 test('store derives the display label from the dropdown value', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [
             'nama' => 'Ahmad Syarif',
             'jabatan' => 'Ketua',
@@ -29,7 +29,7 @@ test('store derives the display label from the dropdown value', function () {
 });
 
 test('urutan is auto assigned sequentially when the field is left blank', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [
             'nama' => 'Ahmad Syarif',
             'jabatan' => 'Ketua',
@@ -48,7 +48,7 @@ test('urutan is auto assigned sequentially when the field is left blank', functi
 });
 
 test('store keeps a manually entered urutan', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [
             'nama' => 'Ahmad Syarif',
             'jabatan' => 'Ketua',
@@ -69,7 +69,7 @@ test('store rejects a duplicate jabatan in the same organization', function () {
         'urutan' => 1,
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [
             'nama' => 'Peserta Baru',
             'jabatan' => '  ketua  ',
@@ -90,7 +90,7 @@ test('the same jabatan is allowed in a different organization', function () {
         'urutan' => 1,
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [
             'nama' => 'Firda',
             'jabatan' => 'Ketua',
@@ -102,7 +102,7 @@ test('the same jabatan is allowed in a different organization', function () {
 });
 
 test('store rejects an organization code that is not in the dropdown', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [
             'nama' => 'Ahmad Syarif',
             'jabatan' => 'Ketua',
@@ -120,7 +120,7 @@ test('edit form shows the dropdown with the current organization selected', func
         'urutan' => 1,
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->get(route('pengurus.edit', $pengurus))
         ->assertOk()
         ->assertSee('name="banom"', false)
@@ -144,7 +144,7 @@ test('update blocks taking another member jabatan in the same organization', fun
         'urutan' => 2,
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->put(route('pengurus.update', $sekre), [
             'nama' => 'Qomar',
             'jabatan' => 'Ketua',
@@ -174,7 +174,7 @@ test('update refreshes the display label when the organization changes', functio
         'urutan' => 1,
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->put(route('pengurus.update', $pengurus), [
             'nama' => 'Firda',
             'jabatan' => 'Ketua',
@@ -187,7 +187,7 @@ test('update refreshes the display label when the organization changes', functio
 });
 
 test('a failed submission shows errors and keeps the old input', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->from(route('pengurus.create'))
         ->post(route('pengurus.store'), [
             'nama' => 'Budi Santoso',

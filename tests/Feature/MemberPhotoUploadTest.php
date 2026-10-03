@@ -18,7 +18,7 @@ function fakeMemberPhoto(): UploadedFile
 }
 
 test('admin member create form has a photo upload field', function () {
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->get('/members/create')
         ->assertOk()
         ->assertSee('name="photo"', false)
@@ -28,19 +28,19 @@ test('admin member create form has a photo upload field', function () {
 
 test('admin member edit form shows the current photo and an upload field', function () {
     $member = NuMember::create([
-        'nik'            => '3300000000000101',
-        'full_name'      => 'Siti Rahayu',
-        'phone'          => '081234567890',
-        'gender'         => 'P',
-        'address'        => 'Banjaranyar',
-        'status'         => 'active',
+        'nik' => '3300000000000101',
+        'full_name' => 'Siti Rahayu',
+        'phone' => '081234567890',
+        'gender' => 'P',
+        'address' => 'Banjaranyar',
+        'status' => 'active',
         'payment_status' => 'paid',
         'member_card_no' => 'NU-2026-101',
-        'photo'          => 'members-photo/siti.png',
+        'photo' => 'members-photo/siti.png',
     ]);
 
-    $this->actingAs(User::factory()->create())
-        ->get('/members/' . $member->id . '/edit')
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/members/'.$member->id.'/edit')
         ->assertOk()
         ->assertSee('name="photo"', false)
         ->assertSee('storage/members-photo/siti.png', false)
@@ -50,15 +50,15 @@ test('admin member edit form shows the current photo and an upload field', funct
 test('admin can create a member with an uploaded photo', function () {
     Storage::fake('public');
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->post('/members', [
-            'nik'            => '3300000000000102',
-            'full_name'      => 'Ahmad Hidayat',
-            'phone'          => '081234567891',
-            'gender'         => 'L',
-            'address'        => 'Banjaranyar',
+            'nik' => '3300000000000102',
+            'full_name' => 'Ahmad Hidayat',
+            'phone' => '081234567891',
+            'gender' => 'L',
+            'address' => 'Banjaranyar',
             'payment_option' => 'cash',
-            'photo'          => fakeMemberPhoto(),
+            'photo' => fakeMemberPhoto(),
         ])
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('members.index'));
@@ -74,24 +74,24 @@ test('admin member edit can replace the photo', function () {
     Storage::fake('public');
 
     $member = NuMember::create([
-        'nik'            => '3300000000000103',
-        'full_name'      => 'Budi Wijaya',
-        'phone'          => '081234567892',
-        'gender'         => 'L',
-        'address'        => 'Banjaranyar',
-        'status'         => 'active',
+        'nik' => '3300000000000103',
+        'full_name' => 'Budi Wijaya',
+        'phone' => '081234567892',
+        'gender' => 'L',
+        'address' => 'Banjaranyar',
+        'status' => 'active',
         'payment_status' => 'paid',
         'member_card_no' => 'NU-2026-103',
     ]);
 
-    $this->actingAs(User::factory()->create())
-        ->put('/members/' . $member->id, [
-            'nik'       => $member->nik,
+    $this->actingAs(User::factory()->admin()->create())
+        ->put('/members/'.$member->id, [
+            'nik' => $member->nik,
             'full_name' => $member->full_name,
-            'phone'     => $member->phone,
-            'gender'    => $member->gender,
-            'address'   => $member->address,
-            'photo'     => fakeMemberPhoto(),
+            'phone' => $member->phone,
+            'gender' => $member->gender,
+            'address' => $member->address,
+            'photo' => fakeMemberPhoto(),
         ])
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('members.index'));
@@ -115,12 +115,12 @@ test('public registration stores the uploaded photo', function () {
     Storage::fake('public');
 
     $this->post('/daftar', [
-        'nik'       => '3300000000000104',
+        'nik' => '3300000000000104',
         'full_name' => 'Nur Hasanah',
-        'phone'     => '081234567893',
-        'gender'    => 'P',
-        'address'   => 'Banjaranyar',
-        'photo'     => fakeMemberPhoto(),
+        'phone' => '081234567893',
+        'gender' => 'P',
+        'address' => 'Banjaranyar',
+        'photo' => fakeMemberPhoto(),
     ])->assertSessionHasNoErrors();
 
     $member = NuMember::where('nik', '3300000000000104')->sole();
@@ -135,12 +135,12 @@ test('public registration rejects a file that is not a photo', function () {
 
     $this->from('/daftar')
         ->post('/daftar', [
-            'nik'       => '3300000000000105',
+            'nik' => '3300000000000105',
             'full_name' => 'Uji Coba',
-            'phone'     => '081234567894',
-            'gender'    => 'L',
-            'address'   => 'Banjaranyar',
-            'photo'     => UploadedFile::fake()->create('dokumen.txt', 10, 'text/plain'),
+            'phone' => '081234567894',
+            'gender' => 'L',
+            'address' => 'Banjaranyar',
+            'photo' => UploadedFile::fake()->create('dokumen.txt', 10, 'text/plain'),
         ])
         ->assertSessionHasErrors('photo');
 
@@ -149,19 +149,19 @@ test('public registration rejects a file that is not a photo', function () {
 
 test('print card page renders the member photo', function () {
     $member = NuMember::create([
-        'nik'            => '3300000000000106',
-        'full_name'      => 'Fulan Fulanah',
-        'phone'          => '081234567895',
-        'gender'         => 'L',
-        'address'        => 'Banjaranyar',
-        'status'         => 'active',
+        'nik' => '3300000000000106',
+        'full_name' => 'Fulan Fulanah',
+        'phone' => '081234567895',
+        'gender' => 'L',
+        'address' => 'Banjaranyar',
+        'status' => 'active',
         'payment_status' => 'paid',
         'member_card_no' => 'NU-2026-106',
-        'photo'          => 'members-photo/fulan.png',
+        'photo' => 'members-photo/fulan.png',
     ]);
 
-    $this->actingAs(User::factory()->create())
-        ->get('/members/' . $member->id . '/print-card')
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/members/'.$member->id.'/print-card')
         ->assertOk()
         ->assertSee('storage/members-photo/fulan.png', false)
         ->assertSee('KARTU TANDA ANGGOTA', false);
@@ -169,18 +169,18 @@ test('print card page renders the member photo', function () {
 
 test('admin member list shows the photo and a print card action', function () {
     $member = NuMember::create([
-        'nik'            => '3300000000000108',
-        'full_name'      => 'Hasan Basri',
-        'phone'          => '081234567897',
-        'gender'         => 'L',
-        'address'        => 'Banjaranyar',
-        'status'         => 'active',
+        'nik' => '3300000000000108',
+        'full_name' => 'Hasan Basri',
+        'phone' => '081234567897',
+        'gender' => 'L',
+        'address' => 'Banjaranyar',
+        'status' => 'active',
         'payment_status' => 'paid',
         'member_card_no' => 'NU-2026-108',
-        'photo'          => 'members-photo/hasan.png',
+        'photo' => 'members-photo/hasan.png',
     ]);
 
-    $this->actingAs(User::factory()->create())
+    $this->actingAs(User::factory()->admin()->create())
         ->get('/members')
         ->assertOk()
         ->assertSee('storage/members-photo/hasan.png', false)
@@ -189,16 +189,16 @@ test('admin member list shows the photo and a print card action', function () {
 
 test('guest cannot print a member card', function () {
     $member = NuMember::create([
-        'nik'            => '3300000000000107',
-        'full_name'      => 'Tamu',
-        'phone'          => '081234567896',
-        'gender'         => 'L',
-        'address'        => 'Banjaranyar',
-        'status'         => 'active',
+        'nik' => '3300000000000107',
+        'full_name' => 'Tamu',
+        'phone' => '081234567896',
+        'gender' => 'L',
+        'address' => 'Banjaranyar',
+        'status' => 'active',
         'payment_status' => 'paid',
         'member_card_no' => 'NU-2026-107',
     ]);
 
-    $this->get('/members/' . $member->id . '/print-card')
+    $this->get('/members/'.$member->id.'/print-card')
         ->assertRedirect('/login');
 });

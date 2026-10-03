@@ -38,6 +38,9 @@
                 <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('members.status-check') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.status-check') }}">
                     Cek Status
                 </a>
+                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('members.cek-kartu') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.search') }}">
+                    Cetak kartu
+                </a>
             </nav>
 
             <!-- Action CTAs & Mobile Toggle -->
