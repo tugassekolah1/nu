@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\AspirasiController as AdminAspirasiController;
 use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
 use App\Http\Controllers\AgendaController;
+use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
@@ -24,10 +26,13 @@ Route::post('/daftar', [MemberController::class, 'register'])->name('members.reg
 Route::get('/daftar/{member}/bayar', [MemberController::class, 'paymentPage'])->name('members.payment-page');
 Route::post('/daftar/{member}/bukti', [MemberController::class, 'uploadProof'])->name('members.upload-proof');
 
-// Pencarian & Cetak Kartu Anggota (Publik)
+// Kartu Anggota — halaman utama gabungan: cek status pengajuan + preview/cetak/download kartu
+Route::get('/kartu-anggota', [MemberController::class, 'memberCard'])->name('members.card');
+
+// Pencarian & Cetak Kartu Anggota (Publik) — RUTE LAMA, diarahkan ke /kartu-anggota
 Route::get('/cek-kartu', [MemberController::class, 'searchCard'])->name('members.search');
 
-// Cek Status Pendaftaran Anggota (Publik)
+// Cek Status Pendaftaran Anggota (Publik) — RUTE LAMA, diarahkan ke /kartu-anggota
 Route::get('/cek-status', [MemberController::class, 'statusCheck'])->name('members.status-check');
 
 // Public Pages (Non-conflicting)
@@ -43,6 +48,12 @@ Route::post('/infaq/simulate/{kode}', [InfaqController::class, 'simulatePayment'
 Route::get('/infaq/success/{kode}', [InfaqController::class, 'success'])->name('infaq.success');
 
 Route::get('/berita', [BeritaController::class, 'index_publik'])->name('berita.public');
+
+// Kotak Aspirasi (publik)
+Route::get('/aspirasi', [AspirasiController::class, 'index'])->name('aspirasi.index');
+Route::post('/aspirasi', [AspirasiController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('aspirasi.store');
 /*
 |--------------------------------------------------------------------------
 | Authenticated Routes
@@ -56,11 +67,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     // Infaq Management (admin only) — /admin/infaq agar tidak bentrok dengan /infaq publik
     Route::prefix('admin')->name('admin.')->group(function () {
+        // Permintaan Pendaftaran Anggota (terima/tolak)
+        Route::get('/members/requests', [MemberController::class, 'registrationRequests'])
+            ->name('members.requests');
+        Route::patch('/members/requests/{member}/accept', [MemberController::class, 'acceptRegistration'])
+            ->name('members.requests.accept');
+        Route::patch('/members/requests/{member}/reject', [MemberController::class, 'rejectRegistration'])
+            ->name('members.requests.reject');
+
         Route::resource('infaq', AdminInfaqController::class)
             ->parameters(['infaq' => 'infaq'])
             ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
         Route::post('/infaq/{infaq}/lunas', [AdminInfaqController::class, 'markLunas'])
             ->name('infaq.mark-lunas');
+
+        // Kotak Aspirasi (admin only)
+        Route::resource('aspirasi', AdminAspirasiController::class)
+            ->parameters(['aspirasi' => 'aspirasi'])
+            ->only(['index', 'edit', 'update', 'destroy']);
     });
 
     // News & Gallery Management (Resource akan mendaftarkan /berita/create terlebih dahulu)

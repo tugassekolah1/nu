@@ -410,18 +410,18 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
                     </div>
                 </a>
-                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="/cek-kartu">
+                <a class="p-6 sm:p-7 rounded-container-r bg-warm-bg border border-border-neutral flex flex-col justify-between hover:bg-warm-card hover:shadow-subtle transition-all group" href="/kartu-anggota">
                     <div>
                         <div class="w-14 h-14 rounded-card bg-warm-beige flex items-center justify-center text-charcoal mb-6 border border-border-subtle">
-                            <span class="material-symbols-outlined text-[30px]">savings</span>
+                            <span class="material-symbols-outlined text-[30px]">credit_card</span>
                         </div>
-                        <h3 class="text-xl font-bold text-charcoal mb-2 group-hover:text-nu-deep transition-colors">cetak kartu</h3>
+                        <h3 class="text-xl font-bold text-charcoal mb-2 group-hover:text-nu-deep transition-colors">kartu anggota</h3>
                         <p class="text-sm text-muted-charcoal leading-relaxed">
-                            Layanan cetak kartu anggota
+                            Lihat status pengajuan, cetak & unduh kartu anggota
                         </p>
                     </div>
                     <div class="mt-8 pt-4 border-t border-border-neutral flex items-center justify-between text-sm font-semibold text-nu-deep">
-                        <span>Cetak</span>
+                        <span>Buka</span>
                         <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1.5 transition-transform">arrow_forward</span>
                     </div>
                 </a>

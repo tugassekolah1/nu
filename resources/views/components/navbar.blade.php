@@ -1,46 +1,91 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-<!-- NAVBAR PUBLIK (Neutral Frosted Editorial Glass) -->
-<header
-    x-data="{ mobileMenuOpen: false }"
-    id="main-navbar"
-    class="fixed top-0 inset-x-0 z-50 header-floating font-sans">
+<!-- NAVBAR PUBLIK -->
+<header x-data="{ mobileMenuOpen: false, currentTab: 'main' }" id="main-navbar" class="fixed top-0 inset-x-0 z-50 header-floating font-sans">
     <div class="navbar-wrapper max-w-7xl mx-auto px-4 sm:px-8 pt-4 pb-2">
         <div class="neutral-frosted rounded-2xl md:rounded-full px-5 py-3 shadow-[0_2px_10px_rgba(23,24,22,0.04),0_1px_3px_rgba(23,24,22,0.03)] flex items-center justify-between relative navbar-inner">
 
             <!-- Brand & Official Badge -->
-            <a class="flex items-center gap-3 group" href="{{ route('landing') }}">
+            <a class="flex items-center gap-3 group shrink-0" href="{{ route('landing') }}">
                 <img alt="Logo NU Banjaranyar" class="w-10 h-10 object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300 rounded" src="{{ asset('images/logo.webp') }}"/>
                 <div class="flex flex-col">
-                    <span class="font-bold text-base sm:text-lg tracking-tight text-[#171816] leading-tight">PWC NU</span>
-                    <span class="text-xs font-medium text-[#4F544E] tracking-wide">Kecamatan Cilongok, Banyumas</span>
+                    <span class="font-bold text-base sm:text-lg tracking-tight text-[#171816] leading-tight">MWC NU</span>
+                    <span class="text-xs font-medium text-[#4F544E] tracking-wide">Cilongok, Banyumas</span>
                 </div>
             </a>
 
-            <!-- Desktop Nav -->
+            <!-- DESKTOP NAV (Kategori Ringkas dengan Dropdown) -->
             <nav class="hidden lg:flex items-center gap-1 text-sm font-medium text-[#4F544E]">
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('landing') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('landing') }}">
+                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('landing') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('landing') }}">
                     Beranda
                 </a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('agenda.public') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('agenda.public') }}">Agenda</a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('berita.public') || request()->routeIs('berita.show') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('berita.public') }}">
-                    Warta Kabar
-                </a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('infaq.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('infaq.index') }}">
+
+                <!-- Dropdown Informasi -->
+                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
+                    <button class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('agenda.*') || request()->routeIs('berita.*') || request()->routeIs('galeri.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
+                        <span>Informasi</span>
+                        <span class="material-symbols-outlined text-sm transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-2"
+                         x-cloak
+                         class="absolute top-full left-0 mt-2 w-48 neutral-frosted rounded-2xl p-2 shadow-xl border border-[#E5E2D9] flex flex-col gap-1">
+                        <a href="{{ route('berita.public') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">newspaper</span>
+                            <span>Warta Kabar</span>
+                        </a>
+                        <a href="{{ route('agenda.public') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">event</span>
+                            <span>Agenda</span>
+                        </a>
+                        <a href="{{ route('galeri.index') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">photo_library</span>
+                            <span>Galeri</span>
+                        </a>
+                    </div>
+                </div>
+
+                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('infaq.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('infaq.index') }}">
                     Infaq
                 </a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('galeri.index') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('galeri.index') }}">
-                    Galeri
-                </a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('profil') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('profil') }}">
-                    Pengurus
-                </a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('members.status-check') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.status-check') }}">
-                    Cek Status
-                </a>
-                <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('members.cek-kartu') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/70' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.search') }}">
-                    Cetak kartu
-                </a>
+
+                <!-- Dropdown Keanggotaan -->
+                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
+                    <button class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('members.*') || request()->routeIs('aspirasi.*') || request()->routeIs('profil') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
+                        <span>Keanggotaan</span>
+                        <span class="material-symbols-outlined text-sm transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
+                    </button>
+
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 translate-y-2"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 translate-y-0"
+                         x-transition:leave-end="opacity-0 translate-y-2"
+                         x-cloak
+                         class="absolute top-full right-0 mt-2 w-52 neutral-frosted rounded-2xl p-2 shadow-xl border border-[#E5E2D9] flex flex-col gap-1">
+                        <a href="{{ route('members.card') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">id_card</span>
+                            <span>Kartu Anggota</span>
+                        </a>
+                        <a href="{{ route('profil') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">groups</span>
+                            <span>Pengurus</span>
+                        </a>
+                        <a href="{{ route('aspirasi.index') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">chat_bubble</span>
+                            <span>Kotak Aspirasi</span>
+                        </a>
+                    </div>
+                </div>
             </nav>
 
             <!-- Action CTAs & Mobile Toggle -->
@@ -55,31 +100,119 @@
                 </a>
 
                 <!-- Mobile Hamburger Button -->
-                <button @click="mobileMenuOpen = !mobileMenuOpen" id="mobile-menu-btn" class="lg:hidden p-2.5 min-w-[44px] min-h-[44px] rounded-xl bg-[#EDE8DD]/50 hover:bg-[#EDE8DD]/80 text-[#171816] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#16452F] transition-colors" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobile-menu">
-                    <span class="material-symbols-outlined block text-2xl" id="menu-icon">menu</span>
+                <button @click="mobileMenuOpen = !mobileMenuOpen; if(!mobileMenuOpen) currentTab = 'main'" 
+                        class="lg:hidden p-2.5 min-w-[44px] min-h-[44px] rounded-xl bg-[#EDE8DD]/50 hover:bg-[#EDE8DD]/80 text-[#171816] focus:outline-none transition-colors" 
+                        aria-label="Buka menu navigasi">
+                    <span class="material-symbols-outlined block text-2xl" x-text="mobileMenuOpen ? 'close' : 'menu'">menu</span>
                 </button>
             </div>
         </div>
 
-        <!-- Mobile Navigation Drawer -->
-        <div id="mobile-menu" class="hidden lg:hidden mt-2 neutral-frosted rounded-2xl p-5 shadow-[0_10px_30px_rgba(23,24,22,0.06),0_1px_3px_rgba(23,24,22,0.04)] border border-[#E5E2D9] flex-col gap-3 transition-all">
-            <nav class="flex flex-col gap-1 text-sm font-medium text-[#4F544E]">
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('landing') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('landing') }}">Beranda</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('agenda.public') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('agenda.public') }}">Agenda</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('berita.public') || request()->routeIs('berita.show') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('berita.public') }}">Warta Kabar</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('infaq.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('infaq.index') }}">Infaq</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('galeri.index') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('galeri.index') }}">Galeri</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('profil') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('profil') }}">Pengurus</a>
-                <a class="px-4 py-2.5 min-h-[44px] rounded-xl transition-colors {{ request()->routeIs('members.status-check') ? 'text-[#171816] font-semibold bg-[#EDE8DD]/80' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('members.status-check') }}">Cek Status Pendaftaran</a>
-            </nav>
+        <!-- MOBILE FULLSCREEN OVERLAY MENU (STYLE APPLE) -->
+        <div x-show="mobileMenuOpen" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 -translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-4"
+             x-cloak
+             class="fixed inset-0 top-[72px] z-40 bg-[#FDFCF7]/98 backdrop-blur-2xl px-6 py-6 flex flex-col justify-between overflow-y-auto lg:hidden">
+            
+            <!-- LAYER 1: MENU UTAMA -->
+            <div x-show="currentTab === 'main'"
+                 x-transition:enter="transition ease-out duration-250"
+                 x-transition:enter-start="opacity-0 -translate-x-6"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 class="flex flex-col gap-1.5 text-lg font-semibold text-[#171816]">
+                
+                <a class="px-5 py-4 min-h-[52px] rounded-2xl flex items-center justify-between transition-all hover:bg-[#EDE8DD]/50" href="{{ route('landing') }}">
+                    <span>Beranda</span>
+                </a>
 
-            <div class="pt-3 border-t border-[#D5D2C8] flex flex-col gap-2">
-                <a class="flex items-center justify-center gap-2 px-5 py-3 min-h-[44px] rounded-[14px] bg-[#16452F] text-white font-medium text-sm hover:bg-[#113725] transition-all" href="{{ route('members.register-form') }}">
-                    <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+                <!-- Trigger Submenu 1: Informasi -->
+                <button @click="currentTab = 'informasi'" class="w-full px-5 py-4 min-h-[52px] rounded-2xl flex items-center justify-between text-left transition-all hover:bg-[#EDE8DD]/50">
+                    <span>Informasi & Berita</span>
+                    <span class="material-symbols-outlined text-[#4F544E]">chevron_right</span>
+                </button>
+
+                <a class="px-5 py-4 min-h-[52px] rounded-2xl flex items-center justify-between transition-all hover:bg-[#EDE8DD]/50" href="{{ route('infaq.index') }}">
+                    <span>Infaq</span>
+                </a>
+
+                <!-- Trigger Submenu 2: Keanggotaan -->
+                <button @click="currentTab = 'keanggotaan'" class="w-full px-5 py-4 min-h-[52px] rounded-2xl flex items-center justify-between text-left transition-all hover:bg-[#EDE8DD]/50">
+                    <span>Keanggotaan & Layanan</span>
+                    <span class="material-symbols-outlined text-[#4F544E]">chevron_right</span>
+                </button>
+            </div>
+
+            <!-- LAYER 2: SUBMENU INFORMASI -->
+            <div x-show="currentTab === 'informasi'"
+                 x-transition:enter="transition ease-out duration-250"
+                 x-transition:enter-start="opacity-0 translate-x-6"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 class="flex flex-col gap-2">
+                
+                <!-- Tombol Kembali Ala Apple -->
+                <button @click="currentTab = 'main'" class="flex items-center gap-1.5 px-3 py-2 text-[#4F544E] text-base font-semibold mb-2 hover:text-[#171816]">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                    <span>Kembali</span>
+                </button>
+
+                <div class="px-4 pb-2 text-xs font-bold uppercase tracking-wider text-[#8A8F88]">Informasi & Berita</div>
+
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('berita.public') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">newspaper</span>
+                    <span>Warta Kabar</span>
+                </a>
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('agenda.public') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">event</span>
+                    <span>Agenda Kegiatan</span>
+                </a>
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('galeri.index') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">photo_library</span>
+                    <span>Galeri Dokumentasi</span>
+                </a>
+            </div>
+
+            <!-- LAYER 2: SUBMENU KEANGGOTAAN -->
+            <div x-show="currentTab === 'keanggotaan'"
+                 x-transition:enter="transition ease-out duration-250"
+                 x-transition:enter-start="opacity-0 translate-x-6"
+                 x-transition:enter-end="opacity-100 translate-x-0"
+                 class="flex flex-col gap-2">
+                
+                <!-- Tombol Kembali Ala Apple -->
+                <button @click="currentTab = 'main'" class="flex items-center gap-1.5 px-3 py-2 text-[#4F544E] text-base font-semibold mb-2 hover:text-[#171816]">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                    <span>Kembali</span>
+                </button>
+
+                <div class="px-4 pb-2 text-xs font-bold uppercase tracking-wider text-[#8A8F88]">Keanggotaan & Layanan</div>
+
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('members.card') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">id_card</span>
+                    <span>Cetak Kartu Anggota</span>
+                </a>
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('profil') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">groups</span>
+                    <span>Struktur Pengurus</span>
+                </a>
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('aspirasi.index') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">chat_bubble</span>
+                    <span>Kotak Aspirasi</span>
+                </a>
+            </div>
+
+            <!-- Bottom Action CTAs -->
+            <div class="pt-6 mt-6 border-t border-[#E5E2D9] flex flex-col gap-3">
+                <a class="flex items-center justify-center gap-2 px-5 py-4 min-h-[52px] rounded-2xl bg-[#16452F] text-white font-semibold text-base shadow-sm active:scale-95 transition-all" href="{{ route('members.register-form') }}">
+                    <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
                     <span>Daftar Anggota</span>
                 </a>
-                <a class="flex items-center justify-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-[14px] bg-[#FDFCF7] hover:bg-[#EDE8DD]/60 text-[#171816] font-semibold text-sm border border-[#D5D2C8] transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
-                    <span class="material-symbols-outlined text-[#4F544E] text-[18px]">chat</span>
+                <a class="flex items-center justify-center gap-2 px-4 py-3.5 min-h-[52px] rounded-2xl bg-[#FDFCF7] text-[#171816] font-semibold text-base border border-[#D5D2C8] active:scale-95 transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+                    <span class="material-symbols-outlined text-[#16452F] text-[20px]">chat</span>
                     <span>Hubungi Kami (WhatsApp)</span>
                 </a>
             </div>
@@ -94,6 +227,8 @@
 </header>
 
 <style>
+    [x-cloak] { display: none !important; }
+
     .neutral-frosted {
         background: rgba(247, 245, 239, 0.88);
         backdrop-filter: blur(16px);
@@ -110,7 +245,7 @@
                     box-shadow 0.3s ease;
     }
 
-    /* STATE 1: FLOATING (default di atas & saat scroll ke ATAS) */
+    /* STATE 1: FLOATING */
     #main-navbar.header-floating .navbar-wrapper {
         max-width: 90rem;
         padding-left: 1rem;
@@ -119,7 +254,7 @@
         padding-bottom: 0.5rem;
     }
 
-    /* STATE 2: STICKY FULL WIDTH (saat scroll ke BAWAH) */
+    /* STATE 2: STICKY FULL WIDTH */
     #main-navbar.header-sticky-full .navbar-wrapper {
         max-width: 100%;
         padding-left: 0;
@@ -142,36 +277,10 @@
             padding-right: 2rem;
         }
     }
-
-    #main-navbar.header-sticky-full #mobile-menu {
-        border-radius: 0 !important;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        #main-navbar .navbar-wrapper,
-        #main-navbar .navbar-inner {
-            transition: none;
-        }
-    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuIcon = document.getElementById('menu-icon');
-
-        if (menuBtn && mobileMenu) {
-            menuBtn.addEventListener('click', function () {
-                const wasHidden = mobileMenu.classList.contains('hidden');
-                mobileMenu.classList.toggle('hidden', !wasHidden);
-                mobileMenu.classList.toggle('flex', wasHidden);
-                menuIcon.textContent = wasHidden ? 'close' : 'menu';
-                menuBtn.setAttribute('aria-expanded', String(wasHidden));
-            });
-        }
-
-        // Navbar scroll behavior
         const header = document.getElementById('main-navbar');
         if (!header) return;
 

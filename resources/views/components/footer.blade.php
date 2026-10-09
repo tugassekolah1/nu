@@ -31,7 +31,8 @@
                     <li><a class="hover:text-white transition-colors" href="{{ route('berita.public') }}">Semua Warta Kabar</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('profil') }}">Profil & Struktur Pengurus</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('members.register-form') }}">Pendaftaran KARTANU</a></li>
-                    <li><a class="hover:text-white transition-colors" href="{{ route('members.status-check') }}">Cek Status Pendaftaran</a></li>
+                    <li><a class="hover:text-white transition-colors" href="{{ route('aspirasi.index') }}">Kotak Aspirasi Warga</a></li>
+                    <li><a class="hover:text-white transition-colors" href="{{ route('members.card') }}">Kartu Anggota</a></li>
                 </ul>
             </div>
 

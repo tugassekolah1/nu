@@ -3,23 +3,35 @@
 use App\Models\NuMember;
 use App\Models\Payment;
 
-test('cek status page renders the public search form', function () {
-    $this->get('/cek-status')
+test('kartu anggota page renders the public search form', function () {
+    $this->get('/kartu-anggota')
         ->assertOk()
-        ->assertSee('Cek Status Pendaftaran')
+        ->assertSee('<title>Kartu Anggota', false)
         ->assertSee('name="nik"', false)
-        ->assertSee(route('members.status-check'), false);
+        ->assertSee(route('members.card'), false);
 });
 
-test('cek status page shows an empty state when the nik is unknown', function () {
-    $this->get('/cek-status?nik=3300000000000000')
+test('legacy cek-status and cek-kartu urls redirect to the kartu anggota page', function () {
+    $this->get('/cek-status?nik=3300000000000001')
+        ->assertRedirect(route('members.card', ['nik' => '3300000000000001']));
+
+    $this->get('/cek-kartu?nik=3300000000000001')
+        ->assertRedirect(route('members.card', ['nik' => '3300000000000001']));
+
+    $this->get('/cek-status')
+        ->assertRedirect(route('members.card'));
+});
+
+test('unknown nik shows the not submitted state with a registration cta', function () {
+    $this->get('/kartu-anggota?nik=3300000000000000')
         ->assertOk()
-        ->assertSee('Data Pendaftaran Tidak Ditemukan')
+        ->assertSee('Belum Ada Pengajuan')
         ->assertSee('3300000000000000')
-        ->assertSee(route('members.register-form'), false);
+        ->assertSee(route('members.register-form'), false)
+        ->assertDontSee('id="mcStage"', false);
 });
 
-test('cek status page reports an unpaid registration without proof', function () {
+test('a pending registration shows the waiting state without print buttons', function () {
     $member = NuMember::create([
         'nik'            => '3300000000000001',
         'full_name'      => 'Budi Santoso',
@@ -37,16 +49,20 @@ test('cek status page reports an unpaid registration without proof', function ()
         'payment_status'   => 'unpaid',
     ]);
 
-    $this->get('/cek-status?nik=3300000000000001')
+    $this->get('/kartu-anggota?nik=3300000000000001')
         ->assertOk()
         ->assertSee('Budi Santoso')
+        ->assertSee('Menunggu Persetujuan')
+        ->assertSee('Tanggal pengajuan')
         ->assertSee('Menunggu Pembayaran')
         ->assertSee('Belum Bayar')
         ->assertSee('TRX-CHECKSTATUS')
-        ->assertSee(route('members.payment-page', $member), false);
+        ->assertSee(route('members.payment-page', $member), false)
+        ->assertDontSee('id="mcStage"', false)
+        ->assertDontSee("printMemberCard(", false);
 });
 
-test('cek status page reports a proof waiting for admin verification', function () {
+test('a proof waiting for admin verification stays pending without print buttons', function () {
     $member = NuMember::create([
         'nik'            => '3300000000000002',
         'full_name'      => 'Siti Aminah',
@@ -65,13 +81,38 @@ test('cek status page reports a proof waiting for admin verification', function 
         'payment_status'   => 'unpaid',
     ]);
 
-    $this->get('/cek-status?nik=3300000000000002')
+    $this->get('/kartu-anggota?nik=3300000000000002')
         ->assertOk()
-        ->assertSee('Menunggu Verifikasi')
-        ->assertSee('Bukti Diterima');
+        ->assertSee('Menunggu Persetujuan')
+        ->assertSee('Bukti Diterima')
+        ->assertDontSee('id="mcStage"', false)
+        ->assertDontSee("printMemberCard(", false);
 });
 
-test('cek status page reports an active member and links to the card search', function () {
+test('a rejected application shows the reason and a reapply cta without print', function () {
+    $member = NuMember::create([
+        'nik'                => '3300000000000005',
+        'full_name'          => 'Zainul Arifin',
+        'phone'              => '081234567893',
+        'gender'             => 'L',
+        'address'            => 'Banjaranyar',
+        'status'             => 'pending_payment',
+        'payment_status'     => 'unpaid',
+        'registration_status'=> 'rejected',
+        'rejection_reason'   => 'Berkas identitas belum lengkap.',
+    ]);
+
+    $this->get('/kartu-anggota?nik=' . $member->nik)
+        ->assertOk()
+        ->assertSee('Pengajuan Ditolak')
+        ->assertSee('Berkas identitas belum lengkap.')
+        ->assertSee('Ajukan Kembali')
+        ->assertSee(route('members.register-form'), false)
+        ->assertDontSee('id="mcStage"', false)
+        ->assertDontSee("printMemberCard(", false);
+});
+
+test('an approved member sees the card right on the page with print and download', function () {
     $member = NuMember::create([
         'nik'            => '3300000000000003',
         'full_name'      => 'Ahmad Fauzi',
@@ -90,11 +131,15 @@ test('cek status page reports an active member and links to the card search', fu
         'payment_status'   => 'paid',
     ]);
 
-    $this->get('/cek-status?nik=3300000000000003')
+    $this->get('/kartu-anggota?nik=3300000000000003')
         ->assertOk()
-        ->assertSee('Anggota Aktif')
+        ->assertSee('Disetujui / Aktif')
+        ->assertSee('Pengajuan Disetujui — Kartu Siap Digunakan')
         ->assertSee('Lunas')
         ->assertSee('NU-2026-001')
-        ->assertSee('Lihat & Cetak Kartu', false)
-        ->assertSee(route('members.search', ['nik' => $member->nik]), false);
+        ->assertSee('id="mcStage"', false)
+        ->assertSee('Cetak Kartu')
+        ->assertSee("printMemberCard('front')", false)
+        ->assertSee("printMemberCard('back')", false)
+        ->assertSee("printMemberCard('both')", false);
 });

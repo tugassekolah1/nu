@@ -598,7 +598,7 @@
 
                 <p class="form-privacy">
                     Sudah pernah mendaftar?
-                    <a href="{{ route('members.status-check') }}" style="color: var(--brand-green); font-weight: 700; text-decoration: underline;">Cek status pendaftaran Anda di sini</a>.
+                    <a href="{{ route('members.card') }}" style="color: var(--brand-green); font-weight: 700; text-decoration: underline;">Lihat status pengajuan & kartu Anda di sini</a>.
                 </p>
             </form>
         </div>

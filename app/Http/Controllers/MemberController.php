@@ -123,43 +123,159 @@ class MemberController extends Controller
     }
 
     /**
-     * Cari kartu anggota berdasarkan NIK
+     * Daftar permintaan pendaftaran anggota (admin).
+     *
+     * Mendukung filter status (menunggu/diterima/ditolak) dan pencarian
+     * berdasarkan nama, NIK, atau nomor telepon.
      */
-public function searchCard(Request $request)
-{
-    $member = null;
-    $qrCode = null;
-
-    if ($request->has('nik') && $request->nik != '') {
-        $member = NuMember::where('nik', $request->nik)->first();
-
-        // Generate QR Code jika anggota ditemukan dan sudah lunas
-        if ($member && $member->payment_status === 'paid') {
-            $qrData = "NIK: " . $member->nik . " | CARD: " . $member->member_card_no;
-            $qrCode = QrCode::size(80)->generate($qrData);
+    public function registrationRequests(Request $request)
+    {
+        $statusFilter = $request->query('status', 'all');
+        if (! in_array($statusFilter, ['all', 'pending', 'accepted', 'rejected'], true)) {
+            $statusFilter = 'all';
         }
+
+        $search = trim((string) $request->query('q', ''));
+
+        $members = NuMember::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('full_name', 'like', "%{$search}%")
+                        ->orWhere('nik', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
+                });
+            })
+            ->when($statusFilter !== 'all', function ($query) use ($statusFilter) {
+                $query->where(function ($q) use ($statusFilter) {
+                    match ($statusFilter) {
+                        'pending' => $q->where('registration_status', 'pending')
+                            ->orWhere(fn ($qq) => $qq->whereNull('registration_status')->where('status', '!=', 'active')),
+                        'accepted' => $q->where('registration_status', 'accepted')
+                            ->orWhere(fn ($qq) => $qq->whereNull('registration_status')->where('status', 'active')),
+                        'rejected' => $q->where('registration_status', 'rejected'),
+                    };
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.members.requests', compact('members', 'statusFilter', 'search'));
     }
 
-    return view('members-search', compact('member', 'qrCode'));
-}
+    /**
+     * Terima permintaan pendaftaran -> anggota aktif (AJAX/JSON).
+     */
+    public function acceptRegistration(NuMember $member)
+    {
+        if ($member->registrationState() !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya permintaan berstatus Menunggu yang dapat diterima.',
+            ], 422);
+        }
+
+        $member->update([
+            'registration_status' => 'accepted',
+            'rejection_reason'    => null,
+            'status'              => 'active',
+        ]);
+
+        return $this->registrationResponse(
+            $member,
+            'Pendaftaran diterima. ' . $member->full_name . ' kini berstatus anggota aktif.'
+        );
+    }
 
     /**
-     * Cek status pendaftaran anggota berdasarkan NIK
+     * Tolak permintaan pendaftaran beserta alasan penolakan (AJAX/JSON).
      */
-    public function statusCheck(Request $request)
+    public function rejectRegistration(Request $request, NuMember $member)
+    {
+        if ($member->registrationState() !== 'pending') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya permintaan berstatus Menunggu yang dapat ditolak.',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $member->update([
+            'registration_status' => 'rejected',
+            'rejection_reason'    => $validated['reason'],
+        ]);
+
+        return $this->registrationResponse(
+            $member,
+            'Pendaftaran ' . $member->full_name . ' ditolak.'
+        );
+    }
+
+    /**
+     * Respons JSON standar aksi permintaan pendaftaran,
+     * berisi HTML sel status & aksi agar UI bisa diperbarui tanpa refresh.
+     */
+    private function registrationResponse(NuMember $member, string $message)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'html'    => [
+                'status'  => view('admin.members.requests.status-cell', ['member' => $member])->render(),
+                'actions' => view('admin.members.requests.actions-cell', ['member' => $member])->render(),
+            ],
+        ]);
+    }
+
+    /**
+     * Halaman "Kartu Anggota" (pusat status & cetak kartu dalam satu halaman).
+     *
+     * Menampilkan status pengajuan (belum ajukan / menunggu / ditolak /
+     * disetujui) dan, bila disetujui, langsung preview kartu 3D beserta
+     * tombol cetak & download — tanpa perlu membuka halaman terpisah.
+     */
+    public function memberCard(Request $request)
     {
         $member = null;
         $payment = null;
+        $qrCode = null;
 
         if ($request->filled('nik')) {
             $member = NuMember::where('nik', $request->nik)->first();
 
             if ($member) {
                 $payment = $member->payments()->latest()->first();
+
+                // QR hanya dibuat bila anggota sudah lunas (syarat cetak kartu)
+                if ($member->payment_status === 'paid') {
+                    $qrData = "NIK: " . $member->nik . " | CARD: " . $member->member_card_no;
+                    $qrCode = QrCode::size(80)->generate($qrData);
+                }
             }
         }
 
-        return view('members-status', compact('member', 'payment'));
+        return view('members-card', compact('member', 'payment', 'qrCode'));
+    }
+
+    /**
+     * RUTE LAMA /cek-kartu — diarahkan ke halaman Kartu Anggota
+     * agar tautan lama tetap kompatibel.
+     */
+    public function searchCard(Request $request)
+    {
+        return redirect()->route('members.card', $request->query());
+    }
+
+    /**
+     * RUTE LAMA /cek-status — diarahkan ke halaman Kartu Anggota
+     * agar tautan lama tetap kompatibel.
+     */
+    public function statusCheck(Request $request)
+    {
+        return redirect()->route('members.card', $request->query());
     }
 
     /**
