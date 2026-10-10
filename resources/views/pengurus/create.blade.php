@@ -31,13 +31,6 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-input-label for="jabatan" value="Jabatan" />
-                        <x-text-input id="jabatan" name="jabatan" type="text" class="mt-1 block w-full"
-                                      value="{{ old('jabatan') }}" placeholder="Contoh: Ketua / Sekretaris" required />
-                        <p class="text-xs text-gray-500 mt-1">Satu jabatan hanya boleh diisi satu orang dalam satu organisasi.</p>
-                    </div>
-
-                    <div class="mb-4">
                         <x-input-label for="banom" value="Pilih Organisasi / Banom" />
                         <select name="banom" id="banom" required
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
@@ -48,6 +41,8 @@
                         </select>
                         <p class="text-xs text-gray-500 mt-1">Label tampilan (contoh: PAC IPNU) ikut terisi otomatis sesuai pilihan.</p>
                     </div>
+
+                    <x-pengurus.field-jabatan :jabatan-map="$jabatanMap" :nilai="old('jabatan')" />
 
                     <div class="mb-4">
                         <x-input-label for="foto" value="Foto Pengurus (Opsional)" />

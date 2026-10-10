@@ -51,10 +51,7 @@
                             <span class="material-symbols-outlined text-[18px]">photo_library</span>
                             <span>Galeri</span>
                         </a>
-                        <a href="{{ route('organisasi') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">account_tree</span>
-                            <span>Organisasi NU</span>
-                        </a>
+                        
                         </div>
                     </div>
                 </div>
@@ -87,14 +84,11 @@
                             <span class="material-symbols-outlined text-[18px]">id_card</span>
                             <span>Kartu Anggota</span>
                         </a>
-                        <a href="{{ route('profil') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                        <a href="{{ route('organisasi') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">groups</span>
-                            <span>Pengurus</span>
+                            <span>Organisasi</span>
                         </a>
-                        <a href="{{ route('struktur') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
-                            <span class="material-symbols-outlined text-[18px]">account_tree</span>
-                            <span>Struktur Pengurus</span>
-                        </a>
+                       
                         <a href="{{ route('aspirasi.index') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">chat_bubble</span>
                             <span>Kotak Aspirasi</span>

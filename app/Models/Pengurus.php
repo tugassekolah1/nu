@@ -34,6 +34,68 @@ class Pengurus extends Model
         'mwclazisnu' => ['label' => 'UPZIS LAZISNU', 'name' => 'UPZIS LAZISNU Kecamatan'],
     ];
 
+    /**
+     * Pilihan jabatan inti yang tersedia untuk semua banom.
+     *
+     * @var array<int, string>
+     */
+    public const JABATAN_INTI = [
+        'Ketua',
+        'Wakil Ketua',
+        'Sekretaris',
+        'Bendahara',
+    ];
+
+    /**
+     * Pilihan jabatan bidang khas tiap banom.
+     * Banom yang tidak tercantum memakai JABATAN_BIDANG_UMUM.
+     *
+     * @var array<string, array<int, string>>
+     */
+    public const JABATAN_BIDANG = [
+        'mwcnu' => [
+            'Wakil Ketua Bidang Dakwah',
+            'Wakil Ketua Bidang Pendidikan',
+            'Wakil Ketua Bidang Sosial',
+            'Ketua Bidang Dakwah dan Ukhuwah',
+            'Ketua Bidang Pendidikan dan Kaderisasi',
+            'Ketua Bidang Sosial dan Kesejahteraan',
+            'Ketua Bidang Ekonomi dan Usaha',
+        ],
+        'pac_ansor' => [
+            'Ketua Bidang Perkaderanan',
+            'Ketua Bidang Kepemudaan',
+            'Ketua Bidang Sosial dan Kemanusiaan',
+            'Ketua Bidang Komunikasi dan Informasi',
+        ],
+        'mwclazisnu' => [
+            'Kepala Bidang Pengumpulan',
+            'Kepala Bidang Penyaluran',
+            'Kepala Bidang Pemberdayaan Umat',
+        ],
+    ];
+
+    /**
+     * Pilihan jabatan bidang generik untuk banom tanpa daftar khusus.
+     *
+     * @var array<int, string>
+     */
+    public const JABATAN_BIDANG_UMUM = [
+        'Ketua Bidang Dakwah',
+        'Ketua Bidang Pendidikan',
+        'Ketua Bidang Sosial',
+        'Ketua Bidang Ekonomi',
+    ];
+
+    /**
+     * Pilihan jabatan penutup daftar dropdown form admin.
+     *
+     * @var array<int, string>
+     */
+    public const JABATAN_ANGGOTA = [
+        'Anggota',
+    ];
+
     protected $fillable = [
         'nama',
         'jabatan',
@@ -120,5 +182,40 @@ class Pengurus extends Model
             str_contains($j, 'bendahara'), str_contains($j, 'bendaraha') => 3,
             default => 4,
         };
+    }
+
+    /**
+     * Daftar pilihan jabatan untuk satu banom: inti → bidang → anggota.
+     *
+     * @return array<int, string>
+     */
+    public static function daftarJabatan(?string $banom): array
+    {
+        $bidang = self::JABATAN_BIDANG[$banom] ?? self::JABATAN_BIDANG_UMUM;
+
+        return array_values(array_unique([
+            ...self::JABATAN_INTI,
+            ...$bidang,
+            ...self::JABATAN_ANGGOTA,
+        ]));
+    }
+
+    /**
+     * Peta kode banom => daftar jabatan untuk dropdown dinamis di form admin.
+     * Kunci "__default__" dipakai saat banom belum dipilih atau bukan kode resmi.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public static function jabatanPerBanom(): array
+    {
+        $peta = [];
+
+        foreach (array_keys(self::BANOMS) as $kode) {
+            $peta[$kode] = self::daftarJabatan($kode);
+        }
+
+        $peta['__default__'] = self::daftarJabatan(null);
+
+        return $peta;
     }
 }

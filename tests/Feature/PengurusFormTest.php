@@ -12,6 +12,32 @@ test('create form shows the organization dropdown without raw code inputs', func
         ->assertDontSee('name="label_banom"', false);
 });
 
+test('create form shows a jabatan dropdown whose options follow the organization', function () {
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(route('pengurus.create'))
+        ->assertOk()
+        ->assertSee('id="jabatan"', false)
+        ->assertSee('name="jabatan"', false) // input tersembunyi tetap mengirim jabatan
+        ->assertSee('Ketua Bidang Dakwah', false) // opsi bidang generik
+        ->assertSee('Ketua Bidang Pemberdayaan Umat', false) // opsi khas UPZIS LAZISNU
+        ->assertSee('__default__', false);
+});
+
+test('edit form preselects the current jabatan as the dropdown value', function () {
+    $pengurus = Pengurus::create([
+        'nama' => 'Qomar',
+        'jabatan' => 'Sekretaris',
+        'banom' => 'pac_ipnu',
+        'label_banom' => 'PAC IPNU',
+        'urutan' => 1,
+    ]);
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(route('pengurus.edit', $pengurus))
+        ->assertOk()
+        ->assertSee('value="Sekretaris"', false);
+});
+
 test('store derives the display label from the dropdown value', function () {
     $this->actingAs(User::factory()->admin()->create())
         ->post(route('pengurus.store'), [

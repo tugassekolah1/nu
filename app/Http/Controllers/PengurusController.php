@@ -137,6 +137,7 @@ class PengurusController extends Controller
     {
         return view('pengurus.create', [
             'banomOptions' => Pengurus::BANOMS,
+            'jabatanMap' => Pengurus::jabatanPerBanom(),
         ]);
     }
 
@@ -176,7 +177,11 @@ class PengurusController extends Controller
             ];
         }
 
-        return view('pengurus.edit', compact('pengurus', 'banomOptions'));
+        return view('pengurus.edit', [
+            'pengurus' => $pengurus,
+            'banomOptions' => $banomOptions,
+            'jabatanMap' => Pengurus::jabatanPerBanom(),
+        ]);
     }
 
     // Update Data
