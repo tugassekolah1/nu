@@ -126,8 +126,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 reveal-stagger">
             @forelse ($galleries as $item)
                 <article class="group bg-warm-card rounded-card border border-border-neutral shadow-subtle p-3 flex flex-col hover:-translate-y-1.5 hover:shadow-elevated hover:border-border-subtle transition-all duration-300">
-                    <a class="relative block aspect-video overflow-hidden rounded-[16px] bg-warm-beige"
-                       href="{{ asset('storage/' . $item->foto) }}" target="_blank" rel="noopener">
+                    <button type="button"
+                            data-galeri-modal
+                            data-src="{{ asset('storage/' . $item->foto) }}"
+                            data-judul="{{ $item->judul }}"
+                            @if ($item->deskripsi) data-deskripsi="{{ $item->deskripsi }}" @endif
+                            data-tanggal="{{ $item->created_at->locale('id')->translatedFormat('D, d MMMM Y') }}"
+                            aria-label="Lihat foto {{ $item->judul }} ukuran penuh"
+                            class="relative block w-full aspect-video overflow-hidden rounded-[16px] bg-warm-beige text-left cursor-zoom-in">
                         <img src="{{ asset('storage/' . $item->foto) }}"
                              alt="{{ $item->judul }}"
                              loading="lazy"
@@ -139,7 +145,7 @@
                         <span class="absolute bottom-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/85 text-nu-deep opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300 shadow-subtle">
                             <span class="material-symbols-outlined text-[20px]">zoom_in</span>
                         </span>
-                    </a>
+                    </button>
 
                     <div class="px-3 pt-4 pb-3 flex flex-col flex-1">
                         <h3 class="font-bold text-lg text-charcoal leading-snug group-hover:text-nu-deep transition-colors">
@@ -173,6 +179,42 @@
 
     <x-footer />
 
+    <!-- MODAL LIGHTBOX GALERI -->
+    <div id="galeri-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4 sm:p-8" role="dialog" aria-modal="true" aria-label="Pratinjau foto galeri">
+        <div id="galeri-modal-backdrop" class="absolute inset-0 bg-nu-night/85 backdrop-blur-sm"></div>
+
+        <figure class="relative z-10 w-full max-w-4xl overflow-hidden rounded-container-r bg-warm-card border border-border-neutral shadow-elevated">
+            <div class="relative bg-nu-night flex items-center justify-center min-h-55 max-h-[70vh]">
+                <img id="galeri-modal-img" src="" alt="" class="max-h-[70vh] w-auto max-w-full object-contain" />
+                <button id="galeri-modal-prev" type="button" aria-label="Foto sebelumnya"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-white/90 text-charcoal shadow-subtle hover:bg-white active:scale-95 transition">
+                    <span class="material-symbols-outlined text-[22px]">chevron_left</span>
+                </button>
+                <button id="galeri-modal-next" type="button" aria-label="Foto berikutnya"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-white/90 text-charcoal shadow-subtle hover:bg-white active:scale-95 transition">
+                    <span class="material-symbols-outlined text-[22px]">chevron_right</span>
+                </button>
+            </div>
+            <figcaption class="p-5 sm:p-6 flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <p id="galeri-modal-count" class="text-[11px] font-bold uppercase tracking-widest text-muted-charcoal"></p>
+                    <h3 id="galeri-modal-judul" class="mt-1 font-bold text-lg text-charcoal leading-snug"></h3>
+                    <p id="galeri-modal-deskripsi" class="mt-1 text-sm text-muted-charcoal leading-relaxed"></p>
+                    <p id="galeri-modal-tanggal" class="mt-2 text-xs font-semibold text-muted-charcoal flex items-center gap-1.5"></p>
+                </div>
+                <a id="galeri-modal-open" href="#" target="_blank" rel="noopener"
+                   class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-full bg-warm-bg border border-border-subtle text-charcoal text-xs font-bold hover:bg-warm-beige/60 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                    <span class="hidden sm:inline">Ukuran penuh</span>
+                </a>
+            </figcaption>
+            <button id="galeri-modal-close" type="button" aria-label="Tutup pratinjau"
+                    class="absolute top-3 right-3 inline-flex items-center justify-center w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-white/90 text-charcoal shadow-subtle hover:bg-white active:scale-95 transition">
+                <span class="material-symbols-outlined text-[22px]">close</span>
+            </button>
+        </figure>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -194,6 +236,74 @@
 
             targets.forEach((el) => observer.observe(el));
         });
+
+        // Lightbox galeri: klik foto → modal, dengan navigasi sebelum/berikutnya
+        (function () {
+            const modal = document.getElementById('galeri-modal');
+            if (!modal) return;
+
+            const img = document.getElementById('galeri-modal-img');
+            const judul = document.getElementById('galeri-modal-judul');
+            const deskripsi = document.getElementById('galeri-modal-deskripsi');
+            const tanggal = document.getElementById('galeri-modal-tanggal');
+            const count = document.getElementById('galeri-modal-count');
+            const openLink = document.getElementById('galeri-modal-open');
+            const btnClose = document.getElementById('galeri-modal-close');
+            const btnPrev = document.getElementById('galeri-modal-prev');
+            const btnNext = document.getElementById('galeri-modal-next');
+            const backdrop = document.getElementById('galeri-modal-backdrop');
+            const triggers = Array.from(document.querySelectorAll('[data-galeri-modal]'));
+            let activeIndex = 0;
+            let lastFocused = null;
+
+            function render(index) {
+                activeIndex = (index + triggers.length) % triggers.length;
+                const el = triggers[activeIndex];
+                img.src = el.dataset.src;
+                img.alt = el.dataset.judul || 'Foto galeri';
+                judul.textContent = el.dataset.judul || '';
+                deskripsi.textContent = el.dataset.deskripsi || '';
+                deskripsi.style.display = el.dataset.deskripsi ? '' : 'none';
+                tanggal.textContent = el.dataset.tanggal || '';
+                count.textContent = 'Foto ' + (activeIndex + 1) + ' dari ' + triggers.length;
+                openLink.href = el.dataset.src;
+                const single = triggers.length < 2;
+                btnPrev.style.display = single ? 'none' : '';
+                btnNext.style.display = single ? 'none' : '';
+            }
+
+            function open(index, trigger) {
+                lastFocused = trigger || document.activeElement;
+                render(index);
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                btnClose.focus();
+            }
+
+            function close() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+                img.removeAttribute('src');
+                if (lastFocused && lastFocused.focus) lastFocused.focus();
+            }
+
+            triggers.forEach((el, index) => {
+                el.addEventListener('click', () => open(index, el));
+            });
+            btnClose.addEventListener('click', close);
+            backdrop.addEventListener('click', close);
+            btnPrev.addEventListener('click', (e) => { e.stopPropagation(); render(activeIndex - 1); });
+            btnNext.addEventListener('click', (e) => { e.stopPropagation(); render(activeIndex + 1); });
+
+            document.addEventListener('keydown', (e) => {
+                if (modal.classList.contains('hidden')) return;
+                if (e.key === 'Escape') close();
+                if (e.key === 'ArrowLeft') render(activeIndex - 1);
+                if (e.key === 'ArrowRight') render(activeIndex + 1);
+            });
+        })();
     </script>
 </body>
 </html>

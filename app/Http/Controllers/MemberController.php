@@ -4,18 +4,38 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\NuMember;
 use App\Models\Payment;
+use App\Models\Pengurus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class MemberController extends Controller
 {
     private const REGISTRATION_FEE = 5000;
 
-    public function index()
+    public function index(Request $request)
     {
-        $members = NuMember::latest()->paginate(10);
-        return view('admin.members.index', compact('members'));
+        $statusFilter = $request->query('status', 'all');
+        if (! in_array($statusFilter, ['all', 'pending', 'approved'], true)) {
+            $statusFilter = 'all';
+        }
+
+        $banomFilter = $request->query('banom', 'all');
+        $banomCodes = NuMember::organisasiCodes();
+        if ($banomFilter !== 'all' && $banomFilter !== 'none' && ! in_array($banomFilter, $banomCodes, true)) {
+            $banomFilter = 'all';
+        }
+
+        $members = NuMember::query()
+            ->when($statusFilter !== 'all', fn ($q) => $q->withRegistrationState($statusFilter === 'approved' ? 'accepted' : 'pending'))
+            ->when($banomFilter === 'none', fn ($q) => $q->whereNull('organisasi'))
+            ->when($banomFilter !== 'all' && $banomFilter !== 'none', fn ($q) => $q->where('organisasi', $banomFilter))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.members.index', compact('members', 'statusFilter', 'banomFilter'));
     }
 
     public function create()
@@ -30,6 +50,7 @@ class MemberController extends Controller
             'full_name'      => 'required|max:255',
             'phone'          => 'required|max:20',
             'gender'         => 'required|in:L,P',
+            'organisasi'     => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
             'address'        => 'required',
             'payment_option' => 'required|in:cash,unpaid',
             'photo'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -43,15 +64,17 @@ class MemberController extends Controller
         $isCash = $validated['payment_option'] === 'cash';
 
         $member = NuMember::create([
-            'nik'            => $validated['nik'],
-            'full_name'      => $validated['full_name'],
-            'phone'          => $validated['phone'],
-            'gender'         => $validated['gender'],
-            'address'        => $validated['address'],
-            'photo'          => $photoPath,
-            'status'         => $isCash ? 'active' : 'pending_payment',
-            'payment_status' => $isCash ? 'paid' : 'unpaid',
-            'member_card_no' => $isCash ? $this->generateCardNumber() : null,
+            'nik'              => $validated['nik'],
+            'full_name'        => $validated['full_name'],
+            'phone'            => $validated['phone'],
+            'gender'           => $validated['gender'],
+            'organisasi'       => $validated['organisasi'] ?? null,
+            'label_organisasi' => isset($validated['organisasi']) ? Pengurus::BANOMS[$validated['organisasi']]['label'] : null,
+            'address'          => $validated['address'],
+            'photo'            => $photoPath,
+            'status'           => $isCash ? 'active' : 'pending_payment',
+            'payment_status'   => $isCash ? 'paid' : 'unpaid',
+            'member_card_no'   => $isCash ? $this->generateCardNumber() : null,
         ]);
 
         Payment::create([
@@ -72,12 +95,13 @@ class MemberController extends Controller
     public function update(Request $request, NuMember $member)
     {
         $validated = $request->validate([
-            'nik'       => 'required|digits:16|unique:nu_members,nik,' . $member->id,
-            'full_name' => 'required|max:255',
-            'phone'     => 'required|max:20',
-            'gender'    => 'required|in:L,P',
-            'address'   => 'required',
-            'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'nik'        => 'required|digits:16|unique:nu_members,nik,' . $member->id,
+            'full_name'  => 'required|max:255',
+            'phone'      => 'required|max:20',
+            'gender'     => 'required|in:L,P',
+            'organisasi' => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
+            'address'    => 'required',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -86,6 +110,10 @@ class MemberController extends Controller
             }
             $validated['photo'] = $request->file('photo')->store('members-photo', 'public');
         }
+
+        $validated['label_organisasi'] = ! empty($validated['organisasi'])
+            ? Pengurus::BANOMS[$validated['organisasi']]['label']
+            : null;
 
         $member->update($validated);
 
@@ -329,12 +357,13 @@ class MemberController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'nik'       => 'required|digits:16|unique:nu_members,nik',
-            'full_name' => 'required|max:255',
-            'phone'     => 'required|max:20',
-            'gender'    => 'required|in:L,P',
-            'address'   => 'required',
-            'photo'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'nik'        => 'required|digits:16|unique:nu_members,nik',
+            'full_name'  => 'required|max:255',
+            'phone'      => 'required|max:20',
+            'gender'     => 'required|in:L,P',
+            'organisasi' => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
+            'address'    => 'required',
+            'photo'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $photoPath = null;
@@ -343,14 +372,16 @@ class MemberController extends Controller
         }
 
         $member = NuMember::create([
-            'nik'            => $validated['nik'],
-            'full_name'      => $validated['full_name'],
-            'phone'          => $validated['phone'],
-            'gender'         => $validated['gender'],
-            'address'        => $validated['address'],
-            'photo'          => $photoPath,
-            'status'         => 'pending_payment',
-            'payment_status' => 'unpaid',
+            'nik'              => $validated['nik'],
+            'full_name'        => $validated['full_name'],
+            'phone'            => $validated['phone'],
+            'gender'           => $validated['gender'],
+            'organisasi'       => $validated['organisasi'] ?? null,
+            'label_organisasi' => isset($validated['organisasi']) ? Pengurus::BANOMS[$validated['organisasi']]['label'] : null,
+            'address'          => $validated['address'],
+            'photo'            => $photoPath,
+            'status'           => 'pending_payment',
+            'payment_status'   => 'unpaid',
         ]);
 
         Payment::create([

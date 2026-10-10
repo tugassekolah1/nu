@@ -201,6 +201,15 @@
                                             @if ($infaq->no_hp)
                                                 <div class="text-xs text-slate-400 mt-0.5">{{ $infaq->no_hp }}</div>
                                             @endif
+                                            @if ($infaq->bukti_path)
+                                                <a href="{{ asset('storage/' . $infaq->bukti_path) }}" target="_blank" rel="noopener" class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:underline">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                    Lihat bukti bayar
+                                                </a>
+                                            @endif
                                         @endif
                                     </td>
 
@@ -219,10 +228,17 @@
                                                 Lunas
                                             </span>
                                         @elseif ($infaq->status === 'pending')
-                                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100/80 text-amber-800">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                                                Pending
-                                            </span>
+                                            @if ($infaq->bukti_path)
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 ring-1 ring-amber-300">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                    Menunggu Verifikasi
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100/80 text-amber-800">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                    Pending
+                                                </span>
+                                            @endif
                                         @else
                                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-100/80 text-rose-800">
                                                 <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
@@ -242,10 +258,11 @@
                                             </a>
 
                                             @if ($infaq->status === 'pending')
-                                                <form action="{{ route('admin.infaq.mark-lunas', $infaq) }}" method="POST" class="inline">
+                                                <form action="{{ route('admin.infaq.mark-lunas', $infaq) }}" method="POST" class="inline"
+                                                      onsubmit="return confirm('Setujui {{ $infaq->bukti_path ? 'bukti bayar dan ' : '' }}tandai {{ $infaq->kode_transaksi }} lunas?')">
                                                     @csrf
-                                                    <button type="submit" title="Tandai Lunas"
-                                                            class="p-1.5 rounded-lg text-slate-600 hover:bg-white hover:text-emerald-600 border border-transparent hover:border-slate-200 transition-all">
+                                                    <button type="submit" title="{{ $infaq->bukti_path ? 'Setujui Bukti & Tandai Lunas' : 'Tandai Lunas' }}"
+                                                            class="p-1.5 rounded-lg border border-transparent transition-all {{ $infaq->bukti_path ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs' : 'text-slate-600 hover:bg-white hover:text-emerald-600 hover:border-slate-200' }}">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                         </svg>

@@ -542,6 +542,25 @@
                         @enderror
                     </div>
 
+                    <!-- Pilihan Organisasi / Banom -->
+                    <div class="form-group full @error('organisasi') has-error @enderror">
+                        <label for="organisasi">Organisasi / Banom yang Diikuti</label>
+                        <div class="input-wrapper">
+                            <select id="organisasi" name="organisasi">
+                                @include('partials.organisasi-options', ['selected' => old('organisasi')])
+                            </select>
+                        </div>
+                        <p class="photo-hint">
+                            🏳️ Pilih badan otonom NU yang Anda ikuti (mis. Fatayat, Ansor, IPNU). Boleh dikosongkan bila belum mengikuti banom tertentu.
+                        </p>
+                        @error('organisasi')
+                            <p class="form-error">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
+
                     <!-- Address Input -->
                     <div class="form-group full @error('address') has-error @enderror">
                         <label for="address">Alamat Lengkap <span class="req">*</span></label>

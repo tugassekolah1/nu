@@ -146,6 +146,9 @@
                                         <div class="text-xs text-slate-400 mt-0.5">
                                             {{ $aspirasi->email ?: ($aspirasi->no_hp ?: 'Tanpa kontak') }}
                                         </div>
+                                        @if ($aspirasi->kode)
+                                            <div class="mt-1 font-mono text-[11px] font-bold text-slate-500">{{ $aspirasi->kode }}</div>
+                                        @endif
                                     </td>
 
                                     {{-- Kategori --}}

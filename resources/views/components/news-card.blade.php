@@ -20,10 +20,17 @@
     </a>
 
     <div class="px-3 pt-4 pb-2 flex flex-col flex-1">
-        <span class="text-xs font-semibold text-muted-charcoal flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[15px] text-muted-gold">event</span>
-            {{ $berita->created_at->locale('id')->translatedFormat('d F Y') }}
-        </span>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span class="text-xs font-semibold text-muted-charcoal flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px] text-muted-gold">event</span>
+                {{ $berita->created_at->locale('id')->translatedFormat('d F Y') }}
+            </span>
+            <span class="text-xs font-semibold text-muted-charcoal flex items-center gap-1.5"
+                  title="{{ number_format($berita->views) }} kali dibaca">
+                <span class="material-symbols-outlined text-[15px] text-muted-gold">visibility</span>
+                {{ number_format($berita->views) }} dibaca
+            </span>
+        </div>
 
         <h3 class="mt-2 text-lg font-bold text-charcoal leading-snug group-hover:text-nu-deep transition-colors">
             <a href="{{ route('berita.show', $berita->slug) }}">{{ $berita->judul }}</a>

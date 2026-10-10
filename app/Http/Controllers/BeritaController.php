@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Agenda;
 use App\Models\Berita;
+use App\Models\BeritaView;
 use App\Models\Pengurus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class BeritaController extends Controller
 {
@@ -15,13 +17,34 @@ class BeritaController extends Controller
     {
         $q = (string) $request->query('q', '');
         $jenis = $request->query('jenis');
+        $sort = $this->resolveSort($request->query('sort'));
 
         $beritas = Berita::filter($q, $jenis)
-            ->latest()
+            ->sorted($sort)
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.berita.index', compact('beritas', 'q', 'jenis'));
+        // Statistik ringkas untuk kartu di atas tabel.
+        $totalBerita = Berita::count();
+        $totalViews = (int) Berita::sum('views');
+
+        $stats = [
+            'total' => $totalBerita,
+            'publish' => Berita::published()->count(),
+            'draft' => $totalBerita - Berita::published()->count(),
+            'views' => $totalViews,
+            'rataViews' => $totalBerita > 0 ? (int) round($totalViews / $totalBerita) : 0,
+        ];
+
+        // Peringkat berita paling banyak dibaca.
+        $terpopuler = Berita::published()
+            ->orderByDesc('views')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->take(5)
+            ->get();
+
+        return view('admin.berita.index', compact('beritas', 'q', 'jenis', 'sort', 'stats', 'terpopuler'));
     }
 
     public function create()
@@ -61,11 +84,11 @@ class BeritaController extends Controller
     {
         abort_if(! $berita->status, 404); // draft gak boleh diakses publik
 
-        // Hitung pembaca untuk sidebar "Terpopuler"
-        Berita::whereKey($berita->id)->increment('views');
-        $berita->refresh();
+        // Hitung pembaca untuk statistik & sidebar "Terpopuler"
+        $berita->increment('views');
+        $this->catatPembaca($berita);
 
-        $newsList = Berita::where('status', true)
+        $newsList = Berita::published()
             ->where('id', '!=', $berita->id)
             ->latest()
             ->take(5)
@@ -114,7 +137,7 @@ class BeritaController extends Controller
 
     public function landing()
     {
-        $newsList = Berita::where('status', true)->latest()->paginate(6);
+        $newsList = Berita::published()->latest()->paginate(6);
         $upcomingAgenda = Agenda::where('event_date', '>=', now()->toDateString())
             ->orderBy('event_date')
             ->take(3)
@@ -128,31 +151,179 @@ class BeritaController extends Controller
     {
         $q = (string) $request->query('q', '');
         $jenis = $request->query('jenis');
+        $sort = $this->resolveSort($request->query('sort'));
 
         $newsList = Berita::filter($q, $jenis)
-            ->where('status', true)
-            ->latest()
+            ->published()
+            ->sorted($sort)
             ->paginate(5)
             ->withQueryString();
 
         $isFiltering = trim($q) !== '' || in_array($jenis, Berita::JENIS, true);
 
         // Sidebar: berita paling banyak dibaca
-        $popular = Berita::where('status', true)
+        $popular = Berita::published()
             ->orderByDesc('views')
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->take(5)
             ->get();
 
         // Sidebar: jumlah berita per kanal/jenis
-        $kanalCounts = Berita::where('status', true)
+        $kanalCounts = Berita::published()
             ->groupBy('jenis')
             ->selectRaw('jenis, COUNT(*) as total')
             ->pluck('total', 'jenis');
 
-        $totalBerita = Berita::where('status', true)->count();
+        $totalBerita = Berita::published()->count();
 
-        return view('berita', compact('newsList', 'q', 'jenis', 'isFiltering', 'popular', 'kanalCounts', 'totalBerita'));
+        return view('berita', compact('newsList', 'q', 'jenis', 'sort', 'isFiltering', 'popular', 'kanalCounts', 'totalBerita'));
+    }
+
+    /**
+     * Pastikan parameter sort hanya menerima nilai yang dikenal,
+     * jika tidak jatuh ke "terbaru" (urutan bawaan).
+     */
+    private function resolveSort(mixed $sort): string
+    {
+        return is_string($sort) && array_key_exists($sort, Berita::SORTS)
+            ? $sort
+            : 'terbaru';
+    }
+
+    /**
+     * Halaman statistik pembaca berita berbentuk grafik (khusus admin).
+     */
+    public function statistik(): View
+    {
+        // Ringkasan angka utama.
+        $totalBerita = Berita::count();
+        $totalViews = (int) Berita::sum('views');
+
+        $stats = [
+            'total' => $totalBerita,
+            'publish' => Berita::published()->count(),
+            'draft' => $totalBerita - Berita::published()->count(),
+            'views' => $totalViews,
+            'rataViews' => $totalBerita > 0 ? (int) round($totalViews / $totalBerita) : 0,
+        ];
+
+        // --- Grafik 1: tren pembaca 30 hari terakhir ---
+        $rekapHarian = $this->pembacaHarian(30);
+        $labelHarian = array_keys($rekapHarian);
+        $dataHarian = array_values($rekapHarian);
+        $puncakHarian = max($dataHarian ?: [0]);
+
+        // --- Grafik 2: 10 berita terpopuler ---
+        $terpopuler = Berita::published()
+            ->orderByDesc('views')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->take(10)
+            ->get();
+
+        // --- Grafik 3: berita terbit & totalnya tiap bulan (6 bulan) ---
+        $perBulan = $this->rekapBulan(6);
+        $labelBulan = array_keys($perBulan);
+        $dataTerbit = array_column($perBulan, 'terbit');
+        $dataViewsBulan = array_column($perBulan, 'views');
+
+        // --- Grafik 4: komposisi pembaca per jenis/kanal ---
+        $perJenis = Berita::published()
+            ->selectRaw('jenis, COUNT(*) as total_berita, COALESCE(SUM(views), 0) as total_views')
+            ->groupBy('jenis')
+            ->orderByDesc('total_views')
+            ->get()
+            ->map(fn ($row) => [
+                'label' => $row->jenis,
+                'value' => (int) $row->total_views,
+                'berita' => (int) $row->total_berita,
+            ]);
+
+        return view('admin.berita.statistik', compact(
+            'stats',
+            'labelHarian',
+            'dataHarian',
+            'puncakHarian',
+            'terpopuler',
+            'labelBulan',
+            'dataTerbit',
+            'dataViewsBulan',
+            'perJenis',
+        ));
+    }
+
+    /**
+     * Catat satu pembaca untuk hari ini pada rekap harian berita.
+     */
+    private function catatPembaca(Berita $berita): void
+    {
+        $today = now()->toDateString();
+
+        $rekap = BeritaView::firstOrNew([
+            'berita_id' => $berita->id,
+            'tanggal' => $today,
+        ]);
+
+        $rekap->jumlah = ((int) $rekap->jumlah) + 1;
+        $rekap->save();
+    }
+
+    /**
+     * Total pembaca per hari selama $hari hari terakhir (hari tanpa
+     * pembaca tetap muncul dengan nilai 0 agar garis grafik utuh).
+     *
+     * @return array<string, int>
+     */
+    private function pembacaHarian(int $hari): array
+    {
+        $mulai = now()->subDays($hari - 1)->startOfDay();
+
+        $tercatat = BeritaView::query()
+            ->where('tanggal', '>=', $mulai->toDateString())
+            ->groupBy('tanggal')
+            ->selectRaw('tanggal, SUM(jumlah) as total')
+            ->orderBy('tanggal')
+            ->get()
+            ->mapWithKeys(fn ($row) => [substr((string) $row->tanggal, 0, 10) => (int) $row->total]);
+
+        $hasil = [];
+
+        foreach (range($hari - 1, 0) as $mundur) {
+            $tanggal = now()->subDays($mundur);
+            $hasil[$tanggal->translatedFormat('d M')] = (int) ($tercatat[$tanggal->toDateString()] ?? 0);
+        }
+
+        return $hasil;
+    }
+
+    /**
+     * Jumlah berita terbit dan total pembacanya per bulan.
+     *
+     * @return array<string, array{terbit: int, views: int}>
+     */
+    private function rekapBulan(int $bulan): array
+    {
+        $mulai = now()->startOfMonth()->subMonths($bulan - 1);
+
+        $dikelompokkan = Berita::query()
+            ->where('created_at', '>=', $mulai)
+            ->get(['created_at', 'views'])
+            ->groupBy(fn (Berita $berita) => $berita->created_at->format('Y-m'));
+
+        $hasil = [];
+
+        foreach (range($bulan - 1, 0) as $mundur) {
+            $tanggal = now()->startOfMonth()->subMonths($mundur);
+            $grup = $dikelompokkan->get($tanggal->format('Y-m'), collect());
+
+            $hasil[$tanggal->locale('id')->translatedFormat('M Y')] = [
+                'terbit' => $grup->count(),
+                'views' => (int) $grup->sum('views'),
+            ];
+        }
+
+        return $hasil;
     }
 
     /**

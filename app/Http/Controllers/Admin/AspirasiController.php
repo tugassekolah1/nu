@@ -28,7 +28,8 @@ class AspirasiController extends Controller
                 $query->where(function (Builder $query) use ($like) {
                     $query->where('nama', 'like', $like)
                         ->orWhere('isi', 'like', $like)
-                        ->orWhere('email', 'like', $like);
+                        ->orWhere('email', 'like', $like)
+                        ->orWhere('kode', 'like', $like);
                 });
             })
             ->when(in_array($status, Aspirasi::STATUSES, true), fn (Builder $query) => $query->where('status', $status))

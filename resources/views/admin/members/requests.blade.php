@@ -141,6 +141,11 @@
                                             <div>
                                                 <div class="font-bold text-slate-900">{{ $member->full_name }}</div>
                                                 <div class="text-xs text-slate-400 mt-0.5">WA: {{ $member->phone }}</div>
+                                                @if ($member->organisasi_label)
+                                                    <span class="inline-flex items-center mt-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100/80 text-emerald-800">
+                                                        {{ $member->organisasi_label }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>

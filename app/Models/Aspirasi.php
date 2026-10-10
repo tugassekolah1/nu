@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Aspirasi extends Model
 {
@@ -20,6 +21,7 @@ class Aspirasi extends Model
     public const STATUSES = ['baru', 'diproses', 'selesai', 'ditolak'];
 
     protected $fillable = [
+        'kode',
         'nama',
         'email',
         'no_hp',
@@ -29,6 +31,30 @@ class Aspirasi extends Model
         'tanggapan',
         'tanggapan_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Aspirasi $aspirasi) {
+            if (empty($aspirasi->kode)) {
+                $aspirasi->kode = static::generateKode();
+            }
+            if (empty($aspirasi->status)) {
+                $aspirasi->status = 'baru';
+            }
+        });
+    }
+
+    /**
+     * Nomor pelacakan unik untuk cek status oleh pengirim.
+     */
+    public static function generateKode(): string
+    {
+        do {
+            $kode = 'ASP-'.strtoupper(Str::random(8));
+        } while (static::where('kode', $kode)->exists());
+
+        return $kode;
+    }
 
     protected $casts = [
         'tanggapan_at' => 'datetime',

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Infaq;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InfaqController extends Controller
 {
@@ -51,7 +53,52 @@ class InfaqController extends Controller
     {
         $infaq = Infaq::where('kode_transaksi', $kode)->firstOrFail();
 
-        return view('infaq.checkout', compact('infaq'));
+        // QR dummy untuk metode QRIS (payload contoh, bukan QRIS asli).
+        $qrCode = null;
+        if ($infaq->metode_pembayaran === 'qris' && $infaq->status === 'pending' && ! $infaq->bukti_path) {
+            $payload = implode('|', [
+                'DUMMY-QRIS',
+                'NU-BANJARANYAR',
+                $infaq->kode_transaksi,
+                (int) $infaq->nominal,
+            ]);
+            $qrCode = QrCode::size(220)->generate($payload);
+        }
+
+        return view('infaq.checkout', compact('infaq', 'qrCode'));
+    }
+
+    /**
+     * Donatur menekan "Saya Sudah Bayar" sekaligus mengunggah bukti transfer.
+     * Status tetap pending sampai admin menyetujui (tandai lunas).
+     */
+    public function confirmProof(Request $request, $kode)
+    {
+        $infaq = Infaq::where('kode_transaksi', $kode)->firstOrFail();
+
+        if ($infaq->status !== 'pending') {
+            return redirect()->route('infaq.checkout', $kode)
+                ->with('error', 'Transaksi ini sudah tidak membutuhkan konfirmasi.');
+        }
+
+        $validated = $request->validate([
+            'bukti' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ], [
+            'bukti.required' => 'Lampirkan foto bukti pembayaran terlebih dahulu.',
+            'bukti.image' => 'Bukti harus berupa gambar (JPG/PNG).',
+            'bukti.max' => 'Ukuran bukti maksimal 2 MB.',
+        ]);
+
+        if ($infaq->bukti_path) {
+            Storage::disk('public')->delete($infaq->bukti_path);
+        }
+
+        $infaq->update([
+            'bukti_path' => $request->file('bukti')->store('infaq-bukti', 'public'),
+        ]);
+
+        return redirect()->route('infaq.checkout', $kode)
+            ->with('success', 'Bukti pembayaran terkirim. Admin akan memverifikasi, lalu status berubah lunas.');
     }
 
     // SIMULASI: Ubah Status ke Lunas

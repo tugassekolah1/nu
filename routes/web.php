@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\BeritaController;
+use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InfaqController;
@@ -37,6 +38,11 @@ Route::get('/cek-status', [MemberController::class, 'statusCheck'])->name('membe
 
 // Public Pages (Non-conflicting)
 Route::get('/profil', [PengurusController::class, 'index'])->name('profil');
+Route::get('/organisasi', [OrganisasiController::class, 'index'])->name('organisasi');
+Route::get('/organisasi/{slug}', [OrganisasiController::class, 'show'])->name('organisasi.show');
+Route::get('/struktur', [PengurusController::class, 'struktur'])->name('struktur');
+Route::get('/struktur/{pengurus}', [PengurusController::class, 'show'])->name('struktur.show');
+Route::get('/kontak', fn () => view('kontak'))->name('kontak');
 Route::get('/galeri', [GalleryController::class, 'publicIndex'])->name('galeri.index');
 Route::get('/agenda', [AgendaController::class, 'publicIndex'])->name('agenda.public');
 
@@ -45,12 +51,14 @@ Route::get('/infaq', [InfaqController::class, 'index'])->name('infaq.index');
 Route::post('/infaq', [InfaqController::class, 'store'])->name('infaq.store');
 Route::get('/infaq/checkout/{kode}', [InfaqController::class, 'checkout'])->name('infaq.checkout');
 Route::post('/infaq/simulate/{kode}', [InfaqController::class, 'simulatePayment'])->name('infaq.simulate');
+Route::post('/infaq/konfirmasi/{kode}', [InfaqController::class, 'confirmProof'])->name('infaq.proof');
 Route::get('/infaq/success/{kode}', [InfaqController::class, 'success'])->name('infaq.success');
 
 Route::get('/berita', [BeritaController::class, 'index_publik'])->name('berita.public');
 
 // Kotak Aspirasi (publik)
 Route::get('/aspirasi', [AspirasiController::class, 'index'])->name('aspirasi.index');
+Route::get('/aspirasi/lacak', [AspirasiController::class, 'lacak'])->name('aspirasi.lacak');
 Route::post('/aspirasi', [AspirasiController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('aspirasi.store');
@@ -88,6 +96,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     });
 
     // News & Gallery Management (Resource akan mendaftarkan /berita/create terlebih dahulu)
+    // Rute statistik harus didaftarkan SEBELUM resource, supaya kata "statistik"
+    // tidak dimakan oleh parameter {berita} pada /admin/berita/{berita}.
+    Route::get('/admin/berita/statistik', [BeritaController::class, 'statistik'])->name('berita.statistik');
     Route::resource('admin/berita', BeritaController::class)
         ->parameters(['berita' => 'berita'])
         ->except(['show']);

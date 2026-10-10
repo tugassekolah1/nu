@@ -18,6 +18,7 @@
             <p><strong>Nama</strong>: {{ $member->full_name }}</p>
             <p><strong>NIK</strong>: {{ $member->nik }}</p>
             <p><strong>No Reg</strong>: {{ $member->member_card_no ?? '—' }}</p>
+            <p><strong>Banom</strong>: {{ $member->organisasi_label ?? '—' }}</p>
             <p><strong>Alamat</strong>: {{ Str::limit($member->address, 32) }}</p>
         </div>
     </div>

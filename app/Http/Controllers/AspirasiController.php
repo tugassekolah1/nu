@@ -23,7 +23,40 @@ class AspirasiController extends Controller
 
         $totalDiterima = Aspirasi::count();
 
-        return view('aspirasi', compact('ditanggapi', 'totalDiterima'));
+        return view('aspirasi', [
+            'ditanggapi' => $ditanggapi,
+            'totalDiterima' => $totalDiterima,
+            'hasil' => null,
+            'kodeCari' => '',
+        ]);
+    }
+
+    /**
+     * Lacak aspirasi berdasarkan nomor pelacakan + lihat tanggapan admin.
+     */
+    public function lacak(Request $request): View
+    {
+        $kodeCari = strtoupper(trim((string) $request->query('kode', '')));
+
+        $hasil = $kodeCari !== ''
+            ? Aspirasi::where('kode', $kodeCari)->first()
+            : null;
+
+        $ditanggapi = Aspirasi::where('status', 'selesai')
+            ->whereNotNull('tanggapan')
+            ->latest('tanggapan_at')
+            ->take(10)
+            ->get();
+
+        $totalDiterima = Aspirasi::count();
+
+        return view('aspirasi', [
+            'ditanggapi' => $ditanggapi,
+            'totalDiterima' => $totalDiterima,
+            'hasil' => $hasil,
+            'kodeCari' => $kodeCari,
+            'tidakDitemukan' => $kodeCari !== '' && $hasil === null,
+        ]);
     }
 
     /**
@@ -49,10 +82,10 @@ class AspirasiController extends Controller
             'isi.max' => 'Isi aspirasi maksimal 2000 karakter.',
         ]);
 
-        Aspirasi::create($validated);
+        $aspirasi = Aspirasi::create($validated);
 
         return redirect()
-            ->route('aspirasi.index')
-            ->with('success', 'Aspirasi berhasil dikirim. Pengurus akan menindaklanjuti.');
+            ->route('aspirasi.lacak', ['kode' => $aspirasi->kode])
+            ->with('success', 'Aspirasi berhasil dikirim. Simpan nomor pelacakan berikut untuk memantau status dan tanggapan pengurus.');
     }
 }

@@ -209,9 +209,9 @@
                         <ol class="mt-6 space-y-5">
                             @php
                                 $langkah = [
-                                    ['judul' => 'Anda kirim aspirasi', 'isi' => 'Tulis usul atau kritik melalui formulir di samping. Boleh memakai nama sendiri maupun Anonim.'],
+                                    ['judul' => 'Anda kirim aspirasi', 'isi' => 'Tulis usul atau kritik melalui formulir. Boleh memakai nama sendiri maupun Anonim. Simpan nomor pelacakan yang muncul setelahnya.'],
                                     ['judul' => 'Pengurus membaca & meninjau', 'isi' => 'Sekretariat memeriksa setiap aspirasi masuk lalu menentukan langkah tindak lanjut.'],
-                                    ['judul' => 'Tanggapan dipublikasikan', 'isi' => 'Aspirasi yang sudah ditindaklanjuti beserta jawaban pengurus tampil di halaman ini.'],
+                                    ['judul' => 'Pantau lewat nomor pelacakan', 'isi' => 'Cek status dan tanggapan pengurus kapan saja lewat kolom Lacak Aspirasi di bawah. Aspirasi yang selesai juga tampil publik di halaman ini.'],
                                 ];
                             @endphp
 
@@ -240,6 +240,139 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LACAK ASPIRASI -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-8 py-16 sm:py-24" id="lacak">
+            <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-subtle p-6 sm:p-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div class="lg:col-span-5">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-bold uppercase tracking-wider border border-border-neutral">
+                            <span class="material-symbols-outlined text-[16px] text-muted-charcoal">search</span>
+                            <span>Cek Status</span>
+                        </span>
+                        <h2 class="mt-5 font-heading text-2xl sm:text-3xl font-extrabold text-charcoal tracking-tight">
+                            Lacak Aspirasi Anda
+                        </h2>
+                        <p class="mt-2 text-sm sm:text-base text-muted-charcoal leading-relaxed">
+                            Masukkan nomor pelacakan yang diterima setelah mengirim aspirasi
+                            (contoh: <span class="font-mono font-bold">ASP-XXXXXXXX</span>) untuk melihat
+                            status penanganan dan tanggapan pengurus.
+                        </p>
+
+                        <form action="{{ route('aspirasi.lacak') }}" method="GET" class="mt-6 flex flex-col sm:flex-row gap-3">
+                            <input type="text" name="kode" value="{{ $kodeCari ?? '' }}" maxlength="20"
+                                   placeholder="ASP-XXXXXXXX" autocomplete="off" spellcheck="false"
+                                   class="min-h-[48px] flex-1 rounded-[14px] border border-[#DCE4DE] bg-white px-4 py-3 font-mono text-sm font-bold uppercase tracking-wider text-[#171816] placeholder:text-[#7B8780] placeholder:font-sans placeholder:font-normal placeholder:tracking-normal focus:border-[#1F5A3F] focus:outline-none focus:ring-2 focus:ring-[#1F5A3F]/20" />
+                            <button type="submit"
+                                    class="inline-flex items-center justify-center gap-2 px-7 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-bold hover:bg-[#113725] shadow-subtle transition-all active:scale-95">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                                <span>Lacak</span>
+                            </button>
+                        </form>
+
+                        @if (! empty($tidakDitemukan ?? false))
+                            <div role="alert" class="mt-5 flex items-start gap-3 rounded-[18px] border border-rose-300 bg-rose-50 p-4 text-sm text-rose-700">
+                                <span class="material-symbols-outlined text-[20px] shrink-0">error</span>
+                                <span>Nomor <span class="font-mono font-bold">{{ $kodeCari }}</span> tidak ditemukan. Periksa kembali penulisan nomor pelacakan Anda.</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="lg:col-span-7">
+                        @if (! empty($hasil))
+                            @php
+                                $badgeHasil = match ($hasil->status) {
+                                    'baru' => 'bg-amber-100 text-amber-800',
+                                    'diproses' => 'bg-blue-100 text-blue-800',
+                                    'selesai' => 'bg-emerald-100 text-emerald-800',
+                                    default => 'bg-rose-100 text-rose-800',
+                                };
+                            @endphp
+                            <div class="rounded-card bg-warm-bg border border-border-neutral p-6 sm:p-8">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <span class="font-mono text-sm font-extrabold tracking-wider text-charcoal bg-warm-card border border-border-neutral rounded-full px-4 py-1.5">
+                                        {{ $hasil->kode }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold {{ $badgeHasil }}">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                        {{ \App\Models\Aspirasi::labelStatus($hasil->status) }}
+                                    </span>
+                                </div>
+
+                                <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-muted-charcoal">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">sell</span>
+                                        {{ \App\Models\Aspirasi::labelKategori($hasil->kategori) }}
+                                    </span>
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-[16px]">event</span>
+                                        Dikirim {{ $hasil->created_at->locale('id')->translatedFormat('d F Y, H:i') }}
+                                    </span>
+                                </div>
+
+                                <div class="mt-5 rounded-[18px] bg-warm-card border border-border-neutral p-5">
+                                    <p class="text-[11px] font-bold uppercase tracking-widest text-muted-charcoal">Isi aspirasi Anda</p>
+                                    <p class="mt-2 text-sm sm:text-base text-charcoal leading-relaxed">{{ $hasil->isi }}</p>
+                                </div>
+
+                                @if ($hasil->status === 'ditolak')
+                                    <div class="mt-4 rounded-[18px] border border-rose-300 bg-rose-50 p-5">
+                                        <p class="text-[11px] font-bold uppercase tracking-widest text-rose-700">Keterangan pengurus</p>
+                                        <p class="mt-2 text-sm text-rose-700 leading-relaxed">
+                                            {{ $hasil->tanggapan ?: 'Mohon maaf, aspirasi ini belum dapat ditindaklanjuti.' }}
+                                        </p>
+                                    </div>
+                                @elseif ($hasil->tanggapan)
+                                    <div class="mt-4 rounded-[18px] border border-nu-deep/25 bg-muted-sage/60 p-5">
+                                        <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-nu-deep">
+                                            <span class="material-symbols-outlined text-[16px]">forum</span>
+                                            <span>Tanggapan Pengurus</span>
+                                            @if ($hasil->tanggapan_at)
+                                                <span class="text-muted-charcoal normal-case tracking-normal font-medium">
+                                                    · {{ $hasil->tanggapan_at->locale('id')->translatedFormat('d F Y') }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <p class="mt-2 text-sm sm:text-base text-charcoal leading-relaxed">{{ $hasil->tanggapan }}</p>
+                                    </div>
+                                @else
+                                    <div class="mt-4 rounded-[18px] border border-dashed border-border-subtle bg-warm-card p-5 flex items-start gap-3">
+                                        <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">hourglass_empty</span>
+                                        <p class="text-sm text-muted-charcoal leading-relaxed">
+                                            Belum ada tanggapan. Pengurus akan memberikan jawaban setelah aspirasi ditindaklanjuti — silakan cek lagi nanti dengan nomor yang sama.
+                                        </p>
+                                    </div>
+                                @endif
+
+                                {{-- Alur status --}}
+                                <ol class="mt-6 flex items-center gap-1.5 sm:gap-2" aria-label="Alur penanganan">
+                                    @php
+                                        $tahap = ['baru' => 'Diterima', 'diproses' => 'Diproses', 'selesai' => 'Selesai'];
+                                        $urutan = array_search($hasil->status, array_keys($tahap), true);
+                                        $urutan = $urutan === false ? 0 : $urutan;
+                                    @endphp
+                                    @foreach ($tahap as $kode => $label)
+                                        @php $aktif = array_search($kode, array_keys($tahap), true) <= $urutan; @endphp
+                                        <li class="flex-1">
+                                            <div class="h-1.5 rounded-full {{ $aktif ? 'bg-nu-deep' : 'bg-border-neutral' }}"></div>
+                                            <p class="mt-1.5 text-[11px] font-bold {{ $aktif ? 'text-nu-deep' : 'text-muted-charcoal' }}">{{ $label }}</p>
+                                        </li>
+                                    @endforeach
+                                </ol>
+                            </div>
+                        @else
+                            <div class="rounded-card bg-warm-bg border border-dashed border-border-subtle p-10 flex flex-col items-center text-center h-full justify-center">
+                                <span class="material-symbols-outlined text-muted-charcoal text-5xl mb-3">manage_search</span>
+                                <p class="text-base font-bold text-charcoal">Hasil pelacakan muncul di sini</p>
+                                <p class="mt-1.5 max-w-sm text-sm text-muted-charcoal">
+                                    Nomor pelacakan Anda terima tepat setelah mengirim aspirasi. Simpan baik-baik — nomor ini satu-satunya kunci untuk memantau statusnya.
+                                </p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

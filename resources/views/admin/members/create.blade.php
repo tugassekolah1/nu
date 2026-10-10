@@ -51,6 +51,15 @@
                     </div>
 
                     <div class="mb-4">
+                        <x-input-label for="organisasi" value="Organisasi / Banom (opsional)" />
+                        <select id="organisasi" name="organisasi"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            @include('partials.organisasi-options', ['selected' => old('organisasi')])
+                        </select>
+                        <p class="text-xs text-slate-500 mt-1">Banom yang diikuti anggota, mis. Fatayat, Ansor, IPNU. Boleh dikosongkan.</p>
+                    </div>
+
+                    <div class="mb-4">
                         <x-input-label for="address" value="Alamat" />
                         <textarea id="address" name="address" rows="3" required
                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('address') }}</textarea>

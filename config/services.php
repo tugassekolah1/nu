@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'google' => [
+        // Isi dengan Google Maps API key untuk mengaktifkan
+        // Places Autocomplete + peta Google di form admin.
+        // Kosongkan untuk memakai mode gratis (OpenStreetMap + Leaflet),
+        // link publik ke Google Maps tetap berfungsi tanpa key.
+        'maps_key' => env('GOOGLE_MAPS_API_KEY'),
+    ],
+
 ];

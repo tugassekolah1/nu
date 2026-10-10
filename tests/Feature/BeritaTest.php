@@ -2,6 +2,7 @@
 
 use App\Models\Berita;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 test('admin can create berita with jenis and slug', function () {
     $user = User::factory()->admin()->create();
@@ -303,7 +304,7 @@ test('public search shows empty state when nothing matches', function () {
 
     $this->get('/berita?q=zzzzz')
         ->assertOk()
-        ->assertSee('Tidak ada berita yang cocok dengan pencarian Anda.');
+        ->assertSee('Tidak ada berita yang cocok');
 });
 
 test('search and jenis filters are kept in the public pagination links', function () {
@@ -330,6 +331,362 @@ test('public berita list renders the editorial layout when there is no search', 
 
     $this->get('/berita')
         ->assertOk()
-        ->assertSee('Kabar Lainnya')
+        ->assertSee('Berita Utama')
+        ->assertSee('Berita Terbaru')
+        ->assertSee('Terbaru dari Redaksi')
         ->assertDontSee('Hasil Pencarian');
+});
+
+/**
+ * Urutan kemunculan judul berita di dalam HTML halaman.
+ */
+function urutanTampil(string $html, array $juduls): array
+{
+    $posisi = [];
+
+    foreach ($juduls as $judul) {
+        $pos = strpos($html, $judul);
+        if ($pos !== false) {
+            $posisi[$judul] = $pos;
+        }
+    }
+
+    asort($posisi);
+
+    return array_keys($posisi);
+}
+
+function seedBeritasPerUrutan(): User
+{
+    $user = User::factory()->admin()->create();
+
+    $data = [
+        ['judul' => 'Laporan Pertama Banom', 'views' => 10],
+        ['judul' => 'Laporan Kedua Banom', 'views' => 50],
+        ['judul' => 'Laporan Ketiga Banom', 'views' => 30],
+    ];
+
+    foreach ($data as $item) {
+        Berita::create([
+            'judul' => $item['judul'],
+            'slug' => Str::slug($item['judul']),
+            'jenis' => 'Kegiatan',
+            'isi' => 'Isi laporan banom.',
+            'user_id' => $user->id,
+            'status' => true,
+            'views' => $item['views'],
+        ]);
+    }
+
+    return $user;
+}
+
+test('public berita list sorts by terpopuler', function () {
+    seedBeritasPerUrutan();
+
+    $content = $this->get('/berita?q=laporan&sort=terpopuler')->assertOk()->getContent();
+
+    expect(urutanTampil($content, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Kedua Banom',   // 50 dibaca
+        'Laporan Ketiga Banom',  // 30 dibaca
+        'Laporan Pertama Banom', // 10 dibaca
+    ]);
+});
+
+test('public berita list sorts by terbaru and terlama', function () {
+    seedBeritasPerUrutan();
+
+    $baru = $this->get('/berita?q=laporan&sort=terbaru')->assertOk()->getContent();
+    expect(urutanTampil($baru, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Ketiga Banom',
+        'Laporan Kedua Banom',
+        'Laporan Pertama Banom',
+    ]);
+
+    $lama = $this->get('/berita?q=laporan&sort=terlama')->assertOk()->getContent();
+    expect(urutanTampil($lama, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]);
+});
+
+test('unknown sort option falls back to terbaru on the public list', function () {
+    seedBeritasPerUrutan();
+
+    $content = $this->get('/berita?q=laporan&sort=acak-kadang')->assertOk()->getContent();
+
+    expect(urutanTampil($content, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Ketiga Banom',
+        'Laporan Kedua Banom',
+        'Laporan Pertama Banom',
+    ]);
+});
+
+test('sort option is kept in the public pagination links', function () {
+    $user = seedBeritasPerUrutan();
+
+    foreach (range(1, 6) as $i) {
+        Berita::create([
+            'judul' => "Laporan Tambahan {$i}",
+            'slug' => "laporan-tambahan-{$i}",
+            'jenis' => 'Kegiatan',
+            'isi' => 'Isi laporan tambahan.',
+            'user_id' => $user->id,
+            'status' => true,
+            'views' => $i,
+        ]);
+    }
+
+    $this->get('/berita?q=laporan&sort=terpopuler')
+        ->assertOk()
+        ->assertSee('sort=terpopuler', false);
+});
+
+test('public berita list highlights the selected sort option', function () {
+    seedBeritasPerUrutan();
+
+    $this->get('/berita?sort=terpopuler')
+        ->assertOk()
+        ->assertSee('Terpopuler')
+        ->assertSee('Berita Terpopuler')
+        ->assertDontSee('Berita Terbaru');
+});
+
+test('public news card shows the view count', function () {
+    $user = seedBeritasPerUrutan();
+
+    $this->get('/berita?q=laporan')
+        ->assertOk()
+        ->assertSee('dibaca')
+        ->assertSee('50 dibaca');
+
+    expect(Berita::where('judul', 'Laporan Kedua Banom')->value('views'))->toBe(50)
+        ->and($user->exists)->toBeTrue();
+});
+
+test('public berita detail page counts the view and shows it', function () {
+    $user = User::factory()->admin()->create();
+
+    $berita = Berita::create([
+        'judul' => 'Berita Terhitung',
+        'slug' => 'berita-terhitung',
+        'jenis' => 'Berita',
+        'isi' => 'Isi berita.',
+        'user_id' => $user->id,
+        'status' => true,
+        'views' => 5,
+    ]);
+
+    $this->get("/berita/{$berita->slug}")
+        ->assertOk()
+        ->assertSee('6 kali dibaca');
+
+    expect($berita->refresh()->views)->toBe(6);
+});
+
+test('draft berita view count is not incremented', function () {
+    $user = User::factory()->admin()->create();
+
+    $berita = Berita::create([
+        'judul' => 'Draft Tidak Dihitung',
+        'slug' => 'draft-tidak-dihitung',
+        'jenis' => 'Artikel',
+        'isi' => 'Isi draft.',
+        'user_id' => $user->id,
+        'status' => false,
+        'views' => 3,
+    ]);
+
+    $this->get("/berita/{$berita->slug}")->assertNotFound();
+
+    expect($berita->refresh()->views)->toBe(3);
+});
+
+test('admin berita list shows the view statistics', function () {
+    seedBeritasPerUrutan();
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/admin/berita')
+        ->assertOk()
+        ->assertSee('Total Berita')
+        ->assertSee('Total Dibaca')
+        ->assertSee('Rata-rata / Berita')
+        ->assertSee('90') // 10 + 50 + 30
+        ->assertSee('30'); // rata-rata 90/3
+});
+
+test('admin berita list shows the views column and popular ranking', function () {
+    seedBeritasPerUrutan();
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/admin/berita')
+        ->assertOk()
+        ->assertSee('Dibaca')
+        ->assertSee('Paling Banyak Dibaca')
+        ->assertSeeInOrder([
+            'Laporan Kedua Banom',   // 50 dibaca
+            'Laporan Ketiga Banom',  // 30 dibaca
+            'Laporan Pertama Banom', // 10 dibaca
+        ]);
+});
+
+test('admin berita list can be sorted by views, newest, and oldest', function () {
+    $user = seedBeritasPerUrutan();
+
+    $terpopuler = $this->actingAs($user)->get('/admin/berita?sort=terpopuler')->assertOk()->getContent();
+    expect(urutanTampil($terpopuler, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+        'Laporan Pertama Banom',
+    ]);
+
+    $terbaru = $this->actingAs($user)->get('/admin/berita?sort=terbaru')->assertOk()->getContent();
+    expect(urutanTampil($terbaru, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Ketiga Banom',
+        'Laporan Kedua Banom',
+        'Laporan Pertama Banom',
+    ]);
+
+    $terlama = $this->actingAs($user)->get('/admin/berita?sort=terlama')->assertOk()->getContent();
+    expect(urutanTampil($terlama, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]);
+});
+
+test('unknown sort option falls back to terbaru on the admin list', function () {
+    $user = seedBeritasPerUrutan();
+
+    $content = $this->actingAs($user)->get('/admin/berita?sort=ngawur')->assertOk()->getContent();
+
+    expect(urutanTampil($content, [
+        'Laporan Pertama Banom',
+        'Laporan Kedua Banom',
+        'Laporan Ketiga Banom',
+    ]))->toBe([
+        'Laporan Ketiga Banom',
+        'Laporan Kedua Banom',
+        'Laporan Pertama Banom',
+    ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Statistik & grafik pembaca (admin)
+|--------------------------------------------------------------------------
+*/
+
+test('admin statistik berita page shows the charts', function () {
+    seedBeritasPerUrutan();
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/admin/berita/statistik')
+        ->assertOk()
+        ->assertSee('Statistik Pembaca Berita')
+        ->assertSee('Tren Pembaca 30 Hari Terakhir')
+        ->assertSee('10 Berita Terpopuler')
+        ->assertSee('Pembaca per Kanal')
+        ->assertSee('Total Dibaca');
+});
+
+test('admin statistik page needs an admin account', function () {
+    $this->get('/admin/berita/statistik')->assertRedirect();
+
+    $this->actingAs(User::factory()->create())
+        ->get('/admin/berita/statistik')
+        ->assertForbidden();
+});
+
+test('visiting a berita records the daily reader for the chart', function () {
+    $user = User::factory()->admin()->create();
+
+    $berita = Berita::create([
+        'judul' => 'Berita Bergrafik',
+        'slug' => 'berita-bergrafik',
+        'jenis' => 'Kegiatan',
+        'isi' => 'Isi berita.',
+        'user_id' => $user->id,
+        'status' => true,
+        'views' => 0,
+    ]);
+
+    expect(\App\Models\BeritaView::count())->toBe(0);
+
+    $this->get("/berita/{$berita->slug}")->assertOk();
+
+    $rekap = \App\Models\BeritaView::first();
+
+    expect($rekap->berita_id)->toBe($berita->id)
+        ->and($rekap->tanggal->toDateString())->toBe(now()->toDateString())
+        ->and($rekap->jumlah)->toBe(1)
+        ->and($berita->refresh()->views)->toBe(1);
+
+    // Kunjungan berikutnya menambah rekap hari ini, bukan membuat baris baru.
+    $this->get("/berita/{$berita->slug}")->assertOk();
+
+    expect(\App\Models\BeritaView::count())->toBe(1)
+        ->and($berita->refresh()->views)->toBe(2)
+        ->and(\App\Models\BeritaView::first()->jumlah)->toBe(2);
+});
+
+test('daily reader recap appears on the admin statistik page', function () {
+    $user = User::factory()->admin()->create();
+
+    $berita = Berita::create([
+        'judul' => 'Berita Rekap Harian',
+        'slug' => 'berita-rekap-harian',
+        'jenis' => 'Pengumuman',
+        'isi' => 'Isi berita.',
+        'user_id' => $user->id,
+        'status' => true,
+        'views' => 7,
+    ]);
+
+    foreach (range(1, 3) as $i) {
+        $this->get("/berita/{$berita->slug}")->assertOk();
+    }
+
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/admin/berita/statistik')
+        ->assertOk()
+        ->assertSee('Tren Pembaca 30 Hari Terakhir')
+        ->assertDontSee('Belum ada pembaca tercatat')
+        ->assertSee('Berita Rekap Harian');
+});
+
+test('statistik berita page is reachable and not swallowed by the berita resource', function () {
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/admin/berita/statistik')
+        ->assertOk()
+        ->assertSee('Tren Pembaca 30 Hari Terakhir');
 });

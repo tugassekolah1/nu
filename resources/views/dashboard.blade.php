@@ -161,6 +161,13 @@
                         {{ $totalNews ?? 0 }}
                     </h3>
                     <p class="text-xs text-slate-400 mt-1">Berita diterbitkan</p>
+                    <p class="mt-2 inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 bg-amber-50 rounded-lg px-2 py-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        {{ number_format($totalNewsViews ?? 0) }} kali dibaca
+                    </p>
                 </div>
                 
                 <div class="inline-flex items-center gap-2 text-xs font-bold text-teal-700 bg-teal-100/80 group-hover:bg-teal-600 group-hover:text-white px-3 py-2 rounded-xl transition-all duration-300 shadow-xs">
@@ -296,6 +303,112 @@
                 </a>
             @endif
         </div>
+    </div>
+
+    {{-- Section: Anggota per Organisasi / Banom (dengan filter status) --}}
+    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <h2 class="text-base font-bold text-slate-800">Anggota per Organisasi / Banom</h2>
+            </div>
+            <a href="{{ route('members.index') }}" class="text-xs font-bold text-emerald-700 hover:underline">Kelola anggota</a>
+        </div>
+
+        @php
+            $statusFilter = $statusFilter ?? 'all';
+            $perOrg = $membersPerOrganisasi ?? collect();
+            $pendingPerOrg = $pendingPerOrganisasi ?? collect();
+            $approvedPerOrg = $approvedPerOrganisasi ?? collect();
+            $filterTabs = [
+                'all' => 'Semua',
+                'pending' => 'Menunggu Disetujui',
+                'approved' => 'Sudah Disetujui',
+            ];
+            $filterCounts = [
+                'all' => (int) ($pendingCount ?? 0) + (int) ($approvedCount ?? 0),
+                'pending' => (int) ($pendingCount ?? 0),
+                'approved' => (int) ($approvedCount ?? 0),
+            ];
+        @endphp
+
+        {{-- Filter status persetujuan --}}
+        <div class="flex flex-wrap gap-2">
+            @foreach ($filterTabs as $value => $label)
+                <a href="{{ route('dashboard', $value === 'all' ? [] : ['status' => $value]) }}"
+                   @class([
+                       'px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 inline-flex items-center gap-1.5',
+                       'bg-emerald-600 text-white shadow-xs' => $statusFilter === $value,
+                       'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700' => $statusFilter !== $value,
+                   ])>
+                    {{ $label }}
+                    <span @class([
+                        'px-1.5 py-0.5 rounded-md text-[11px] font-black',
+                        'bg-white/20 text-white' => $statusFilter === $value,
+                        'bg-slate-100 text-slate-600' => $statusFilter !== $value,
+                    ])>{{ $filterCounts[$value] }}</span>
+                </a>
+            @endforeach
+        </div>
+
+        @foreach (\App\Models\NuMember::ORGANISASI_GROUPS as $group => $items)
+            <div>
+                <p class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">{{ $group }}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    @foreach ($items as $code => $desc)
+                        @php
+                            $jumlah = (int) ($perOrg[$code] ?? 0);
+                            $cardUrl = route('members.index', array_filter([
+                                'banom' => $code,
+                                'status' => $statusFilter === 'all' ? null : $statusFilter,
+                            ]));
+                        @endphp
+                        <a href="{{ $cardUrl }}"
+                           class="group p-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 hover:bg-emerald-50/50 hover:border-emerald-300 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]">
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-bold text-slate-800 group-hover:text-emerald-900 truncate" title="{{ \App\Models\Pengurus::BANOMS[$code]['label'] ?? $code }} — {{ $desc }}">
+                                        {{ \App\Models\Pengurus::BANOMS[$code]['label'] ?? $code }}
+                                    </p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5 truncate" title="{{ $desc }}">{{ $desc }}</p>
+                                </div>
+                                <span class="text-2xl font-black text-slate-900 group-hover:text-emerald-700 tracking-tight shrink-0">{{ $jumlah }}</span>
+                            </div>
+                            <div class="mt-2.5 flex items-center justify-between gap-2">
+                                @if ($statusFilter === 'all')
+                                    <span class="text-[11px] font-semibold text-slate-500">
+                                        <span class="text-amber-600 font-bold">{{ (int) ($pendingPerOrg[$code] ?? 0) }} menunggu</span>
+                                        <span class="text-slate-300 mx-1">•</span>
+                                        <span class="text-emerald-700 font-bold">{{ (int) ($approvedPerOrg[$code] ?? 0) }} disetujui</span>
+                                    </span>
+                                @else
+                                    <span class="text-[11px] font-semibold {{ $statusFilter === 'pending' ? 'text-amber-600' : 'text-emerald-700' }}">
+                                        {{ $statusFilter === 'pending' ? 'Menunggu persetujuan' : 'Sudah disetujui' }}
+                                    </span>
+                                @endif
+                                <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 group-hover:gap-2 transition-all">
+                                    Lihat
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                                    </svg>
+                                </span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endforeach
+
+        @if (($membersTanpaOrganisasi ?? 0) > 0)
+            <a href="{{ route('members.index', array_filter(['banom' => 'none', 'status' => $statusFilter === 'all' ? null : $statusFilter])) }}"
+               class="flex items-center gap-3 pt-3 border-t border-slate-100 group">
+                <span class="text-sm font-medium text-slate-400 italic group-hover:text-emerald-700">Tanpa organisasi</span>
+                <div class="flex-1"></div>
+                <span class="text-sm font-black text-slate-500">{{ $membersTanpaOrganisasi }} anggota →</span>
+            </a>
+        @endif
     </div>
 
     @if (auth()->user()->is_admin)

@@ -50,6 +50,52 @@
                 </div>
             @endif
 
+            {{-- Filter Status & Banom --}}
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    @php
+                        $statusTabs = ['all' => 'Semua', 'pending' => 'Menunggu Disetujui', 'approved' => 'Sudah Disetujui'];
+                        $banomQuery = array_filter(['banom' => ($banomFilter ?? 'all') === 'all' ? null : ($banomFilter ?? null)]);
+                    @endphp
+                    @foreach ($statusTabs as $value => $label)
+                        <a href="{{ route('members.index', array_merge($banomQuery, $value === 'all' ? [] : ['status' => $value])) }}"
+                           @class([
+                               'px-3.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95',
+                               'bg-emerald-600 text-white shadow-xs' => ($statusFilter ?? 'all') === $value,
+                               'bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700' => ($statusFilter ?? 'all') !== $value,
+                           ])>
+                            {{ $label }}
+                        </a>
+                    @endforeach
+
+                    <form action="{{ route('members.index') }}" method="GET" class="flex items-center gap-2 ml-auto">
+                        @if (($statusFilter ?? 'all') !== 'all')
+                            <input type="hidden" name="status" value="{{ $statusFilter }}">
+                        @endif
+                        <select name="banom" onchange="this.form.submit()"
+                                class="text-xs font-semibold text-slate-700 border border-slate-200 rounded-xl px-3 py-2 bg-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 cursor-pointer">
+                            <option value="all">Semua Banom</option>
+                            @foreach (\App\Models\NuMember::ORGANISASI_GROUPS as $group => $items)
+                                <optgroup label="{{ $group }}">
+                                    @foreach ($items as $code => $desc)
+                                        <option value="{{ $code }}" @selected(($banomFilter ?? 'all') === $code)>
+                                            {{ \App\Models\Pengurus::BANOMS[$code]['label'] ?? $code }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endforeach
+                            <option value="none" @selected(($banomFilter ?? 'all') === 'none')>Tanpa organisasi</option>
+                        </select>
+                        @if (($search ?? '') !== '' || ($statusFilter ?? 'all') !== 'all' || ($banomFilter ?? 'all') !== 'all')
+                            <a href="{{ route('members.index') }}"
+                               class="text-xs font-bold text-slate-400 hover:text-rose-600 transition-colors px-1">
+                                Reset
+                            </a>
+                        @endif
+                    </form>
+                </div>
+            </div>
+
             {{-- Main Table Card --}}
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
                 <div class="p-5 border-b border-slate-100 flex items-center justify-between">
@@ -65,6 +111,7 @@
                             <tr class="bg-slate-50 border-b border-slate-200/80 text-xs uppercase font-bold text-slate-500 tracking-wider">
                                 <th class="px-6 py-4">Informasi Diri</th>
                                 <th class="px-6 py-4">Kontak</th>
+                                <th class="px-6 py-4">Organisasi</th>
                                 <th class="px-6 py-4">No. Kartu</th>
                                 <th class="px-6 py-4">Status Pembayaran</th>
                                 <th class="px-6 py-4 text-center">Aksi</th>
@@ -95,6 +142,17 @@
                                     {{-- Telepon --}}
                                     <td class="px-6 py-4 text-slate-600 font-medium">
                                         {{ $member->phone }}
+                                    </td>
+
+                                    {{-- Organisasi / Banom --}}
+                                    <td class="px-6 py-4">
+                                        @if ($member->organisasi_label)
+                                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100/80 text-emerald-800 whitespace-nowrap">
+                                                {{ $member->organisasi_label }}
+                                            </span>
+                                        @else
+                                            <span class="text-slate-400 italic text-xs">—</span>
+                                        @endif
                                     </td>
 
                                     {{-- No Kartu --}}
@@ -196,7 +254,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center py-12">
+                                    <td colspan="6" class="text-center py-12">
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <div class="p-4 bg-slate-100 text-slate-400 rounded-full">
                                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

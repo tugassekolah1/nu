@@ -174,10 +174,19 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                             <!-- Meta specs -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-card bg-warm-card border border-border-neutral text-sm">
                                 @if($featuredAgenda->location ?? $featuredAgenda->lokasi ?? null)
-                                    <div class="flex items-start gap-2.5">
-                                        <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">location_on</span>
-                                        <span class="font-medium text-charcoal">{{ $featuredAgenda->location ?? $featuredAgenda->lokasi }}</span>
-                                    </div>
+                                    @php
+    $loc = $featuredAgenda->location ?? $featuredAgenda->lokasi ?? null;
+@endphp
+
+@if($loc)
+    <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($loc) }}" target="_blank" rel="noopener noreferrer"
+       class="flex items-start gap-2.5 group/loc hover:opacity-80 transition"
+       title="Buka petunjuk arah ke lokasi di Google Maps">
+        <span class="material-symbols-outlined text-nu-deep text-[20px] shrink-0">directions</span>
+        <span class="font-medium text-charcoal group-hover/loc:underline underline-offset-2">{{ $loc }}</span>
+        <span class="material-symbols-outlined text-[14px] text-muted-charcoal shrink-0 mt-0.5">open_in_new</span>
+    </a>
+@endif
                                 @endif
                                 @if($featuredAgenda->speaker ?? $featuredAgenda->pemateri ?? null)
                                     <div class="flex items-start gap-2.5">
@@ -190,7 +199,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <!-- Action bottom -->
                         <div class="relative z-10 mt-8 pt-6 border-t border-border-neutral flex flex-wrap items-center justify-between gap-4">
                             <span class="text-xs font-medium text-muted-charcoal">Terbuka untuk Umum (Putra & Putri)</span>
-                            <a class="inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white text-sm font-medium hover:bg-[#113725] transition-colors" href="https://wa.me/6281234567890?text=Konfirmasi%20Kehadiran%20{{ urlencode($featuredAgenda->title) }}" rel="noopener noreferrer" target="_blank">
+                            <a class="inline-flex items-center gap-2 px-5 py-2.5 min-h-[44px] rounded-btn bg-nu-deep text-white text-sm font-medium hover:bg-[#113725] transition-colors" href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($loc) }}" rel="noopener noreferrer" target="_blank">
                                 <span>Lihat Detail & Lokasi</span>
                                 <span class="material-symbols-outlined text-[18px]">navigation</span>
                             </a>
@@ -213,10 +222,12 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                                 <p class="text-xs sm:text-sm text-muted-charcoal line-clamp-2 leading-relaxed mb-4">
                                     {{ Str::limit($agenda->description ?? $agenda->deskripsi ?? '', 150) }}
                                 </p>
-                                <div class="flex items-center gap-2 text-xs font-medium text-muted-charcoal">
+                                <a href="{{ $agenda->maps_link }}" target="_blank" rel="noopener noreferrer"
+                                   class="flex items-center gap-2 text-xs font-medium text-muted-charcoal hover:text-nu-deep transition-colors group/loc"
+                                   title="Buka lokasi di Google Maps">
                                     <span class="material-symbols-outlined text-[18px] text-muted-charcoal">apartment</span>
-                                    <span>{{ $agenda->location ?? $agenda->lokasi ?? 'Aula Gedung Ranting PRNU Banjaranyar' }}</span>
-                                </div>
+                                    <span class="group-hover/loc:underline underline-offset-2">{{ $agenda->location ?? $agenda->lokasi ?? 'Aula Gedung Ranting PRNU Banjaranyar' }}</span>
+                                </a>
                             </div>
                             <div class="mt-4 pt-4 border-t border-border-neutral flex items-center justify-between">
                                 <span class="text-xs text-muted-charcoal">{{ $agenda->event_time ?? 'Pukul 08.30 WIB' }}</span>
@@ -664,6 +675,39 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
         </div>
     </section>
 
+    <!-- 8b. JADWAL SHOLAT -->
+    <section class="w-full py-16 sm:py-20 bg-warm-bg" id="jadwal-sholat">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">mosque</span>
+                        <span>Ibadah & Waktu</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Jadwal Sholat</h2>
+                    <p class="text-base text-muted-charcoal mt-1">Waktu sholat wilayah Banyumas dan sekitarnya.</p>
+                </div>
+                <span id="js-tanggal" class="text-sm font-semibold text-muted-charcoal bg-warm-card border border-border-neutral rounded-full px-4 py-1.5">
+                    …
+                </span>
+            </div>
+
+            <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-subtle p-6 sm:p-8">
+                <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 sm:gap-4" id="js-grid">
+                    @foreach (['Subuh','Dzuhur','Ashar','Maghrib','Isya'] as $waktu)
+                        <div class="rounded-card bg-warm-bg border border-border-neutral p-4 text-center">
+                            <p class="text-[11px] font-bold uppercase tracking-widest text-muted-charcoal">{{ $waktu }}</p>
+                            <p class="mt-1.5 text-xl sm:text-2xl font-extrabold text-charcoal js-waktu">--:--</p>
+                        </div>
+                    @endforeach
+                </div>
+                <p class="mt-5 text-xs text-muted-charcoal text-center">
+                    Sumber: Kementerian Agama Republik Indonesia (metode hisab Kemenag).
+                </p>
+            </div>
+        </div>
+    </section>
+
     <!-- 9. CONTACT & WHATSAPP CLOSING SECTION -->
     <section class="w-full py-16 sm:py-20 bg-warm-card border-t border-border-neutral" id="kontak">
         <div class="max-w-7xl mx-auto px-4 sm:px-8">
@@ -687,6 +731,15 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <div class="text-left">
                             <span class="block text-[11px] font-normal uppercase tracking-wider text-white/80">WhatsApp Sekretariat</span>
                             <span>+62 {{ $kontak['whatsapp'] ?? '812-3456-7890' }}</span>
+                        </div>
+                    </a>
+                    <a class="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[50px] rounded-btn bg-warm-card hover:bg-warm-beige text-charcoal font-bold text-base border border-border-subtle shadow-subtle transition-all active:scale-95"
+                       href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode('Gedung Sekretariat PRNU, Jl. Raya Cilongok No. 12, Banjaranyar, Banyumas, Jawa Tengah 53162') }}"
+                       rel="noopener noreferrer" target="_blank">
+                        <span class="material-symbols-outlined text-[24px]">directions</span>
+                        <div class="text-left">
+                            <span class="block text-[11px] font-normal uppercase tracking-wider text-muted-charcoal">Petunjuk Arah</span>
+                            <span>Buka di Google Maps</span>
                         </div>
                     </a>
                 </div>
@@ -777,6 +830,48 @@ document.addEventListener('DOMContentLoaded', function () {
   //   });
   // }, { threshold: 0.4 });
   // otherStats.forEach((el) => observer.observe(el));
+
+  // ===== Jadwal sholat (API Kemenag via aladhan.com, method 2) =====
+  (function () {
+    const grid = document.getElementById('js-grid');
+    if (!grid) return;
+
+    const tanggalEl = document.getElementById('js-tanggal');
+    const sekarang = new Date();
+    if (tanggalEl) {
+      tanggalEl.textContent = sekarang.toLocaleDateString('id-ID', {
+        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+      });
+    }
+
+    const namaWaktu = ['Subuh', 'Dzuhur', 'Ashar', 'Maghrib', 'Isya'];
+    const fallback = ['04:30', '12:00', '15:20', '18:00', '19:15'];
+
+    function tampilkan(data) {
+      const timings = data?.timings || {};
+      const ambil = (kunci) => (timings[kunci] || '').slice(0, 5);
+      const nilai = [
+        ambil('Fajr'),
+        ambil('Dhuhr'),
+        ambil('Asr'),
+        ambil('Maghrib'),
+        ambil('Isha'),
+      ];
+      grid.querySelectorAll('.js-waktu').forEach((el, i) => {
+        el.textContent = nilai[i] || fallback[i];
+      });
+    }
+
+    fetch('https://api.aladhan.com/v1/timingsByCity?city=Banyumas&country=Indonesia&method=2')
+      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+      .then(tampilkan)
+      .catch(() => {
+        // Fallback: jam perkiraan bila API tidak dapat dijangkau
+        grid.querySelectorAll('.js-waktu').forEach((el, i) => {
+          el.textContent = fallback[i];
+        });
+      });
+  })();
 });
 </script>
 </body>

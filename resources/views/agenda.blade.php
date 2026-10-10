@@ -168,10 +168,15 @@
 
                         <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-card bg-warm-bg border border-border-neutral text-sm">
                             @if ($featured->location)
-                                <div class="flex items-start gap-2.5">
-                                    <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">location_on</span>
-                                    <span class="font-medium text-charcoal">{{ $featured->location }}</span>
-                                </div>
+                                <a href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($featured->location) }}" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="flex items-start gap-2.5 group/loc hover:bg-warm-beige/60 -m-1 p-1 rounded-lg transition-colors"
+           title="Buka petunjuk arah ke lokasi di Google Maps">
+            <span class="material-symbols-outlined text-nu-deep text-[20px] shrink-0">directions</span>
+            <span class="font-medium text-charcoal group-hover/loc:text-nu-deep group-hover/loc:underline underline-offset-2">{{ $featured->location }}</span>
+            <span class="material-symbols-outlined text-[14px] text-muted-charcoal shrink-0 mt-0.5">open_in_new</span>
+        </a>
                             @endif
                             <div class="flex items-start gap-2.5">
                                 <span class="material-symbols-outlined text-muted-charcoal text-[20px] shrink-0">event</span>
@@ -182,8 +187,26 @@
                             </div>
                         </div>
 
+                        @if ($featured->embed_url)
+                            <div class="mt-4 overflow-hidden rounded-card border border-border-neutral">
+                                <iframe title="Peta lokasi {{ $featured->title }}"
+                                        src="{{ $featured->embed_url }}"
+                                        class="w-full h-56 sm:h-64" style="border:0" loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                            </div>
+                        @endif
+
                         <div class="mt-auto pt-8 flex flex-wrap items-center justify-between gap-4">
-                            <span class="text-xs font-medium text-muted-charcoal">Terbuka untuk umum</span>
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <span class="text-xs font-medium text-muted-charcoal">Terbuka untuk umum</span>
+                                @if ($featured->maps_link)
+                                    <a class="inline-flex items-center gap-1.5 px-4 py-2 min-h-[40px] rounded-full bg-muted-sage text-charcoal text-xs font-bold hover:bg-warm-beige transition-all active:scale-95 border border-border-neutral"
+                                       href="https://www.google.com/maps/dir/?api=1&destination={{ urlencode($featured->location) }}" target="_blank" rel="noopener noreferrer">
+                                        <span class="material-symbols-outlined text-[16px]">directions</span>
+                                        <span>Buka di Google Maps</span>
+                                    </a>
+                                @endif
+                            </div>
                             <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95"
                                href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, saya ingin bertanya tentang agenda: ' . $featured->title) }}"
                                rel="noopener noreferrer" target="_blank">
@@ -230,10 +253,13 @@
                                     <span class="material-symbols-outlined text-[16px]">schedule</span>
                                     <span>{{ $agenda->event_time ?? 'Waktu menyusul' }}</span>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <a href="{{ $agenda->maps_link }}" target="_blank" rel="noopener noreferrer"
+                                   class="flex items-center gap-2 hover:text-nu-deep transition-colors group/loc"
+                                   title="Buka lokasi di Google Maps">
                                     <span class="material-symbols-outlined text-[16px]">location_on</span>
-                                    <span class="truncate">{{ $agenda->location ?? 'Sekretariat PRNU Banjaranyar' }}</span>
-                                </div>
+                                    <span class="truncate group-hover/loc:underline underline-offset-2">{{ $agenda->location ?? 'Sekretariat PRNU Banjaranyar' }}</span>
+                                    <span class="material-symbols-outlined text-[13px] shrink-0">open_in_new</span>
+                                </a>
                             </div>
                         </article>
                     @endforeach
@@ -326,10 +352,13 @@
                                             <span class="material-symbols-outlined text-[16px]">schedule</span>
                                             {{ $agenda->event_time ?? 'Waktu menyusul' }}
                                         </span>
-                                        <span class="inline-flex items-center gap-1.5">
+                                        <a href="{{ $agenda->maps_link }}" target="_blank" rel="noopener noreferrer"
+                                           class="inline-flex items-center gap-1.5 hover:text-nu-deep transition-colors group/loc"
+                                           title="Buka lokasi di Google Maps">
                                             <span class="material-symbols-outlined text-[16px]">location_on</span>
-                                            <span class="truncate">{{ $agenda->location ?? 'Sekretariat PRNU Banjaranyar' }}</span>
-                                        </span>
+                                            <span class="truncate max-w-55 group-hover/loc:underline underline-offset-2">{{ $agenda->location ?? 'Sekretariat PRNU Banjaranyar' }}</span>
+                                            <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                                        </a>
                                     </div>
                                 </div>
                             </article>

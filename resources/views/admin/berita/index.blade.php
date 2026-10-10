@@ -16,15 +16,29 @@
             </div>
 
             <div class="flex items-center gap-3">
-                
+                <a href="{{ route('berita.public') }}" target="_blank" rel="noopener"
+                   class="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border border-slate-200/80 shadow-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/>
+                    </svg>
+                    <span>Beranda Berita</span>
+                </a>
+
+                <a href="{{ route('berita.statistik') }}"
+                   class="inline-flex items-center gap-2 bg-white hover:bg-teal-50 text-teal-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border border-slate-200/80 shadow-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+                    </svg>
+                    <span>Statistik Grafik</span>
+                </a>
 
                 <a href="{{ route('berita.create') }}"
-               class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-xs hover:shadow-emerald-200 hover:shadow-md">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>Tambah Berita Baru</span>
-            </a>
+                   class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-xs hover:shadow-emerald-200 hover:shadow-md">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>Tambah Berita Baru</span>
+                </a>
             </div>
         </div>
     </x-slot>
@@ -45,7 +59,63 @@
                 </div>
             @endif
 
-            {{-- Pencarian & Filter --}}
+            {{-- Statistik Ringkas --}}
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {{-- Total Berita --}}
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 flex items-center gap-3.5">
+                    <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-2xl font-black text-slate-900 leading-none">{{ number_format($stats['total']) }}</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-1.5">Total Berita</p>
+                    </div>
+                </div>
+
+                {{-- Terbit --}}
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 flex items-center gap-3.5">
+                    <div class="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-2xl font-black text-slate-900 leading-none">{{ number_format($stats['publish']) }}</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-1.5">Terbit · <span class="text-slate-400">{{ $stats['draft'] }} draft</span></p>
+                    </div>
+                </div>
+
+                {{-- Total Pembaca --}}
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 flex items-center gap-3.5">
+                    <div class="p-2.5 bg-amber-50 text-amber-600 rounded-xl shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-2xl font-black text-slate-900 leading-none">{{ number_format($stats['views']) }}</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-1.5">Total Dibaca</p>
+                    </div>
+                </div>
+
+                {{-- Rata-rata Pembaca --}}
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 flex items-center gap-3.5">
+                    <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-2xl font-black text-slate-900 leading-none">{{ number_format($stats['rataViews']) }}</p>
+                        <p class="text-xs font-semibold text-slate-500 mt-1.5">Rata-rata / Berita</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pencarian, Filter & Urutan --}}
             <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4">
                 <form method="GET" action="{{ route('berita.index') }}"
                       class="flex flex-col sm:flex-row gap-3 sm:items-center">
@@ -66,6 +136,16 @@
                         @foreach (\App\Models\Berita::JENIS as $pilihan)
                             <option value="{{ $pilihan }}" {{ ($jenis ?? '') === $pilihan ? 'selected' : '' }}>
                                 {{ $pilihan }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <select name="sort" onchange="this.form.submit()"
+                            aria-label="Urutkan berita"
+                            class="sm:w-44 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-700 font-semibold focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                        @foreach (\App\Models\Berita::SORTS as $nilai => $label)
+                            <option value="{{ $nilai }}" {{ ($sort ?? 'terbaru') === $nilai ? 'selected' : '' }}>
+                                {{ $label }}
                             </option>
                         @endforeach
                     </select>
@@ -110,6 +190,7 @@
                                 <th class="px-6 py-4">Jenis</th>
                                 <th class="px-6 py-4">Penulis</th>
                                 <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4">Dibaca</th>
                                 <th class="px-6 py-4">Tanggal</th>
                                 <th class="px-6 py-4 text-center">Aksi</th>
                             </tr>
@@ -165,6 +246,17 @@
                                         @endif
                                     </td>
 
+                                    {{-- Jumlah Pembaca --}}
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center gap-1.5 text-sm font-bold text-slate-700">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            </svg>
+                                            {{ number_format($berita->views) }}
+                                        </span>
+                                    </td>
+
                                     {{-- Tanggal --}}
                                     <td class="px-6 py-4 text-slate-600 font-medium">
                                         {{ $berita->created_at->format('d M Y') }}
@@ -199,7 +291,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-12">
+                                    <td colspan="8" class="text-center py-12">
                                         <div class="flex flex-col items-center justify-center space-y-3">
                                             <div class="p-4 bg-slate-100 text-slate-400 rounded-full">
                                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,6 +328,52 @@
                     </div>
                 @endif
             </div>
+
+            {{-- Peringkat Paling Banyak Dibaca (hanya saat tidak ada filter aktif) --}}
+            @if (! $filtering && $terpopuler->isNotEmpty())
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 flex items-center gap-3">
+                        <div class="p-2 bg-amber-50 text-amber-600 rounded-xl">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-800">Paling Banyak Dibaca</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Lima berita teratas berdasarkan jumlah pembaca.</p>
+                        </div>
+                    </div>
+
+                    <ol class="divide-y divide-slate-100">
+                        @foreach ($terpopuler as $index => $item)
+                            <li class="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50/80 transition-colors">
+                                <span class="w-7 shrink-0 text-center font-heading text-lg font-extrabold text-slate-300">
+                                    {{ $index + 1 }}
+                                </span>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-bold text-slate-800 truncate">{{ $item->judul }}</p>
+                                    <p class="text-xs text-slate-400 mt-0.5">
+                                        {{ $item->jenis }} · terbit {{ $item->created_at->format('d M Y') }}
+                                    </p>
+                                </div>
+                                <span class="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    {{ number_format($item->views) }}
+                                </span>
+                                <a href="{{ route('berita.edit', $item) }}"
+                                   class="shrink-0 rounded-lg p-1.5 text-slate-400 hover:bg-white hover:text-blue-600 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
+            @endif
 
         </div>
     </div>

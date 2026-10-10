@@ -254,6 +254,10 @@
                             </li>
                         @endforeach
                     </ul>
+                    <a href="{{ route('struktur') }}" class="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-bold text-[#1F5A3F] hover:underline underline-offset-4">
+                        Lihat mode piramida per organisasi
+                        <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                    </a>
                 </div>
 
                 @foreach ($sections as $section)
@@ -283,17 +287,18 @@
 
                         @if ($ketua)
                             <!-- KARTU KETUA (penekanan hierarki) -->
-                            <article class="mb-6 flex flex-col items-center gap-6 rounded-[28px] border border-[#C99A2E]/30 bg-[#16452F] p-6 text-center text-white sm:flex-row sm:p-8 sm:text-left">
+                            <a href="{{ route('struktur.show', $ketua) }}" aria-label="Lihat profil {{ $ketua->nama }} — {{ $ketua->jabatan }}"
+                               class="group mb-6 flex flex-col items-center gap-6 rounded-[28px] border border-[#C99A2E]/30 bg-[#16452F] p-6 text-center text-white transition duration-300 hover:shadow-[0_10px_30px_rgba(23,24,22,0.12)] sm:flex-row sm:p-8 sm:text-left">
                                 <div class="h-40 w-32 shrink-0 overflow-hidden rounded-2xl border-2 border-white/20 bg-white/10">
                                     @if ($ketua->foto)
-                                        <img src="{{ asset('storage/' . $ketua->foto) }}" alt="Foto {{ $ketua->nama }}" loading="lazy" class="h-full w-full object-cover">
+                                        <img src="{{ asset('storage/' . $ketua->foto) }}" alt="Foto {{ $ketua->nama }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
                                     @else
                                         <div class="flex h-full w-full items-center justify-center text-3xl font-extrabold text-white/50">
                                             {{ \Illuminate\Support\Str::of($ketua->nama)->explode(' ')->filter()->map(fn ($w) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($w, 0, 1)))->take(2)->implode('') }}
                                         </div>
                                     @endif
                                 </div>
-                                <div class="min-w-0">
+                                <div class="min-w-0 flex-1">
                                     <span class="inline-flex rounded-full border border-[#C99A2E]/40 bg-[#C99A2E]/20 px-3.5 py-1.5 text-xs font-extrabold uppercase tracking-wider text-[#F3DFAE]">
                                         {{ $ketua->jabatan }}
                                     </span>
@@ -301,8 +306,12 @@
                                     <p class="mt-2 text-base leading-relaxed text-white/75">
                                         Pimpinan {{ $section['label'] }} Desa Banjaranyar periode berjalan.
                                     </p>
+                                    <span class="mt-3 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#F3DFAE] opacity-0 transition-opacity group-hover:opacity-100">
+                                        Lihat Profil
+                                        <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                                    </span>
                                 </div>
-                            </article>
+                            </a>
                         @endif
 
                         @if ($anggota->isNotEmpty())
@@ -311,7 +320,8 @@
                                     @php
                                         $inisial = \Illuminate\Support\Str::of($item->nama)->explode(' ')->filter()->map(fn ($w) => \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($w, 0, 1)))->take(2)->implode('');
                                     @endphp
-                                    <article class="group flex flex-col items-center gap-3 rounded-3xl border border-[#DCE4DE] bg-white p-5 text-center transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(23,24,22,0.08)]">
+                                    <a href="{{ route('struktur.show', $item) }}" aria-label="Lihat profil {{ $item->nama }} — {{ $item->jabatan }}"
+                                       class="group flex flex-col items-center gap-3 rounded-3xl border border-[#DCE4DE] bg-white p-5 text-center transition duration-300 hover:-translate-y-0.5 hover:border-[#1F5A3F]/40 hover:shadow-[0_10px_30px_rgba(23,24,22,0.08)]">
                                         <div class="h-36 w-28 overflow-hidden rounded-2xl border border-[#DCE4DE] bg-[#F5F7F4] sm:h-40 sm:w-32">
                                             @if ($item->foto)
                                                 <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto {{ $item->nama }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
@@ -322,10 +332,14 @@
                                             @endif
                                         </div>
                                         <div class="w-full">
-                                            <h3 class="text-base font-bold leading-snug text-[#17392D]">{{ $item->nama }}</h3>
+                                            <h3 class="text-base font-bold leading-snug text-[#17392D] group-hover:text-[#1F5A3F]">{{ $item->nama }}</h3>
                                             <p class="mt-1 text-base leading-snug text-[#526158]">{{ $item->jabatan }}</p>
+                                            <span class="mt-2 inline-flex items-center gap-1 text-xs font-bold text-[#1F5A3F] opacity-0 transition-opacity group-hover:opacity-100">
+                                                Lihat Profil
+                                                <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                            </span>
                                         </div>
-                                    </article>
+                                    </a>
                                 @endforeach
                             </div>
                         @endif

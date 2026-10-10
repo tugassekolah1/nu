@@ -126,6 +126,7 @@
                     @if (!empty($jenis))
                         <input type="hidden" name="jenis" value="{{ $jenis }}"/>
                     @endif
+                    <input type="hidden" name="sort" value="{{ $sort ?? 'terbaru' }}"/>
                     <button type="submit"
                             class="min-h-[48px] px-7 rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95">
                         Cari
@@ -144,17 +145,39 @@
                         <span class="material-symbols-outlined text-[16px]">label</span>
                         Kanal:
                     </span>
-                    <a href="{{ route('berita.public', array_filter(['q' => $q])) }}"
+                    <a href="{{ route('berita.public', array_filter(['q' => $q, 'sort' => $sort])) }}"
                        class="{{ empty($jenis) ? 'bg-nu-deep text-white border-nu-deep' : 'bg-warm-card text-charcoal border-border-neutral hover:bg-warm-beige/60' }} min-h-[44px] inline-flex items-center gap-2 px-5 rounded-full border text-sm font-semibold transition-colors">
                         Semua
                     </a>
                     @foreach (\App\Models\Berita::JENIS as $pilihan)
-                        <a href="{{ route('berita.public', array_filter(['q' => $q, 'jenis' => $pilihan])) }}"
+                        <a href="{{ route('berita.public', array_filter(['q' => $q, 'jenis' => $pilihan, 'sort' => $sort])) }}"
                            class="{{ ($jenis ?? '') === $pilihan ? 'bg-nu-deep text-white border-nu-deep' : 'bg-warm-card text-charcoal border-border-neutral hover:bg-warm-beige/60' }} min-h-[44px] inline-flex items-center gap-2 px-5 rounded-full border text-sm font-semibold transition-colors">
                             {{ $pilihan }}
                             @isset($kanalCounts[$pilihan])
                                 <span class="{{ ($jenis ?? '') === $pilihan ? 'bg-white/20 text-white' : 'bg-muted-sage text-muted-charcoal' }} text-[11px] font-bold px-2 py-0.5 rounded-full">{{ $kanalCounts[$pilihan] }}</span>
                             @endisset
+                        </a>
+                    @endforeach
+                </div>
+
+                {{-- Urutan tampil: Terbaru / Terpopuler / Terlama --}}
+                <div class="flex flex-wrap items-center gap-2.5 pt-1 border-t border-border-neutral">
+                    <span class="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-charcoal mr-1 mt-2">
+                        <span class="material-symbols-outlined text-[16px]">sort</span>
+                        Urutkan:
+                    </span>
+                    @php
+                        $ikonSort = ['terbaru' => 'schedule', 'terpopuler' => 'trending_up', 'terlama' => 'history'];
+                    @endphp
+                    @foreach (\App\Models\Berita::SORTS as $nilai => $label)
+                        <a href="{{ route('berita.public', array_filter(['q' => $q, 'jenis' => $jenis, 'sort' => $nilai])) }}"
+                           @class([
+                               'mt-2 min-h-[44px] inline-flex items-center gap-2 px-5 rounded-full border text-sm font-semibold transition-colors',
+                               'bg-nu-deep text-white border-nu-deep' => ($sort ?? 'terbaru') === $nilai,
+                               'bg-warm-card text-charcoal border-border-neutral hover:bg-warm-beige/60' => ($sort ?? 'terbaru') !== $nilai,
+                           ])>
+                            <span class="material-symbols-outlined text-[16px]">{{ $ikonSort[$nilai] }}</span>
+                            {{ $label }}
                         </a>
                     @endforeach
                 </div>
@@ -209,8 +232,15 @@
         @else
 
             {{-- ========================================== --}}
-            {{-- LEAD STORY (Berita Utama) --}}
+            {{-- LEAD STORY (menyesuaikan urutan yang dipilih) --}}
             {{-- ========================================== --}}
+            @php
+                $judulLead = [
+                    'terbaru' => ['label' => 'Berita Utama', 'ikon' => 'star'],
+                    'terpopuler' => ['label' => 'Paling Banyak Dibaca', 'ikon' => 'trending_up'],
+                    'terlama' => ['label' => 'Arsip Terlama', 'ikon' => 'history'],
+                ][$sort ?? 'terbaru'];
+            @endphp
             @if ($newsList->isNotEmpty())
                 @php $featuredNews = $newsList->first(); @endphp
                 <section class="max-w-7xl mx-auto px-4 sm:px-8 py-10 reveal">
@@ -227,7 +257,7 @@
                             @endif
                             <span class="absolute top-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-nu-deep/90 backdrop-blur-sm text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 border border-white/15">
                                 <span class="w-1.5 h-1.5 rounded-full bg-muted-gold"></span>
-                                Berita Utama
+                                {{ $judulLead['label'] }}
                             </span>
                         </div>
 
@@ -238,6 +268,10 @@
                                 </span>
                                 <span class="text-xs font-semibold text-muted-charcoal">
                                     {{ $featuredNews->created_at->locale('id')->translatedFormat('d F Y') }}
+                                </span>
+                                <span class="inline-flex items-center gap-1 text-xs font-semibold text-muted-charcoal">
+                                    <span class="material-symbols-outlined text-[15px]">visibility</span>
+                                    {{ number_format($featuredNews->views) }} kali dibaca
                                 </span>
                             </div>
 
@@ -262,17 +296,24 @@
             @endif
 
             {{-- ========================================== --}}
-            {{-- BERITA TERBARU + SIDEBAR --}}
+            {{-- DAFTAR BERITA + SIDEBAR --}}
             {{-- ========================================== --}}
+            @php
+                $judulBagian = [
+                    'terbaru' => ['badge' => 'Terbaru dari Redaksi', 'judul' => 'Berita Terbaru', 'deskripsi' => 'Kabar terkini dari ranting dan lembaga Banjaranyar.', 'ikon' => 'history'],
+                    'terpopuler' => ['badge' => 'Paling Banyak Dibaca', 'judul' => 'Berita Terpopuler', 'deskripsi' => 'Berita yang paling sering dibaca pengunjung.', 'ikon' => 'trending_up'],
+                    'terlama' => ['badge' => 'Arsip Awal', 'judul' => 'Berita Terlama', 'deskripsi' => 'Berita awal yang menjadi cikal bakal informasi ini.', 'ikon' => 'history'],
+                ][$sort ?? 'terbaru'];
+            @endphp
             <section class="max-w-7xl mx-auto px-4 sm:px-8 py-6 pb-4 reveal">
                 <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                     <div>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-3 border border-border-neutral">
-                            <span class="material-symbols-outlined text-[16px] text-muted-charcoal">history</span>
-                            Terbaru dari Redaksi
+                            <span class="material-symbols-outlined text-[16px] text-muted-charcoal">{{ $judulBagian['ikon'] }}</span>
+                            {{ $judulBagian['badge'] }}
                         </span>
-                        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Berita Terbaru</h2>
-                        <p class="text-base text-muted-charcoal mt-2">Kabar terkini dari ranting dan lembaga Banjaranyar.</p>
+                        <h2 class="font-heading text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">{{ $judulBagian['judul'] }}</h2>
+                        <p class="text-base text-muted-charcoal mt-2">{{ $judulBagian['deskripsi'] }}</p>
                     </div>
                     <span class="text-sm font-semibold text-muted-charcoal bg-warm-card border border-border-neutral rounded-full px-4 py-1.5">
                         {{ $newsList->total() }} berita

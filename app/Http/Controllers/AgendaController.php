@@ -42,6 +42,9 @@ class AgendaController extends Controller
             'event_date'  => 'required|date',
             'event_time'  => 'nullable|max:50',
             'location'    => 'nullable|max:255',
+            'latitude'    => 'nullable|numeric|between:-90,90',
+            'longitude'   => 'nullable|numeric|between:-180,180',
+            'maps_url'    => 'nullable|url|max:500',
             'description' => 'nullable',
         ]);
 
@@ -65,6 +68,9 @@ class AgendaController extends Controller
             'event_date'  => 'required|date',
             'event_time'  => 'nullable|max:50',
             'location'    => 'nullable|max:255',
+            'latitude'    => 'nullable|numeric|between:-90,90',
+            'longitude'   => 'nullable|numeric|between:-180,180',
+            'maps_url'    => 'nullable|url|max:500',
             'description' => 'nullable',
         ]);
 

@@ -18,12 +18,15 @@ class BeritaFactory extends Factory
     public function definition(): array
     {
         return [
-    'judul' => fake()->sentence(8),
-    'slug' => fake()->unique()->slug(),
-    'isi' => fake()->paragraphs(5, true),
-'gambar' => 'https://picsum.photos/800/600?random=' . $this->faker->unique()->numberBetween(1, 1000),    'user_id' => 1,
-    'status' => true,
-];
+            'judul' => fake()->sentence(8),
+            'slug' => fake()->unique()->slug(),
+            'isi' => fake()->paragraphs(5, true),
+            'gambar' => 'https://picsum.photos/800/600?random=' . $this->faker->unique()->numberBetween(1, 1000),
+            'user_id' => 1,
+            'jenis' => fake()->randomElement(Berita::JENIS),
+            'status' => true,
+            'views' => fake()->numberBetween(0, 500),
+        ];
 
     }
 }

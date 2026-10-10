@@ -30,12 +30,12 @@ test('guest can open the public kotak aspirasi page', function () {
 });
 
 test('visitor can send an aspiration', function () {
-    $this->from('/aspirasi')
-        ->post('/aspirasi', payloadAspirasi())
-        ->assertSessionHasNoErrors()
-        ->assertRedirect(route('aspirasi.index'));
+    $response = $this->from('/aspirasi')
+        ->post('/aspirasi', payloadAspirasi());
+    $response->assertSessionHasNoErrors();
 
     $aspirasi = Aspirasi::sole();
+    $response->assertRedirect(route('aspirasi.lacak', ['kode' => $aspirasi->kode]));
 
     expect($aspirasi->nama)->toBe('Budi Santoso')
         ->and($aspirasi->email)->toBe('budi@example.com')
@@ -43,18 +43,23 @@ test('visitor can send an aspiration', function () {
         ->and($aspirasi->kategori)->toBe('kegiatan')
         ->and($aspirasi->isi)->toBe('Usulan agar pengajian rutin ditambah setiap malam Jumat.')
         ->and($aspirasi->status)->toBe('baru')
-        ->and($aspirasi->tanggapan)->toBeNull();
+        ->and($aspirasi->tanggapan)->toBeNull()
+        ->and($aspirasi->kode)->toMatch('/^ASP-[A-Z0-9]{8}$/');
+
+    $this->get(route('aspirasi.lacak', ['kode' => $aspirasi->kode]))
+        ->assertOk()
+        ->assertSee($aspirasi->kode, false);
 });
 
 test('contact fields are optional when sending an aspiration', function () {
-    $this->post('/aspirasi', payloadAspirasi([
+    $response = $this->post('/aspirasi', payloadAspirasi([
         'email' => '',
         'no_hp' => '',
-    ]))
-        ->assertSessionHasNoErrors()
-        ->assertRedirect(route('aspirasi.index'));
+    ]));
+    $response->assertSessionHasNoErrors();
 
     $aspirasi = Aspirasi::sole();
+    $response->assertRedirect(route('aspirasi.lacak', ['kode' => $aspirasi->kode]));
 
     expect($aspirasi->email)->toBeNull()
         ->and($aspirasi->no_hp)->toBeNull();

@@ -10,23 +10,58 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Berita extends Model
 {
-        use HasFactory;
-
+    use HasFactory;
 
     /**
      * Pilihan jenis berita yang tersedia di form admin.
      */
     public const JENIS = ['Pengumuman', 'Kegiatan', 'Artikel', 'Berita'];
 
-    protected $fillable = ['judul', 'slug', 'jenis', 'isi', 'gambar', 'user_id', 'status'];
+    /**
+     * Pilihan pengurutan daftar berita (publik & admin).
+     */
+    public const SORTS = [
+        'terbaru' => 'Terbaru',
+        'terpopuler' => 'Terpopuler',
+        'terlama' => 'Terlama',
+    ];
+
+    protected $fillable = ['judul', 'slug', 'jenis', 'isi', 'gambar', 'user_id', 'status', 'views'];
 
     protected $attributes = [
         'jenis' => 'Berita',
+        'views' => 0,
+    ];
+
+    protected $casts = [
+        'status' => 'boolean',
+        'views' => 'integer',
     ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Hanya berita yang sudah diterbitkan (aman untuk halaman publik).
+     */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('status', true);
+    }
+
+    /**
+     * Urutkan berita sesuai pilihan pengguna: terbaru (bawaan), terpopuler,
+     * atau terlama. Pilihan di luar daftar SORTS diabaikan.
+     */
+    public function scopeSorted(Builder $query, ?string $sort = null): Builder
+    {
+        return match ($sort) {
+            'terlama' => $query->orderBy('created_at')->orderBy('id'),
+            'terpopuler' => $query->orderByDesc('views')->orderByDesc('created_at')->orderByDesc('id'),
+            default => $query->orderByDesc('created_at')->orderByDesc('id'),
+        };
     }
 
     /**

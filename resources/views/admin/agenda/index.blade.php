@@ -87,7 +87,21 @@
 
                                     {{-- Lokasi --}}
                                     <td class="px-6 py-4 text-slate-600 font-medium">
-                                        {{ $agenda->location ?? '-' }}
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="max-w-45 truncate">{{ $agenda->location ?? '-' }}</span>
+                                            @if ($agenda->maps_link)
+                                                <a href="{{ $agenda->maps_link }}" target="_blank" rel="noopener noreferrer"
+                                                   title="Buka di Google Maps"
+                                                   class="p-1 rounded-md text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 transition shrink-0">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    </svg>
+                                                </a>
+                                            @endif
+                                        </div>
+                                        @if ($agenda->latitude && $agenda->longitude)
+                                            <div class="text-[11px] text-slate-400 font-mono mt-0.5">{{ $agenda->latitude }}, {{ $agenda->longitude }}</div>
+                                        @endif
                                     </td>
 
                                     {{-- Kolom Aksi --}}

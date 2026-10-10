@@ -1,5 +1,5 @@
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+{{-- Alpine.js hanya dari bundle Vite (resources/js/app.js) — JANGAN tambah CDN lagi agar tidak double-init --}}
 
 <!-- NAVBAR PUBLIK -->
 <header x-data="{ mobileMenuOpen: false, currentTab: 'main' }" id="main-navbar" class="fixed top-0 inset-x-0 z-50 header-floating font-sans">
@@ -22,13 +22,14 @@
                 </a>
 
                 <!-- Dropdown Informasi -->
-                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
-                    <button class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('agenda.*') || request()->routeIs('berita.*') || request()->routeIs('galeri.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
+                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @keydown.escape.window="open = false" class="relative">
+                    <button :aria-expanded="open" class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('agenda.*') || request()->routeIs('berita.*') || request()->routeIs('galeri.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
                         <span>Informasi</span>
                         <span class="material-symbols-outlined text-sm transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
 
-                    <div x-show="open" 
+                    {{-- Wrapper pt-2 sebagai jembatan hover: tanpa celah mati antara tombol dan panel --}}
+                    <div x-show="open"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 translate-y-2"
                          x-transition:enter-end="opacity-100 translate-y-0"
@@ -36,7 +37,8 @@
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 translate-y-2"
                          x-cloak
-                         class="absolute top-full left-0 mt-2 w-48 neutral-frosted rounded-2xl p-2 shadow-xl border border-[#E5E2D9] flex flex-col gap-1">
+                         class="absolute top-full left-0 pt-2 bg-transparent">
+                        <div class="w-48 neutral-frosted rounded-2xl p-2 shadow-xl border border-[#E5E2D9] flex flex-col gap-1">
                         <a href="{{ route('berita.public') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">newspaper</span>
                             <span>Warta Kabar</span>
@@ -49,6 +51,11 @@
                             <span class="material-symbols-outlined text-[18px]">photo_library</span>
                             <span>Galeri</span>
                         </a>
+                        <a href="{{ route('organisasi') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                            <span>Organisasi NU</span>
+                        </a>
+                        </div>
                     </div>
                 </div>
 
@@ -56,14 +63,17 @@
                     Infaq
                 </a>
 
+               
+
                 <!-- Dropdown Keanggotaan -->
-                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative">
-                    <button class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('members.*') || request()->routeIs('aspirasi.*') || request()->routeIs('profil') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
+                <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @keydown.escape.window="open = false" class="relative">
+                    <button :aria-expanded="open" class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('members.*') || request()->routeIs('aspirasi.*') || request()->routeIs('profil') || request()->routeIs('struktur') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
                         <span>Keanggotaan</span>
                         <span class="material-symbols-outlined text-sm transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
 
-                    <div x-show="open" 
+                    {{-- Wrapper pt-2 sebagai jembatan hover: tanpa celah mati antara tombol dan panel --}}
+                    <div x-show="open"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 translate-y-2"
                          x-transition:enter-end="opacity-100 translate-y-0"
@@ -71,7 +81,8 @@
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 translate-y-2"
                          x-cloak
-                         class="absolute top-full right-0 mt-2 w-52 neutral-frosted rounded-2xl p-2 shadow-xl border border-[#E5E2D9] flex flex-col gap-1">
+                         class="absolute top-full right-0 pt-2 bg-transparent">
+                        <div class="w-52 neutral-frosted rounded-2xl p-2 shadow-xl border border-[#E5E2D9] flex flex-col gap-1">
                         <a href="{{ route('members.card') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">id_card</span>
                             <span>Kartu Anggota</span>
@@ -80,12 +91,20 @@
                             <span class="material-symbols-outlined text-[18px]">groups</span>
                             <span>Pengurus</span>
                         </a>
+                        <a href="{{ route('struktur') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                            <span>Struktur Pengurus</span>
+                        </a>
                         <a href="{{ route('aspirasi.index') }}" class="px-4 py-2.5 rounded-xl hover:bg-[#EDE8DD]/70 transition-colors text-left flex items-center gap-2">
                             <span class="material-symbols-outlined text-[18px]">chat_bubble</span>
                             <span>Kotak Aspirasi</span>
                         </a>
+                        </div>
                     </div>
                 </div>
+                 <a class="px-4 py-2 rounded-full transition-colors {{ request()->routeIs('kontak') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}" href="{{ route('kontak') }}">
+                    Kontak
+                </a>
             </nav>
 
             <!-- Action CTAs & Mobile Toggle -->
@@ -117,7 +136,7 @@
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 -translate-y-4"
              x-cloak
-             class="fixed inset-0 top-[72px] z-40 bg-[#FDFCF7]/98 backdrop-blur-2xl px-6 py-6 flex flex-col justify-between overflow-y-auto lg:hidden">
+             class="fixed inset-0 top-[72px] z-40 bg-[#FDFCF7]/98 neutral-frosted bg px-6 py-6 flex flex-col justify-between overflow-y-auto lg:hidden">
             
             <!-- LAYER 1: MENU UTAMA -->
             <div x-show="currentTab === 'main'"
@@ -140,12 +159,17 @@
                     <span>Infaq</span>
                 </a>
 
+                
                 <!-- Trigger Submenu 2: Keanggotaan -->
                 <button @click="currentTab = 'keanggotaan'" class="w-full px-5 py-4 min-h-[52px] rounded-2xl flex items-center justify-between text-left transition-all hover:bg-[#EDE8DD]/50">
                     <span>Keanggotaan & Layanan</span>
                     <span class="material-symbols-outlined text-[#4F544E]">chevron_right</span>
                 </button>
             </div>
+            <a class="px-5 py-4 min-h-[52px] rounded-2xl flex items-center justify-between transition-all hover:bg-[#EDE8DD]/50" href="{{ route('kontak') }}">
+                    <span>Kontak</span>
+                </a>
+
 
             <!-- LAYER 2: SUBMENU INFORMASI -->
             <div x-show="currentTab === 'informasi'"
@@ -174,6 +198,10 @@
                     <span class="material-symbols-outlined text-[#4F544E]">photo_library</span>
                     <span>Galeri Dokumentasi</span>
                 </a>
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('organisasi') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">account_tree</span>
+                    <span>Organisasi &amp; Badan Otonom</span>
+                </a>
             </div>
 
             <!-- LAYER 2: SUBMENU KEANGGOTAAN -->
@@ -197,7 +225,11 @@
                 </a>
                 <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('profil') }}">
                     <span class="material-symbols-outlined text-[#4F544E]">groups</span>
-                    <span>Struktur Pengurus</span>
+                    <span>Profil Pengurus</span>
+                </a>
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('struktur') }}">
+                    <span class="material-symbols-outlined text-[#4F544E]">account_tree</span>
+                    <span>Piramida Struktur</span>
                 </a>
                 <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('aspirasi.index') }}">
                     <span class="material-symbols-outlined text-[#4F544E]">chat_bubble</span>
