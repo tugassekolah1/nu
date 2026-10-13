@@ -16,6 +16,10 @@ return new class extends Migration
             $table->bigInteger('nominal');
             $table->string('metode_pembayaran'); // transfer_bank, qris, tunai
             $table->enum('status', ['pending', 'lunas', 'dibatalkan'])->default('pending');
+            $table->enum('arah', ['masuk', 'keluar'])->default('masuk')->after('status');
+            $table->string('kategori')->nullable()->after('arah');
+            $table->string('penanggung_jawab')->nullable()->after('kategori');
+            $table->string('bukti_path')->nullable()->after('penanggung_jawab');
             $table->text('catatan')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();

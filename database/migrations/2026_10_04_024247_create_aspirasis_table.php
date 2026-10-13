@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('aspirasis', function (Blueprint $table) {
             $table->id();
+            // Nomor pelacakan (ASP-XXXXXXXX), dibuat otomatis oleh model Aspirasi.
+            $table->string('kode', 20)->unique();
             $table->string('nama', 100);
             $table->string('email')->nullable();
             $table->string('no_hp', 20)->nullable();

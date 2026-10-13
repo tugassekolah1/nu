@@ -19,7 +19,7 @@ test('create form shows a jabatan dropdown whose options follow the organization
         ->assertSee('id="jabatan"', false)
         ->assertSee('name="jabatan"', false) // input tersembunyi tetap mengirim jabatan
         ->assertSee('Ketua Bidang Dakwah', false) // opsi bidang generik
-        ->assertSee('Ketua Bidang Pemberdayaan Umat', false) // opsi khas UPZIS LAZISNU
+        ->assertSee('Kepala Bidang Pemberdayaan Umat', false) // opsi khas UPZIS LAZISNU
         ->assertSee('__default__', false);
 });
 
@@ -214,15 +214,13 @@ test('update refreshes the display label when the organization changes', functio
 
 test('a failed submission shows errors and keeps the old input', function () {
     $this->actingAs(User::factory()->admin()->create())
+        ->followingRedirects()
         ->from(route('pengurus.create'))
         ->post(route('pengurus.store'), [
             'nama' => 'Budi Santoso',
             'jabatan' => '',
             'banom' => 'pac_ipnu',
         ])
-        ->assertSessionHasErrors('jabatan');
-
-    $this->get(route('pengurus.create'))
         ->assertSee('Terjadi kesalahan pada inputan:')
         ->assertSee('Jabatan wajib diisi.')
         ->assertSee('value="Budi Santoso"', false)

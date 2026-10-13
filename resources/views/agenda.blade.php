@@ -208,7 +208,7 @@
                                 @endif
                             </div>
                             <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] shadow-subtle transition-all active:scale-95"
-                               href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, saya ingin bertanya tentang agenda: ' . $featured->title) }}"
+                               href="https://wa.me/{{ config('kontak.whatsapp') }}?text={{ urlencode('Assalamualaikum, saya ingin bertanya tentang agenda: ' . $featured->title) }}"
                                rel="noopener noreferrer" target="_blank">
                                 <span>Tanya Jadwal</span>
                                 <span class="material-symbols-outlined text-[18px]">chat</span>
@@ -302,7 +302,7 @@
                         Jadwal kegiatan berikutnya akan segera diumumkan. Silakan hubungi sekretariat untuk informasi kegiatan rutin mingguan.
                     </p>
                     <a class="mt-6 inline-flex items-center gap-2 px-6 py-3 min-h-[44px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] transition-all active:scale-95"
-                       href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, mohon info jadwal kegiatan NU Banjaranyar') }}"
+                       href="https://wa.me/{{ config('kontak.whatsapp') }}?text={{ urlencode('Assalamualaikum, mohon info jadwal kegiatan NU Banjaranyar') }}"
                        rel="noopener noreferrer" target="_blank">
                         <span class="material-symbols-outlined text-[18px]">chat</span>
                         <span>Tanya Jadwal via WhatsApp</span>
@@ -391,7 +391,7 @@
                 </div>
                 <div class="relative shrink-0">
                     <a class="inline-flex items-center justify-center gap-3 px-8 py-4 min-h-[52px] rounded-full bg-nu-deep hover:bg-[#113725] text-white font-bold text-base shadow-subtle transition-all active:scale-95"
-                       href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, saya ingin ikut / mengusulkan agenda kegiatan NU Banjaranyar') }}"
+                       href="https://wa.me/{{ config('kontak.whatsapp') }}?text={{ urlencode('Assalamualaikum, saya ingin ikut / mengusulkan agenda kegiatan NU Banjaranyar') }}"
                        rel="noopener noreferrer" target="_blank">
                         <span class="material-symbols-outlined text-[22px]">chat</span>
                         <span>Hubungi Sekretariat</span>
@@ -405,7 +405,7 @@
     <div class="fixed bottom-6 right-6 z-40">
         <a aria-label="Hubungi WhatsApp Pengurus"
            class="flex items-center gap-2.5 px-4 py-3 min-h-[44px] rounded-full bg-warm-card/95 border border-border-subtle text-charcoal shadow-subtle hover:shadow-elevated hover:-translate-y-0.5 active:scale-95 transition-all"
-           href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+           href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">
             <div class="w-8 h-8 rounded-full bg-nu-deep text-white flex items-center justify-center shrink-0">
                 <span class="material-symbols-outlined text-[19px]">chat</span>
             </div>

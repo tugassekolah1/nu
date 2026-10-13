@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -107,38 +108,6 @@ class Pengurus extends Model
 
     protected $casts = [
         'urutan' => 'integer',
-    ];
-
-    /**
-     * Tab kategori struktur organisasi untuk halaman piramida pengurus.
-     * Kode tab => label, kode banom yang termasuk, dan deskripsi singkat.
-     */
-    public const STRUKTUR_TABS = [
-        'mwcnu' => [
-            'label' => 'MWC NU',
-            'codes' => ['mwcnu'],
-            'desc' => 'Majelis Wakil Cabang — induk organisasi NU tingkat kecamatan.',
-        ],
-        'ansor' => [
-            'label' => 'GP Ansor',
-            'codes' => ['pac_ansor', 'satkoryon_banser'],
-            'desc' => 'Gerakan Pemuda Ansor beserta Barisan Ansor Serbaguna.',
-        ],
-        'muslimat' => [
-            'label' => 'Muslimat NU',
-            'codes' => ['pac_muslimat'],
-            'desc' => 'Wadah perjuangan perempuan dan tokoh wanita NU.',
-        ],
-        'fatayat' => [
-            'label' => 'Fatayat NU',
-            'codes' => ['pac_fatayat'],
-            'desc' => 'Wadah perempuan muda NU (maksimal 40 tahun).',
-        ],
-        'ipnu-ippnu' => [
-            'label' => 'IPNU-IPPNU',
-            'codes' => ['pac_ipnu', 'pac_ippnu', 'cbp_ipnu', 'kpp_ippnu'],
-            'desc' => 'Ikatan pelajar putra-putri NU beserta unit CBP dan KPP.',
-        ],
     ];
 
     /**

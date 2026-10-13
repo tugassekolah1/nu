@@ -25,7 +25,7 @@
                     <ol class="flex flex-wrap items-center gap-2">
                         <li><a class="hover:text-white hover:underline underline-offset-4 transition-colors" href="{{ route('landing') }}">Beranda</a></li>
                         <li aria-hidden="true">›</li>
-                        <li><a class="hover:text-white hover:underline underline-offset-4 transition-colors" href="{{ route('struktur') }}">Struktur Pengurus</a></li>
+                        <li><a class="hover:text-white hover:underline underline-offset-4 transition-colors" href="{{ route('organisasi') }}">Organisasi</a></li>
                         <li aria-hidden="true">›</li>
                         <li class="text-white font-semibold" aria-current="page">{{ $pengurus->nama }}</li>
                     </ol>
@@ -85,16 +85,24 @@
                         </p>
 
                         <div class="mt-8 flex flex-wrap gap-3">
-                            <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] transition-all active:scale-95"
-                               href="{{ route('struktur') }}">
-                                <span class="material-symbols-outlined text-[18px]">account_tree</span>
-                                <span>Lihat Struktur Lengkap</span>
-                            </a>
-                            <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-warm-bg text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-all active:scale-95"
-                               href="{{ route('profil') }}">
-                                <span class="material-symbols-outlined text-[18px]">groups</span>
-                                <span>Halaman Profil</span>
-                            </a>
+                            @if ($org)
+                                <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] transition-all active:scale-95"
+                                   href="{{ route('organisasi.show', ['slug' => $org['slug'], 'tab' => 'struktur']) }}">
+                                    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                                    <span>Lihat Struktur {{ $org['singkatan'] }}</span>
+                                </a>
+                                <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-warm-bg text-charcoal text-sm font-semibold border border-border-subtle hover:bg-warm-beige/60 transition-all active:scale-95"
+                                   href="{{ route('organisasi.show', ['slug' => $org['slug'], 'tab' => 'profil']) }}">
+                                    <span class="material-symbols-outlined text-[18px]">groups</span>
+                                    <span>Profil {{ $org['singkatan'] }}</span>
+                                </a>
+                            @else
+                                <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-full bg-nu-deep text-white text-sm font-semibold hover:bg-[#113725] transition-all active:scale-95"
+                                   href="{{ route('organisasi') }}">
+                                    <span class="material-symbols-outlined text-[18px]">account_tree</span>
+                                    <span>Lihat Semua Organisasi</span>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -64,7 +64,7 @@
 
                 <!-- Dropdown Keanggotaan -->
                 <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @keydown.escape.window="open = false" class="relative">
-                    <button :aria-expanded="open" class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('members.*') || request()->routeIs('aspirasi.*') || request()->routeIs('profil') || request()->routeIs('struktur') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
+                    <button :aria-expanded="open" class="px-4 py-2 rounded-full flex items-center gap-1 transition-colors {{ request()->routeIs('members.*') || request()->routeIs('aspirasi.*') || request()->routeIs('organisasi.*') ? 'text-[#171816] font-semibold bg-[#EDE8DD]' : 'hover:text-[#171816] hover:bg-[#EDE8DD]/50' }}">
                         <span>Keanggotaan</span>
                         <span class="material-symbols-outlined text-sm transition-transform" :class="open ? 'rotate-180' : ''">expand_more</span>
                     </button>
@@ -107,7 +107,7 @@
                     <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
                     <span>Daftar Anggota</span>
                 </a>
-                <a class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-[14px] bg-[#FDFCF7] hover:bg-[#EDE8DD]/60 text-[#171816] font-semibold text-xs sm:text-sm border border-[#D5D2C8] transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+                <a class="hidden md:inline-flex items-center gap-1.5 px-4 py-2 min-h-[44px] rounded-[14px] bg-[#FDFCF7] hover:bg-[#EDE8DD]/60 text-[#171816] font-semibold text-xs sm:text-sm border border-[#D5D2C8] transition-all" href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">
                     <span class="material-symbols-outlined text-[#4F544E] text-[18px]">chat</span>
                     <span>Hubungi Kami</span>
                 </a>
@@ -192,10 +192,6 @@
                     <span class="material-symbols-outlined text-[#4F544E]">photo_library</span>
                     <span>Galeri Dokumentasi</span>
                 </a>
-                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('organisasi') }}">
-                    <span class="material-symbols-outlined text-[#4F544E]">account_tree</span>
-                    <span>Organisasi &amp; Badan Otonom</span>
-                </a>
             </div>
 
             <!-- LAYER 2: SUBMENU KEANGGOTAAN -->
@@ -217,13 +213,9 @@
                     <span class="material-symbols-outlined text-[#4F544E]">id_card</span>
                     <span>Cetak Kartu Anggota</span>
                 </a>
-                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('profil') }}">
-                    <span class="material-symbols-outlined text-[#4F544E]">groups</span>
-                    <span>Profil Pengurus</span>
-                </a>
-                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('struktur') }}">
+                <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('organisasi') }}">
                     <span class="material-symbols-outlined text-[#4F544E]">account_tree</span>
-                    <span>Piramida Struktur</span>
+                    <span>Organisasi &amp; Struktur Pengurus</span>
                 </a>
                 <a class="px-5 py-3.5 rounded-2xl flex items-center gap-3 transition-all hover:bg-[#EDE8DD]/50 text-base font-medium" href="{{ route('aspirasi.index') }}">
                     <span class="material-symbols-outlined text-[#4F544E]">chat_bubble</span>
@@ -237,7 +229,7 @@
                     <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
                     <span>Daftar Anggota</span>
                 </a>
-                <a class="flex items-center justify-center gap-2 px-4 py-3.5 min-h-[52px] rounded-2xl bg-[#FDFCF7] text-[#171816] font-semibold text-base border border-[#D5D2C8] active:scale-95 transition-all" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+                <a class="flex items-center justify-center gap-2 px-4 py-3.5 min-h-[52px] rounded-2xl bg-[#FDFCF7] text-[#171816] font-semibold text-base border border-[#D5D2C8] active:scale-95 transition-all" href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">
                     <span class="material-symbols-outlined text-[#16452F] text-[20px]">chat</span>
                     <span>Hubungi Kami (WhatsApp)</span>
                 </a>

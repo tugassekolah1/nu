@@ -573,10 +573,10 @@
          data-aria-label="Kartu anggota {{ $member->full_name }}">
         <span class="fc-shadow-el" aria-hidden="true"></span>
         <div class="fc-rotor">
-            <div class="fc-face">
+            <div class="fc-face mc-face-front">
                 @include('partials.member-card-face-front')
             </div>
-            <div class="fc-face fc-face-back">
+            <div class="fc-face fc-face-back mc-face-back">
                 @include('partials.member-card-face-back')
             </div>
         </div>

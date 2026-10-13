@@ -6,7 +6,7 @@ test('public agenda page is reachable by guests', function () {
     $response = $this->get('/agenda');
 
     $response->assertOk()
-        ->assertSee('Agenda &amp; Majelis Taklim', false)
+        ->assertSee('Majelis Taklim', false)
         ->assertSee('Agenda Terdekat', false)
         ->assertSee('Agenda Telah Berlangsung', false);
 });
@@ -19,11 +19,11 @@ test('public agenda page uses the agenda.public route name', function () {
 
 test('public agenda page lists upcoming agenda', function () {
     $agenda = Agenda::create([
-        'title'       => 'Pengajian Rutin Malam Rabu Pon',
-        'category'    => 'Pengajian',
-        'event_date'  => now()->addDays(7)->toDateString(),
-        'event_time'  => '19:30 WIB',
-        'location'    => 'Masjid Baiturrahman',
+        'title' => 'Pengajian Rutin Malam Rabu Pon',
+        'category' => 'Pengajian',
+        'event_date' => now()->addDays(7)->toDateString(),
+        'event_time' => '19:30 WIB',
+        'location' => 'Masjid Baiturrahman',
         'description' => 'Pengajian kitab kuning bersama jamaah Banjaranyar.',
     ]);
 
@@ -37,18 +37,18 @@ test('public agenda page lists upcoming agenda', function () {
 
 test('public agenda page keeps past agenda in the archive section only', function () {
     $upcoming = Agenda::create([
-        'title'      => 'Agenda Mendatang Khusus',
-        'category'   => 'Kegiatan',
+        'title' => 'Agenda Mendatang Khusus',
+        'category' => 'Kegiatan',
         'event_date' => now()->addDays(3)->toDateString(),
         'event_time' => '08:00 WIB',
     ]);
 
     $past = Agenda::create([
-        'title'      => 'Agenda Lama Yang Telah Selesai',
-        'category'   => 'Sosial',
+        'title' => 'Agenda Lama Yang Telah Selesai',
+        'category' => 'Sosial',
         'event_date' => now()->subDays(10)->toDateString(),
         'event_time' => '10:00 WIB',
-        'location'   => 'Aula Ranting',
+        'location' => 'Aula Ranting',
     ]);
 
     $response = $this->get('/agenda');
@@ -60,8 +60,8 @@ test('public agenda page keeps past agenda in the archive section only', functio
     // Agenda lampau tidak boleh muncul di bagian terdekat (setelah judul bagian arsip)
     $html = $response->getContent();
     $arsipPos = strpos($html, 'Agenda Telah Berlangsung');
-    $pastPos  = strpos($html, $past->title);
-    $nextPos  = strpos($html, $upcoming->title);
+    $pastPos = strpos($html, $past->title);
+    $nextPos = strpos($html, $upcoming->title);
 
     expect($arsipPos)->not->toBeFalse();
     expect($pastPos)->toBeGreaterThan($arsipPos);
@@ -78,8 +78,8 @@ test('public agenda page shows an empty state when there is no agenda', function
 test('public agenda page paginates upcoming agenda', function () {
     foreach (range(1, 12) as $i) {
         Agenda::create([
-            'title'      => "Agenda Nomor {$i}",
-            'category'   => 'Kegiatan',
+            'title' => "Agenda Nomor {$i}",
+            'category' => 'Kegiatan',
             'event_date' => now()->addDays($i)->toDateString(),
         ]);
     }
@@ -94,9 +94,9 @@ test('public agenda page paginates upcoming agenda', function () {
 
 test('public agenda page escapes agenda content', function () {
     Agenda::create([
-        'title'       => 'Kegiatan <script>alert(1)</script>',
-        'category'    => 'Kegiatan',
-        'event_date'  => now()->addDay()->toDateString(),
+        'title' => 'Kegiatan <script>alert(1)</script>',
+        'category' => 'Kegiatan',
+        'event_date' => now()->addDay()->toDateString(),
         'description' => '<b>Deskripsi</b> berbahaya',
     ]);
 

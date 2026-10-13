@@ -29,7 +29,7 @@
                     <li><a class="hover:text-white transition-colors" href="{{ route('agenda.public') }}">Jadwal Agenda & Majelis</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('landing') }}#berita">Warta & Kabar Terkini</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('berita.public') }}">Semua Warta Kabar</a></li>
-                    <li><a class="hover:text-white transition-colors" href="{{ route('profil') }}">Profil & Struktur Pengurus</a></li>
+                    <li><a class="hover:text-white transition-colors" href="{{ route('organisasi') }}">Organisasi &amp; Struktur Pengurus</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('members.register-form') }}">Pendaftaran KARTANU</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('aspirasi.index') }}">Kotak Aspirasi Warga</a></li>
                     <li><a class="hover:text-white transition-colors" href="{{ route('members.card') }}">Kartu Anggota</a></li>
@@ -41,11 +41,11 @@
             <div class="lg:col-span-4 flex flex-col">
                 <span class="text-xs font-bold tracking-wider text-[#B49352] uppercase mb-4">Badan Otonom & Lembaga</span>
                 <div class="grid grid-cols-2 gap-2.5 text-sm text-white/70">
-                    <a class="hover:text-white transition-colors" href="{{ route('profil') }}#muslimat">• Muslimat NU</a>
-                    <a class="hover:text-white transition-colors" href="{{ route('profil') }}#ansor">• GP Ansor</a>
-                    <a class="hover:text-white transition-colors" href="{{ route('profil') }}#fatayat">• Fatayat NU</a>
-                    <a class="hover:text-white transition-colors" href="{{ route('profil') }}#banser">• Banser Satkoryon</a>
-                    <a class="hover:text-white transition-colors" href="{{ route('profil') }}#ipnu">• IPNU & IPPNU</a>
+                    <a class="hover:text-white transition-colors" href="{{ route('organisasi.show', 'muslimat') }}">• Muslimat NU</a>
+                    <a class="hover:text-white transition-colors" href="{{ route('organisasi.show', 'gp-ansor') }}">• GP Ansor</a>
+                    <a class="hover:text-white transition-colors" href="{{ route('organisasi.show', 'fatayat') }}">• Fatayat NU</a>
+                    <a class="hover:text-white transition-colors" href="{{ route('organisasi.show', ['slug' => 'gp-ansor', 'tab' => 'struktur']) }}">• Banser Satkoryon</a>
+                    <a class="hover:text-white transition-colors" href="{{ route('organisasi.show', 'ipnu') }}">• IPNU &amp; IPPNU</a>
                     <a class="hover:text-white transition-colors" href="{{ route('infaq.index') }}">• LAZISNU UPZIS</a>
                 </div>
                 <div class="mt-6 pt-4 border-t border-white/10 text-xs text-white/60">

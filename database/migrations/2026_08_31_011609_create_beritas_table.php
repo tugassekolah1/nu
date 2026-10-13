@@ -9,20 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    // database/migrations/xxxx_create_beritas_table.php
-public function up()
-{
-    Schema::create('beritas', function (Blueprint $table) {
-        $table->id();
-        $table->string('judul');
-        $table->string('slug')->unique();
-        $table->text('isi');
-        $table->string('gambar')->nullable();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        $table->boolean('status')->default(true); // publish/draft
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('beritas', function (Blueprint $table) {
+            $table->id();
+            $table->string('judul');
+            $table->string('jenis', 30)->default('Berita')->after('judul')->index();
+            $table->string('slug')->unique();
+            $table->text('isi');
+            $table->string('gambar')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->boolean('status')->default(true); // publish/draft
+            $table->unsignedBigInteger('views')->default(0)->after('status');
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

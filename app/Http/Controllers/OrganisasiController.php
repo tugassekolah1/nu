@@ -66,10 +66,13 @@ class OrganisasiController extends Controller
         $ketua = collect();
         $inti = collect();
         $bidang = collect();
+        $jabatanList = collect();
+        $jabatanFilter = 'all';
+        $hasilFilter = collect();
 
         if ($organisasi['banom'] !== null) {
             $pengurus = Pengurus::query()
-                ->where('banom', $organisasi['banom'])
+                ->whereIn('banom', $this->kodeBanom($organisasi))
                 ->orderBy('urutan')
                 ->orderBy('id')
                 ->get();
@@ -81,6 +84,25 @@ class OrganisasiController extends Controller
                 ->values();
 
             $bidang = $pengurus->filter(fn ($p) => Pengurus::levelJabatan($p->jabatan) === 3)->values();
+
+            // Filter jabatan (warisan halaman /struktur lama): daftar opsi + hasil terpilih.
+            $jabatanList = $pengurus
+                ->groupBy('jabatan')
+                ->map(fn ($items, $jabatan) => [
+                    'jabatan' => $jabatan,
+                    'jumlah' => $items->count(),
+                ])
+                ->sortBy(fn ($row) => [Pengurus::levelJabatan($row['jabatan']), $row['jabatan']])
+                ->values();
+
+            $jabatanFilter = (string) $request->query('jabatan', 'all');
+            if (! $jabatanList->contains(fn ($row) => $row['jabatan'] === $jabatanFilter)) {
+                $jabatanFilter = 'all';
+            }
+
+            $hasilFilter = $jabatanFilter === 'all'
+                ? collect()
+                : $pengurus->filter(fn ($p) => $p->jabatan === $jabatanFilter)->values();
         }
 
         $lainnya = collect(config('organisasi.organisasi'))
@@ -96,7 +118,28 @@ class OrganisasiController extends Controller
             'inti' => $inti,
             'bidang' => $bidang,
             'punyaStruktur' => $ketua->isNotEmpty() || $inti->isNotEmpty() || $bidang->isNotEmpty(),
+            'jabatanList' => $jabatanList,
+            'jabatanFilter' => $jabatanFilter,
+            'hasilFilter' => $hasilFilter,
             'lainnya' => $lainnya,
         ]);
+    }
+
+    /**
+     * Kode banom utama + kode tambahan sebuah organisasi.
+     *
+     * Beberapa banom sengaja digabung ke satu halaman organisasi, misalnya
+     * Satkoryon Banser tampil pada halaman GP Ansor dan CBP/KPP tampil pada
+     * halaman IPNU/IPPNU.
+     *
+     * @param  array<string, mixed>  $organisasi
+     * @return array<int, string>
+     */
+    private function kodeBanom(array $organisasi): array
+    {
+        return array_values(array_unique(array_filter(array_merge(
+            [$organisasi['banom']],
+            $organisasi['banom_tambahan'] ?? [],
+        ))));
     }
 }

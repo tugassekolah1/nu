@@ -9,48 +9,6 @@ use Illuminate\Validation\Rule;
 
 class PengurusController extends Controller
 {
-    // Halaman Utama Frontend
-    public function index()
-    {
-        $pengurus = Pengurus::orderBy('urutan', 'asc')->orderBy('id', 'asc')->get();
-
-        $urutanBanom = ['ranting', 'ipnu', 'ippnu', 'ansor', 'fatayat', 'muslimat', 'banser'];
-        $labelCadangan = [
-            'ranting' => 'Ranting NU',
-            'ipnu' => 'PR IPNU',
-            'ippnu' => 'PR IPPNU',
-            'ansor' => 'GP Ansor',
-            'fatayat' => 'Fatayat NU',
-            'muslimat' => 'Muslimat NU',
-            'banser' => 'Banser',
-        ];
-
-        $sections = $pengurus
-            ->groupBy('banom')
-            ->map(function ($items, $slug) use ($labelCadangan) {
-                $label = $items->groupBy('label_banom')
-                    ->sortByDesc(fn ($group) => $group->count())
-                    ->keys()
-                    ->first() ?: ($labelCadangan[$slug] ?? $slug);
-
-                return [
-                    'slug' => $slug,
-                    'label' => $label,
-                    'jumlah' => $items->count(),
-                    'items' => $items->values(),
-                ];
-            })
-            ->sortBy(fn ($section) => ($index = array_search($section['slug'], $urutanBanom, true)) === false
-                ? count($urutanBanom)
-                : $index)
-            ->values();
-
-        return view('profil', [
-            'sections' => $sections,
-            'totalPengurus' => $pengurus->count(),
-        ]);
-    }
-
     // Halaman detail profil satu pengurus (publik)
     public function show(Pengurus $pengurus)
     {
@@ -62,66 +20,26 @@ class PengurusController extends Controller
             ->take(4)
             ->get();
 
-        return view('struktur-show', compact('pengurus', 'lainnya'));
+        return view('struktur-show', compact('pengurus', 'lainnya') + [
+            // Halaman organisasi induk, dipakai untuk tautan kembali yang relevan.
+            'org' => $this->organisasiInduk($pengurus),
+        ]);
     }
 
-    // Halaman Piramida Struktur Pengurus per kategori organisasi (MWC/Banom)
-    public function struktur(Request $request)
+    /**
+     * Cari entri direktori organisasi yang menaungi kode banom pengurus.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function organisasiInduk(Pengurus $pengurus): ?array
     {
-        $tab = $request->query('tab', 'mwcnu');
-        if (! isset(Pengurus::STRUKTUR_TABS[$tab])) {
-            $tab = 'mwcnu';
-        }
-
-        $codes = Pengurus::STRUKTUR_TABS[$tab]['codes'];
-
-        $pengurus = Pengurus::query()
-            ->whereIn('banom', $codes)
-            ->orderBy('urutan')
-            ->orderBy('id')
-            ->get();
-
-        // Daftar jabatan unik untuk dropdown filter (urut: ketua → inti → bidang).
-        $jabatanList = $pengurus
-            ->groupBy('jabatan')
-            ->map(fn ($items, $jabatan) => [
-                'jabatan' => $jabatan,
-                'level' => Pengurus::levelJabatan($jabatan),
-                'bobot' => Pengurus::bobotInti($jabatan),
-                'min_urutan' => $items->min('urutan') ?? 0,
-                'jumlah' => $items->count(),
-            ])
-            ->sortBy(fn ($row) => [$row['level'], $row['bobot'], $row['min_urutan'], $row['jabatan']])
-            ->values();
-
-        $jabatanFilter = $request->query('jabatan', 'all');
-        if ($jabatanFilter !== 'all' && ! $jabatanList->contains(fn ($row) => $row['jabatan'] === $jabatanFilter)) {
-            $jabatanFilter = 'all';
-        }
-
-        $ketua = $pengurus->filter(fn ($p) => Pengurus::levelJabatan($p->jabatan) === 1)->values();
-
-        $inti = $pengurus->filter(fn ($p) => Pengurus::levelJabatan($p->jabatan) === 2)
-            ->sortBy(fn ($p) => [Pengurus::bobotInti($p->jabatan), $p->urutan ?? 0, $p->id])
-            ->values();
-
-        $bidang = $pengurus->filter(fn ($p) => Pengurus::levelJabatan($p->jabatan) === 3)->values();
-
-        $hasilFilter = $jabatanFilter === 'all'
-            ? collect()
-            : $pengurus->filter(fn ($p) => $p->jabatan === $jabatanFilter)->values();
-
-        return view('struktur', [
-            'tabs' => Pengurus::STRUKTUR_TABS,
-            'tabAktif' => $tab,
-            'ketua' => $ketua,
-            'inti' => $inti,
-            'bidang' => $bidang,
-            'totalTab' => $pengurus->count(),
-            'jabatanList' => $jabatanList,
-            'jabatanFilter' => $jabatanFilter,
-            'hasilFilter' => $hasilFilter,
-        ]);
+        return collect(config('organisasi.organisasi'))
+            ->filter(fn (array $org) => $org['banom'] !== null
+                && in_array($pengurus->banom, array_merge(
+                    [$org['banom']],
+                    $org['banom_tambahan'] ?? [],
+                ), true))
+            ->firstWhere('terverifikasi', true);
     }
 
     // Dashboard Admin - List Data

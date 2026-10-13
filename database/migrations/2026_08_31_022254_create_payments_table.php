@@ -9,18 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    // database/migrations/xxxx_create_payments_table.php
-public function up()
-{
-    Schema::create('payments', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('nu_member_id')->constrained()->onDelete('cascade');
-        $table->string('transaction_code')->unique();
-        $table->decimal('amount', 10, 2);
-        $table->enum('payment_status', ['unpaid', 'paid'])->default('unpaid');
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('payments', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('nu_member_id')->constrained()->onDelete('cascade');
+            $table->string('transaction_code')->unique();
+            $table->decimal('amount', 10, 2);
+            $table->string('payment_proof')->nullable()->after('amount');
+            $table->enum('payment_status', ['unpaid', 'paid'])->default('unpaid');
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

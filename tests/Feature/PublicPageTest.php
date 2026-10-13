@@ -9,7 +9,17 @@ test('landing page renders the shared public footer', function () {
         ->assertSee('NU BANJARANYAR');
 });
 
-test('profil page groups pengurus by badan otonom', function () {
+test('/profil redirects to the organisasi profil tab', function () {
+    $this->get('/profil')
+        ->assertRedirect('/organisasi/mwcnu?tab=profil');
+});
+
+test('/struktur redirects to the organisasi struktur tab', function () {
+    $this->get('/struktur')
+        ->assertRedirect('/organisasi/mwcnu?tab=struktur');
+});
+
+test('pengurus are listed on the struktur tab of their own organisation', function () {
     Pengurus::create([
         'nama' => 'Ahmad Fauzi',
         'jabatan' => 'Ketua',
@@ -20,42 +30,77 @@ test('profil page groups pengurus by badan otonom', function () {
 
     Pengurus::create([
         'nama' => 'Zahra Aulia',
-        'jabatan' => 'Anggota',
-        'banom' => 'ipnu',
-        'label_banom' => 'PR IPNU',
+        'jabatan' => 'Ketua',
+        'banom' => 'pac_ipnu',
+        'label_banom' => 'PAC IPNU',
         'urutan' => 2,
     ]);
 
-    $this->get('/profil')
+    $this->get(route('organisasi.show', ['slug' => 'prnu', 'tab' => 'struktur']))
         ->assertOk()
-        ->assertSee('Profil Organisasi')
-        ->assertSee('Ranting NU')
-        ->assertSee('PR IPNU')
         ->assertSee('Ahmad Fauzi')
+        ->assertDontSee('Zahra Aulia');
+
+    $this->get(route('organisasi.show', ['slug' => 'ipnu', 'tab' => 'struktur']))
+        ->assertOk()
         ->assertSee('Zahra Aulia')
-        ->assertSee('Pilih badan otonom yang ingin dilihat susunan pengurusnya')
-        ->assertSee(route('landing'), false);
+        ->assertDontSee('Ahmad Fauzi');
 });
 
-test('profil page shows visi, misi, and the short history for first time visitors', function () {
-    $this->get('/profil')
+test('pengurus from an extra banom code appear on the parent organisation page', function () {
+    Pengurus::create([
+        'nama' => 'Slamet Riyadi',
+        'jabatan' => 'Komandan',
+        'banom' => 'satkoryon_banser',
+        'label_banom' => 'Satkoryon Banser',
+        'urutan' => 1,
+    ]);
+
+    // Satkoryon Banser menaungi GP Ansor, jadi tampil di halaman GP Ansor.
+    $this->get(route('organisasi.show', ['slug' => 'gp-ansor', 'tab' => 'struktur']))
         ->assertOk()
-        ->assertSee('Visi & Misi')
-        ->assertSee('Misi: 5 langkah utama')
+        ->assertSee('Slamet Riyadi');
+});
+
+test('struktur pengurus can be filtered by jabatan', function () {
+    Pengurus::create([
+        'nama' => 'Ahmad Fauzi',
+        'jabatan' => 'Ketua',
+        'banom' => 'mwcnu',
+        'label_banom' => 'MWCNU',
+        'urutan' => 1,
+    ]);
+
+    Pengurus::create([
+        'nama' => 'Budi Santoso',
+        'jabatan' => 'Sekretaris',
+        'banom' => 'mwcnu',
+        'label_banom' => 'MWCNU',
+        'urutan' => 2,
+    ]);
+
+    $this->get(route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'struktur', 'jabatan' => 'Sekretaris']))
+        ->assertOk()
+        ->assertSee('Sekretaris (1)')
+        ->assertSee('Budi Santoso')
+        ->assertDontSee('Ahmad Fauzi');
+
+    // Nilai jabatan yang tidak dikenal jatuh kembali ke bagan lengkap.
+    $this->get(route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'struktur', 'jabatan' => 'Ngawur']))
+        ->assertOk()
+        ->assertSee('Ahmad Fauzi')
+        ->assertSee('Budi Santoso');
+});
+
+test('profil tab shows visi, misi, and the short history for first time visitors', function () {
+    $this->get(route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'profil']))
+        ->assertOk()
+        ->assertSee('Visi')
+        ->assertSee('Misi')
         ->assertSee('Sejarah Singkat')
         ->assertSee('Awal Mula dan Tradisi Pesantren')
-        ->assertSee('Tonggak penting yang perlu diketahui')
-        ->assertSee('href="#visi-misi"', false)
-        ->assertSee('href="#sejarah"', false)
-        ->assertSee('Ketuk salah satu judul di atas')
-        ->assertSee('aria-label="Kembali ke atas halaman"', false);
-});
-
-test('profil page shows an empty state without any pengurus', function () {
-    $this->get('/profil')
-        ->assertOk()
-        ->assertSee('Data pengurus belum tersedia.')
-        ->assertDontSee('href="#struktur"', false);
+        ->assertSee('Tonggak Penting')
+        ->assertSee('Pelopor Pendidikan Ma\'arif');
 });
 
 test('galeri page renders the shared public head and footer', function () {

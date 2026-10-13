@@ -31,11 +31,41 @@ return [
             'terverifikasi' => true,
             'deskripsi' => 'Induk organisasi NU tingkat kecamatan yang mengoordinasikan seluruh badan otonom, lembaga, dan ranting NU di wilayah kecamatan.',
             'sejarah' => 'MWCNU berdiri setelah PCNU Kabupaten Banyumas berkembang, sebagai majelis perwakilan yang menaungi puluhan Pengurus Ranting NU (PRNU) di desa-desa, termasuk Ranting NU.',
-            'visi' => 'Terwujudnya kemandirian jam\'iyah dan jamaah Nahdlatul Ulama di tingkat kecamatan yang kokoh pada aqidah Ahlussunnah wal Jama\'ah.',
+            'visi' => 'Terwujudnya kemandirian jam\'iyah dan jamaah Nahdlatul Ulama di tingkat Kecamatan Cilongok yang kokoh pada aqidah Ahlussunnah wal Jama\'ah An-Nahdliyah, unggul dalam pelayanan pendidikan, kesehatan, ekonomi, serta maslahah bagi umat.',
             'misi' => [
-                'Mengoordinasikan seluruh badan otonom dan lembaga NU di tingkat kecamatan.',
-                'Meningkatkan pelayanan pendidikan, kesehatan, ekonomi, dan maslahah bagi umat.',
-                'Menjaga ukhuwah dan tradisi keagamaan Ahlussunnah wal Jama\'ah.',
+                'Memperkuat aqidah & tradisi keagamaan: meneguhkan aqidah Ahlussunnah wal Jama\'ah dan menjaga tradisi keagamaan lewat kajian kitab, pesantren, dan pengajian rutin syuriah di setiap ranting.',
+                'Meningkatkan mutu pendidikan: mengembangkan sekolah dan madrasah di bawah naungan LP Ma\'arif NU Cilongok, antara lain <a class="font-semibold text-nu-deep underline underline-offset-4 hover:text-charcoal" href="https://s.id/mtsmanusaci54" target="_blank" rel="noopener noreferrer">MTs Ma\'arif NU 1 Cilongok</a> dan MTs Ma\'arif NU 3 Gununglurah.',
+                'Memperluas layanan kesehatan & sosial: menjangkau layanan kesehatan yang murah dan mudah dijangkau bagi warga, termasuk lewat program pelayanan umat yang dikelola bersama.',
+                'Mandiri secara ekonomi: mengelola infak dan sedekah melalui UPZIS LAZISNU Cilongok untuk membantu ekonomi warga, meringankan yang membutuhkan, dan membiayai kegiatan organisasi.',
+                'Bekerja sama dengan semua pihak: menjalin kerja sama dengan <a class="font-semibold text-nu-deep underline underline-offset-4 hover:text-charcoal" href="https://cilongokkec.banyumaskab.go.id/page/58402/visi-misi" target="_blank" rel="noopener noreferrer">Pemerintah Kecamatan Cilongok</a>, dinas terkait, dan organisasi kemasyarakatan lain agar warga Cilongok hidup tentram, damai, dan sejahtera.',
+            ],
+            'sejarah_panjang' => [
+                [
+                    'judul' => 'Awal Mula dan Tradisi Pesantren',
+                    'isi' => 'Cilongok adalah salah satu kecamatan terbesar di Kabupaten Banyumas dan sejak lama dikenal sebagai daerah dengan tradisi pesantren yang kuat. Di sinilah Nahdlatul Ulama tumbuh berkat para ulama, sesepuh, dan kiai kampung yang berdakwah dari mushala ke mushala. Mereka menjaga amaliah Islam Ahlussunnah wal Jama\'ah sekaligus melindungi warga dari paham keagamaan yang radikal.',
+                ],
+                [
+                    'judul' => 'Berdirinya MWCNU Cilongok',
+                    'isi' => 'Setelah Pengurus Cabang Nahdlatul Ulama (PCNU) Kabupaten Banyumas berkembang, dibentuklah Majelis Wakil Cabang Nahdlatul Ulama (MWCNU) Kecamatan Cilongok. Tugasnya menaungi puluhan Pengurus Ranting NU (PRNU) di desa-desa, termasuk Ranting NU Banjaranyar. Sejak berdiri, MWCNU Cilongok konsisten menjadi penggerak organisasi yang aktif.',
+                ],
+            ],
+            'catatan' => 'Hingga saat ini, MWCNU Cilongok terus berbenah, termasuk dari sisi digital, demi melayani jamaah dan memperkuat organisasi menuju abad kedua Nahdlatul Ulama. Catatan: nama tokoh pendiri dan tahun terbitnya SK pertama MWC Cilongok masih menunggu data resmi dari sekretariat, dan akan ditambahkan bila data sudah tersedia.',
+            'tonggak' => [
+                [
+                    'ikon' => 'school',
+                    'judul' => 'Pelopor Pendidikan Ma\'arif',
+                    'isi' => 'Mengelola puluhan sekolah dan madrasah NU secara mandiri. Semangat kebersamaan ini ditandai dengan diresmikannya Joglo Ma\'arif sebagai pusat koordinasi pendidikan di Cilongok.',
+                ],
+                [
+                    'ikon' => 'health_and_safety',
+                    'judul' => 'Mandiri di Bidang Kesehatan',
+                    'isi' => 'MWCNU Cilongok memulai pembangunan RSI NU Cilongok, rumah sakit berbasis umat yang dirancang untuk melayani kesehatan masyarakat luas.',
+                ],
+                [
+                    'ikon' => 'military_tech',
+                    'judul' => 'MWCNU Paling Utama',
+                    'isi' => 'Atas kerja keras pengurus dari tingkat anak ranting hingga lembaga, MWCNU Cilongok sering diakui sebagai salah satu MWCNU terbaik di lingkungan PCNU Banyumas.',
+                ],
             ],
             'program' => [
                 'Koordinasi rapat kerja tahunan seluruh banom dan lembaga.',
@@ -116,6 +146,7 @@ return [
             'singkatan' => 'GP Ansor',
             'kategori' => 'banom',
             'banom' => 'pac_ansor',
+            'banom_tambahan' => ['satkoryon_banser'],
             'terverifikasi' => true,
             'deskripsi' => 'Organisasi kepemudaan NU yang bergerak di bidang keagamaan, sosial kemasyarakatan, dan pengawalan tradisi ulama.',
             'sejarah' => 'GP Ansor berdiri sebagai wadah pemuda NU yang setia menjaga tradisi dan ukhuwah, serta aktif dalam kegiatan sosial dan kemanusiaan.',
@@ -137,6 +168,7 @@ return [
             'singkatan' => 'IPNU',
             'kategori' => 'banom',
             'banom' => 'pac_ipnu',
+            'banom_tambahan' => ['cbp_ipnu'],
             'terverifikasi' => true,
             'deskripsi' => 'Wadah bagi pelajar, santri, dan mahasiswa laki-laki NU (maksimal 27 tahun) untuk membina kepemimpinan dan karakter keislaman.',
             'sejarah' => 'IPNU berdiri sebagai badan otonom pelajar putra yang bergerak di bidang pendidikan, dakwah, dan kaderisasi kepemimpinan.',
@@ -158,6 +190,7 @@ return [
             'singkatan' => 'IPPNU',
             'kategori' => 'banom',
             'banom' => 'pac_ippnu',
+            'banom_tambahan' => ['kpp_ippnu'],
             'terverifikasi' => true,
             'deskripsi' => 'Wadah bagi pelajar, santri, dan mahasiswi perempuan NU (maksimal 27 tahun) untuk pembinaan dan kaderisasi.',
             'sejarah' => 'IPPNU berdiri sebagai badan otonom pelajar putri yang bergerak di bidang pendidikan, dakwah, dan pembinaan kader perempuan.',
@@ -576,27 +609,6 @@ return [
         ],
 
         // ===== Ranting NU (contoh data per desa) =====
-        [
-            'slug' => 'prnu',
-            'nama' => 'PRNU Desa ',
-            'singkatan' => 'PRNU',
-            'kategori' => 'ranting',
-            'banom' => 'ranting',
-            'terverifikasi' => true,
-            'deskripsi' => 'Pengurus Ranting NU  bernaung di bawah MWCNU Kecamatan Cilongok dan PCNU Kabupaten Banyumas.',
-            'sejarah' => 'Berdiri bersamaan dengan berkembangnya tradisi pesantren di Desa, konsisten menggerakkan kegiatan keagamaan dan sosial kemasyarakatan.',
-            'visi' => 'Melayani umat, memperkuat jamaah, dan membangun masyarakat bersama.',
-            'misi' => [
-                'Menyelenggarakan pengajian rutin dan majelis taklim.',
-                'Mengelola infak dan sedekah untuk warga membutuhkan.',
-            ],
-            'program' => [
-                'Pengajian rutin dan majelis taklim pekanan.',
-                'Pembinaan kaderisasi melalui badan otonom.',
-                'Layanan sosial dan santunan warga dhuafa.',
-            ],
-            'kontak' => 'Gedung Sekretariat PRNU, Jl. Raya Cilongok No. 12,.',
-        ],
         [
             'slug' => 'prnu-contoh-1',
             'nama' => 'PRNU Desa Contoh Satu',

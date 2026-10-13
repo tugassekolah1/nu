@@ -173,7 +173,7 @@
 
                     <div class="mt-6 rounded-2xl border border-[#DCE4DE] bg-[#F5F7F4] p-4 text-sm text-[#526158]">
                         Butuh konfirmasi? Hubungi sekretariat melalui
-                        <a class="font-semibold text-[#1F5A3F] underline underline-offset-4 hover:text-[#16452F]" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">WhatsApp pengurus</a>.
+                        <a class="font-semibold text-[#1F5A3F] underline underline-offset-4 hover:text-[#16452F]" href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">WhatsApp pengurus</a>.
                     </div>
                 </div>
 

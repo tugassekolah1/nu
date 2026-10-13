@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                             <a class="mt-5 inline-flex w-full items-center justify-center gap-2 px-6 py-3.5 min-h-[48px] rounded-full bg-white text-nu-deep text-sm font-bold hover:bg-muted-sage transition-all active:scale-95"
-                               href="https://wa.me/6281234567890?text={{ urlencode('Assalamualaikum, saya ingin bertanya tentang NU Banjaranyar') }}"
+                               href="https://wa.me/{{ config('kontak.whatsapp') }}?text={{ urlencode('Assalamualaikum, saya ingin bertanya tentang NU Banjaranyar') }}"
                                rel="noopener noreferrer" target="_blank">
                                 <span class="material-symbols-outlined text-[18px]">chat</span>
                                 <span>Chat WhatsApp Sekarang</span>
@@ -137,7 +137,7 @@
                         +62 812-3456-7890<br>Respon tercepat melalui WhatsApp pada jam khidmat.
                     </p>
                     <a class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-nu-deep hover:underline underline-offset-2"
-                       href="https://wa.me/6281234567890"
+                       href="https://wa.me/{{ config('kontak.whatsapp') }}"
                        rel="noopener noreferrer" target="_blank">
                         <span>Chat Sekarang</span>
                         <span class="material-symbols-outlined text-[14px]">open_in_new</span>
@@ -246,7 +246,7 @@
     <div class="fixed bottom-6 right-6 z-40">
         <a aria-label="Hubungi WhatsApp Pengurus"
            class="flex items-center gap-2.5 px-4 py-3 min-h-[44px] rounded-full bg-warm-card/95 border border-border-subtle text-charcoal shadow-subtle hover:shadow-elevated hover:-translate-y-0.5 active:scale-95 transition-all"
-           href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+           href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">
             <div class="w-8 h-8 rounded-full bg-nu-deep text-white flex items-center justify-center shrink-0">
                 <span class="material-symbols-outlined text-[19px]">chat</span>
             </div>

@@ -235,7 +235,7 @@
                                     <p class="font-bold text-charcoal">Butuh jawaban cepat?</p>
                                     <p class="mt-1">
                                         Untuk hal yang mendesak, hubungi sekretariat langsung lewat WhatsApp
-                                        <a class="font-semibold text-nu-deep underline underline-offset-4 hover:text-[#113725]" href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">0812-3456-7890</a>.
+                                        <a class="font-semibold text-nu-deep underline underline-offset-4 hover:text-[#113725]" href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">{{ config('kontak.whatsapp') }}</a>.
                                     </p>
                                 </div>
                             </div>
@@ -463,7 +463,7 @@
     <div class="fixed bottom-6 right-6 z-40">
         <a aria-label="Hubungi WhatsApp Pengurus"
            class="flex items-center gap-2.5 px-4 py-3 min-h-[44px] rounded-full bg-warm-card/95 border border-border-subtle text-charcoal shadow-subtle hover:shadow-elevated hover:-translate-y-0.5 active:scale-95 transition-all"
-           href="https://wa.me/6281234567890" rel="noopener noreferrer" target="_blank">
+           href="https://wa.me/{{ config('kontak.whatsapp') }}" rel="noopener noreferrer" target="_blank">
             <div class="w-8 h-8 rounded-full bg-nu-deep text-white flex items-center justify-center shrink-0">
                 <span class="material-symbols-outlined text-[19px]">chat</span>
             </div>

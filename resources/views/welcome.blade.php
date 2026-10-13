@@ -457,7 +457,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <p class="text-sm font-bold text-charcoal truncate">Struktur Pengurus</p>
                         <p class="text-xs text-muted-charcoal truncate">Masa Khidmat 2023 - 2028</p>
                     </div>
-                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('profil') }}">
+                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'struktur']) }}">
                         <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                     </a>
                 </div>
@@ -483,7 +483,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         <p class="text-sm font-bold text-charcoal truncate">Profil Ranting</p>
                         <p class="text-xs text-muted-charcoal truncate">Sejarah & Wilayah Dakwah</p>
                     </div>
-                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('profil') }}">
+                    <a class="text-muted-charcoal hover:text-charcoal" href="{{ route('organisasi.show', 'prnu') }}">
                         <span class="material-symbols-outlined text-[18px]">chevron_right</span>
                     </a>
                 </div>
@@ -521,7 +521,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                         Di tanah ini, Nahdlatul Ulama terus menapaki jalan dakwah yang merangkul, membimbing amaliah Ahlussunnah wal Jama'ah an-Nahdliyah, dan mengawal kemandirian ekonomi umat melalui gotong royong tanpa henti.
                     </p>
                     <div>
-                        <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-btn bg-warm-card text-charcoal font-bold text-sm hover:bg-warm-beige transition-colors shadow-subtle" href="{{ route('profil') }}">
+                        <a class="inline-flex items-center gap-2 px-6 py-3 min-h-[48px] rounded-btn bg-warm-card text-charcoal font-bold text-sm hover:bg-warm-beige transition-colors shadow-subtle" href="{{ route('organisasi.show', 'mwcnu') }}">
                             <span>Profil Selengkapnya</span>
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </a>
@@ -563,7 +563,7 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
                 <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Pengurus Ranting NU</h2>
                 <p class="text-base text-muted-charcoal mt-1">Ulama dan tokoh penggerak masa khidmat {{ $periode ?? '2023 - 2028' }}.</p>
             </div>
-            <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('profil') }}">
+            <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'struktur']) }}">
                 <span>Lihat Struktur Lengkap</span>
                 <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
             </a>

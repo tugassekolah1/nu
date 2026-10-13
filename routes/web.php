@@ -5,11 +5,11 @@ use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
 use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\BeritaController;
-use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\InfaqController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\OrganisasiController;
 use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -37,10 +37,13 @@ Route::get('/cek-kartu', [MemberController::class, 'searchCard'])->name('members
 Route::get('/cek-status', [MemberController::class, 'statusCheck'])->name('members.status-check');
 
 // Public Pages (Non-conflicting)
-Route::get('/profil', [PengurusController::class, 'index'])->name('profil');
 Route::get('/organisasi', [OrganisasiController::class, 'index'])->name('organisasi');
 Route::get('/organisasi/{slug}', [OrganisasiController::class, 'show'])->name('organisasi.show');
-Route::get('/struktur', [PengurusController::class, 'struktur'])->name('struktur');
+
+// RUTE LAMA — halaman profil & piramida struktur lama sudah digabung ke /organisasi.
+// Diarahkan agar tautan lama (bookmark, media sosial) tidak rusak.
+Route::redirect('/profil', '/organisasi/mwcnu?tab=profil');
+Route::redirect('/struktur', '/organisasi/mwcnu?tab=struktur');
 Route::get('/struktur/{pengurus}', [PengurusController::class, 'show'])->name('struktur.show');
 Route::get('/kontak', fn () => view('kontak'))->name('kontak');
 Route::get('/galeri', [GalleryController::class, 'publicIndex'])->name('galeri.index');

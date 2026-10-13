@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 <head>
-    <x-public-head title="{{ $org['nama'] }} — Organisasi NU" />
+    <x-public-head title="{{ $org['nama'] }} — Organisasi NU" :description="$org['deskripsi']" />
 
     <style>
         .reveal {
@@ -129,7 +129,26 @@
 
                         <section class="bg-white rounded-card border border-border-neutral shadow-subtle p-6 sm:p-8">
                             <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-charcoal tracking-tight">Sejarah Singkat</h2>
-                            <p class="mt-3 text-sm sm:text-base text-muted-charcoal leading-relaxed">{{ $org['sejarah'] }}</p>
+                            @if (! empty($org['sejarah_panjang']))
+                                <div class="mt-3 space-y-4">
+                                    @foreach ($org['sejarah_panjang'] as $bagian)
+                                        <div>
+                                            @if (! empty($bagian['judul']))
+                                                <h3 class="font-bold text-charcoal">{{ $bagian['judul'] }}</h3>
+                                            @endif
+                                            <p class="mt-1.5 text-sm sm:text-base text-muted-charcoal leading-relaxed">{{ $bagian['isi'] }}</p>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="mt-3 text-sm sm:text-base text-muted-charcoal leading-relaxed">{{ $org['sejarah'] }}</p>
+                            @endif
+
+                            @if (! empty($org['catatan']))
+                                <div class="mt-5 rounded-card border border-border-neutral bg-nu-deep/5 p-5">
+                                    <p class="text-sm text-muted-charcoal leading-relaxed">{{ $org['catatan'] }}</p>
+                                </div>
+                            @endif
                         </section>
 
                         <section class="bg-white rounded-card border border-border-neutral shadow-subtle p-6 sm:p-8">
@@ -141,11 +160,28 @@
                                 @foreach ($org['misi'] as $misi)
                                     <li class="flex items-start gap-3 text-sm sm:text-base text-muted-charcoal leading-relaxed">
                                         <span class="material-symbols-outlined text-nu-deep text-[18px] shrink-0 mt-0.5">check_circle</span>
-                                        <span>{{ $misi }}</span>
+                                        <span>{!! $misi !!}</span>
                                     </li>
                                 @endforeach
                             </ul>
                         </section>
+
+                        @if (! empty($org['tonggak']))
+                            <section class="bg-white rounded-card border border-border-neutral shadow-subtle p-6 sm:p-8">
+                                <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-charcoal tracking-tight">Tonggak Penting</h2>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                    @foreach ($org['tonggak'] as $item)
+                                        <article class="rounded-card border border-border-neutral bg-warm-bg p-5">
+                                            <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-nu-deep/10 text-nu-deep">
+                                                <span class="material-symbols-outlined">{{ $item['ikon'] }}</span>
+                                            </span>
+                                            <h3 class="mt-3 font-bold text-charcoal">{{ $item['judul'] }}</h3>
+                                            <p class="mt-2 text-sm text-muted-charcoal leading-relaxed">{{ $item['isi'] }}</p>
+                                        </article>
+                                    @endforeach
+                                </div>
+                            </section>
+                        @endif
                     </div>
 
                     <aside class="lg:col-span-5">
@@ -201,7 +237,7 @@
                 <div class="reveal">
                     @if ($punyaStruktur)
                         <div class="bg-white rounded-card border border-border-neutral shadow-subtle p-6 sm:p-10">
-                            <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-3">
+                            <div class="flex flex-col md:flex-row md:items-end justify-between mb-6 gap-3">
                                 <div>
                                     <h2 class="font-heading text-xl sm:text-2xl font-extrabold text-charcoal tracking-tight">Bagan Struktur Pengurus</h2>
                                     <p class="text-sm text-muted-charcoal mt-1">{{ $org['nama'] }} — masa khidmat berjalan.</p>
@@ -211,6 +247,48 @@
                                 </span>
                             </div>
 
+                            {{-- Filter jabatan: tampilkan hanya jabatan tertentu --}}
+                            @if ($jabatanList->isNotEmpty())
+                                <form method="GET" action="{{ route('organisasi.show', $org['slug']) }}" class="mb-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                                    <input type="hidden" name="tab" value="struktur">
+                                    <label for="jabatan" class="text-xs font-bold uppercase tracking-widest text-muted-charcoal sm:mr-1 self-start sm:self-center">Jabatan</label>
+                                    <select id="jabatan" name="jabatan" onchange="this.form.submit()"
+                                            class="min-h-[44px] rounded-full border border-border-subtle bg-warm-bg px-5 pr-10 text-sm font-semibold text-charcoal focus:outline-none focus:border-nu-deep focus:ring-2 focus:ring-nu-deep/20 cursor-pointer max-w-full">
+                                        <option value="all">Semua jabatan (bagan lengkap)</option>
+                                        @foreach ($jabatanList as $row)
+                                            <option value="{{ $row['jabatan'] }}" @selected($jabatanFilter === $row['jabatan'])>
+                                                {{ $row['jabatan'] }} ({{ $row['jumlah'] }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @if ($jabatanFilter !== 'all')
+                                        <a href="{{ route('organisasi.show', ['slug' => $org['slug'], 'tab' => 'struktur']) }}"
+                                           class="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full text-xs font-bold text-muted-charcoal hover:text-rose-600 transition-colors">
+                                            Reset
+                                        </a>
+                                    @endif
+                                </form>
+                            @endif
+
+                            @if ($jabatanFilter !== 'all')
+                                {{-- Hasil filter: tampil ringkas tanpa bagan --}}
+                                <p class="text-center text-xs font-bold uppercase tracking-widest text-muted-charcoal mb-4">
+                                    {{ $jabatanFilter }} ({{ $hasilFilter->count() }})
+                                </p>
+                                @if ($hasilFilter->isNotEmpty())
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                                        @foreach ($hasilFilter as $p)
+                                            @include('partials.pengurus-card', ['p' => $p])
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="rounded-card border border-dashed border-border-subtle p-12 flex flex-col items-center text-center">
+                                        <span class="material-symbols-outlined text-muted-charcoal text-5xl mb-3">person_search</span>
+                                        <p class="text-lg font-bold text-charcoal">Tidak ditemukan</p>
+                                        <p class="text-sm text-muted-charcoal mt-1.5">Tidak ada pengurus dengan jabatan tersebut.</p>
+                                    </div>
+                                @endif
+                            @else
                             <div class="bagan-scroll overflow-x-auto pb-4">
                                 <div class="min-w-[720px] flex flex-col items-center">
                                     @if ($ketua->isNotEmpty())
@@ -249,6 +327,7 @@
                             </div>
                             <p class="mt-2 text-xs text-muted-charcoal text-center">Geser horizontal untuk melihat bagan seluruhnya.</p>
                         </div>
+                            @endif
                     @else
                         <div class="bg-white rounded-card border border-dashed border-border-subtle p-12 flex flex-col items-center text-center">
                             <span class="material-symbols-outlined text-muted-charcoal text-5xl mb-3">account_tree_off</span>

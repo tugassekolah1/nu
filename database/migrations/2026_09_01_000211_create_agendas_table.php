@@ -15,6 +15,9 @@ return new class extends Migration
             $table->date('event_date');
             $table->string('event_time')->nullable();
             $table->string('location')->nullable();
+            $table->decimal('latitude', 10, 7)->nullable()->after('location');
+            $table->decimal('longitude', 10, 7)->nullable()->after('latitude');
+            $table->string('maps_url', 500)->nullable()->after('longitude');
             $table->text('description')->nullable();
             $table->timestamps();
         });
