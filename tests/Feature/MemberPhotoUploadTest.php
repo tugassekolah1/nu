@@ -19,7 +19,7 @@ function fakeMemberPhoto(): UploadedFile
 
 test('admin member create form has a photo upload field', function () {
     $this->actingAs(User::factory()->admin()->create())
-        ->get('/members/create')
+        ->get(route('members.create'))
         ->assertOk()
         ->assertSee('name="photo"', false)
         ->assertSee('Foto Anggota', false)
@@ -40,7 +40,7 @@ test('admin member edit form shows the current photo and an upload field', funct
     ]);
 
     $this->actingAs(User::factory()->admin()->create())
-        ->get('/members/'.$member->id.'/edit')
+        ->get(route('members.edit', $member))
         ->assertOk()
         ->assertSee('name="photo"', false)
         ->assertSee('storage/members-photo/siti.png', false)
@@ -51,7 +51,7 @@ test('admin can create a member with an uploaded photo', function () {
     Storage::fake('public');
 
     $this->actingAs(User::factory()->admin()->create())
-        ->post('/members', [
+        ->post(route('members.store'), [
             'nik' => '3300000000000102',
             'full_name' => 'Ahmad Hidayat',
             'phone' => '081234567891',
@@ -85,7 +85,7 @@ test('admin member edit can replace the photo', function () {
     ]);
 
     $this->actingAs(User::factory()->admin()->create())
-        ->put('/members/'.$member->id, [
+        ->put(route('members.update', $member), [
             'nik' => $member->nik,
             'full_name' => $member->full_name,
             'phone' => $member->phone,
@@ -161,7 +161,7 @@ test('print card page renders the member photo', function () {
     ]);
 
     $this->actingAs(User::factory()->admin()->create())
-        ->get('/members/'.$member->id.'/print-card')
+        ->get(route('members.print-card', $member))
         ->assertOk()
         ->assertSee('storage/members-photo/fulan.png', false)
         ->assertSee('KARTU TANDA ANGGOTA', false);
@@ -181,7 +181,7 @@ test('admin member list shows the photo and a print card action', function () {
     ]);
 
     $this->actingAs(User::factory()->admin()->create())
-        ->get('/members')
+        ->get(route('members.index'))
         ->assertOk()
         ->assertSee('storage/members-photo/hasan.png', false)
         ->assertSee(route('members.print-card', $member), false);
@@ -199,6 +199,6 @@ test('guest cannot print a member card', function () {
         'member_card_no' => 'NU-2026-107',
     ]);
 
-    $this->get('/members/'.$member->id.'/print-card')
+    $this->get(route('members.print-card', $member))
         ->assertRedirect('/login');
 });

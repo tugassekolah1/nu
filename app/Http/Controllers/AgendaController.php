@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agenda;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class AgendaController extends Controller
@@ -22,11 +23,25 @@ class AgendaController extends Controller
         return view('agenda', compact('upcomingAgenda', 'pastAgenda'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $agendaList = Agenda::orderBy('event_date')->paginate(10);
+        $q = trim((string) $request->query('q', ''));
 
-        return view('admin.agenda.index', compact('agendaList'));
+        $agendaList = Agenda::query()
+            ->when($q !== '', function (Builder $query) use ($q) {
+                $like = '%'.$q.'%';
+                $query->where(function (Builder $query) use ($like) {
+                    $query->where('title', 'like', $like)
+                        ->orWhere('category', 'like', $like)
+                        ->orWhere('location', 'like', $like)
+                        ->orWhere('description', 'like', $like);
+                });
+            })
+            ->orderBy('event_date')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('admin.agenda.index', compact('agendaList', 'q'));
     }
 
     public function create()
@@ -37,14 +52,14 @@ class AgendaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'       => 'required|max:255',
-            'category'    => 'required|max:100',
-            'event_date'  => 'required|date',
-            'event_time'  => 'nullable|max:50',
-            'location'    => 'nullable|max:255',
-            'latitude'    => 'nullable|numeric|between:-90,90',
-            'longitude'   => 'nullable|numeric|between:-180,180',
-            'maps_url'    => 'nullable|url|max:500',
+            'title' => 'required|max:255',
+            'category' => 'required|max:100',
+            'event_date' => 'required|date',
+            'event_time' => 'nullable|max:50',
+            'location' => 'nullable|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'maps_url' => 'nullable|url|max:500',
             'description' => 'nullable',
         ]);
 
@@ -63,14 +78,14 @@ class AgendaController extends Controller
     public function update(Request $request, Agenda $agenda)
     {
         $validated = $request->validate([
-            'title'       => 'required|max:255',
-            'category'    => 'required|max:100',
-            'event_date'  => 'required|date',
-            'event_time'  => 'nullable|max:50',
-            'location'    => 'nullable|max:255',
-            'latitude'    => 'nullable|numeric|between:-90,90',
-            'longitude'   => 'nullable|numeric|between:-180,180',
-            'maps_url'    => 'nullable|url|max:500',
+            'title' => 'required|max:255',
+            'category' => 'required|max:100',
+            'event_date' => 'required|date',
+            'event_time' => 'nullable|max:50',
+            'location' => 'nullable|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'maps_url' => 'nullable|url|max:500',
             'description' => 'nullable',
         ]);
 

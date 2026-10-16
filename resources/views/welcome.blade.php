@@ -551,66 +551,52 @@ section.revealed .grid > *:nth-child(4) { animation-delay: 0.35s; }
         </div>
     </section>
 
-    <!-- 8. PENGURUS (PORTRAIT PHOTOGRAPHY GRID) -->
-   <section class="w-full py-16 sm:py-24 bg-warm-card border-b border-border-neutral" id="pengurus">
-    <div class="max-w-7xl mx-auto px-4 sm:px-8">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
-            <div>
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
-                    <span class="material-symbols-outlined text-[16px] text-muted-charcoal">group</span>
-                    <span>Khidmat Kepemimpinan</span>
+    <!-- 8. PENGURUS INTI (RINGKAS — JABATAN PENTING SAJA) -->
+    @php
+        $pengurusInti = $pengurus
+            ->whereIn('jabatan', \App\Models\Pengurus::JABATAN_INTI)
+            ->sortBy('urutan')
+            ->take(4);
+    @endphp
+    @if($pengurusInti->isNotEmpty())
+    <section class="w-full py-16 sm:py-24 bg-warm-card border-y border-border-neutral" id="pengurus">
+        <div class="max-w-7xl mx-auto px-4 sm:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-muted-sage text-charcoal text-xs font-semibold uppercase tracking-wider mb-2 border border-border-neutral">
+                        <span class="material-symbols-outlined text-[16px] text-muted-charcoal">group</span>
+                        <span>Kepengurusan</span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Pengurus Inti</h2>
+                    <p class="text-base text-muted-charcoal mt-1">Jajaran pimpinan yang mengemban amanah khidmat jam'iyyah.</p>
                 </div>
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-charcoal tracking-tight">Pengurus Ranting NU</h2>
-                <p class="text-base text-muted-charcoal mt-1">Ulama dan tokoh penggerak masa khidmat {{ $periode ?? '2023 - 2028' }}.</p>
+                <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'struktur']) }}">
+                    <span>Lihat Struktur Lengkap</span>
+                    <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </a>
             </div>
-            <a class="inline-flex items-center gap-2 font-semibold text-sm text-nu-deep hover:text-charcoal transition-colors group" href="{{ route('organisasi.show', ['slug' => 'mwcnu', 'tab' => 'struktur']) }}">
-                <span>Lihat Struktur Lengkap</span>
-                <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </a>
-        </div>
 
-        <!-- 4:5 Portrait Grid for Leadership -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal-stagger">
-            @forelse ($pengurus as $item)
-                <div class="rounded-card bg-warm-bg border border-border-neutral overflow-hidden flex flex-col shadow-subtle hover:border-border-subtle transition-all group">
-                    <div class="aspect-[4/5] w-full overflow-hidden bg-warm-beige relative">
-                        @if($item->foto)
-                            <img alt="{{ $item->nama }}"
-                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                 src="{{ asset('storage/' . $item->foto) }}"/>
-                        @else
-                            <div class="w-full h-full flex items-center justify-center">
-                                <div class="text-center p-4">
-                                    <span class="material-symbols-outlined text-muted-charcoal text-5xl">badge</span>
-                                    <p class="text-xs text-muted-charcoal font-medium mt-2">{{ $item->label_banom ?? 'Pengurus' }}</p>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($pengurusInti as $orang)
+                    <div class="bg-warm-bg rounded-container-r border border-border-neutral p-6 flex flex-col items-center text-center shadow-subtle">
+                        <div class="w-20 h-20 rounded-full overflow-hidden bg-muted-sage border border-border-subtle mb-4 shrink-0">
+                            @if($orang->foto)
+                                <img src="{{ asset('storage/' . $orang->foto) }}" alt="{{ $orang->nama }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center text-2xl font-extrabold text-charcoal">
+                                    {{ strtoupper(substr($orang->nama, 0, 1)) }}
                                 </div>
-                            </div>
-                        @endif
-                        <div class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-charcoal/80 text-[11px] font-bold text-white">
-                            {{ $item->label_banom ?? 'Pengurus' }}
+                            @endif
                         </div>
+                        <h3 class="text-base font-bold text-charcoal leading-snug">{{ $orang->nama }}</h3>
+                        <p class="text-xs font-semibold text-nu-deep mt-1 uppercase tracking-wider">{{ $orang->jabatan }}</p>
+                        <p class="text-[11px] text-muted-charcoal mt-0.5">{{ $orang->label_banom ?? strtoupper($orang->banom) }}</p>
                     </div>
-                    <div class="p-5 flex flex-col flex-1 justify-between bg-warm-card">
-                        <div>
-                            <h3 class="text-lg font-bold text-charcoal leading-snug">{{ $item->nama }}</h3>
-                            <p class="text-xs font-semibold text-nu-deep mt-0.5">{{ $item->jabatan }}</p>
-                        </div>
-                        @if($item->deskripsi ?? null)
-                            <p class="text-xs text-muted-charcoal mt-3 pt-3 border-t border-border-neutral">
-                                {{ $item->deskripsi }}
-                            </p>
-                        @endif
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full text-center py-12 bg-warm-bg rounded-container-r border border-border-neutral shadow-subtle">
-                    <span class="material-symbols-outlined text-muted-charcoal text-4xl mb-2">group_off</span>
-                    <p class="text-sm font-semibold text-charcoal mt-2">Data pengurus belum tersedia.</p>
-                </div>
-            @endforelse
+                @endforeach
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+    @endif
 
     <!-- INFAQ & KOIN NU (INTEGRATED TRANSPARENCY BLOCK) -->
     <section class="w-full py-16 bg-warm-bg" id="infaq-lazisnu">

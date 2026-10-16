@@ -60,19 +60,23 @@ class BeritaController extends Controller
             'jenis' => ['required', Rule::in(Berita::JENIS)],
             'isi' => 'required',
             'gambar' => 'nullable|image|max:2048',
+            'gambar_url' => 'nullable|url|max:500',
             'status' => 'boolean',
         ], [
             'judul.unique' => 'Judul berita ini sudah pernah digunakan. Silakan gunakan judul lain.',
             'slug.unique' => 'Slug ini sudah dipakai berita lain. Silakan gunakan slug lain.',
             'slug.regex' => 'Slug hanya boleh berisi huruf kecil, angka, dan tanda strip (-).',
             'jenis.in' => 'Jenis berita tidak dikenali.',
+            'gambar_url.url' => 'URL gambar harus format URL yang valid.',
         ]);
 
         $validated['slug'] = $validated['slug'] ?? $this->generateUniqueSlug($validated['judul']);
         $validated['user_id'] = auth()->id();
 
+        // Prioritas: jika ada file upload, gunakan itu. Jika ada URL, gunakan URL.
         if ($request->hasFile('gambar')) {
             $validated['gambar'] = $request->file('gambar')->store('berita', 'public');
+            $validated['gambar_url'] = null; // kosongkan URL jika ada file
         }
 
         Berita::create($validated);
@@ -110,17 +114,22 @@ class BeritaController extends Controller
             'jenis' => ['required', Rule::in(Berita::JENIS)],
             'isi' => 'required',
             'gambar' => 'nullable|image|max:2048',
+            'gambar_url' => 'nullable|url|max:500',
             'status' => 'boolean',
         ], [
             'slug.unique' => 'Slug ini sudah dipakai berita lain. Silakan gunakan slug lain.',
             'slug.regex' => 'Slug hanya boleh berisi huruf kecil, angka, dan tanda strip (-).',
             'jenis.in' => 'Jenis berita tidak dikenali.',
+            'gambar_url.url' => 'URL gambar harus format URL yang valid.',
         ]);
 
         $validated['slug'] = $validated['slug'] ?? $this->generateUniqueSlug($validated['judul'], $berita->id);
 
         if ($request->hasFile('gambar')) {
             $validated['gambar'] = $request->file('gambar')->store('berita', 'public');
+            $validated['gambar_url'] = null; // kosongkan URL jika ada file baru
+        } elseif (isset($validated['gambar_url']) && $validated['gambar_url']) {
+            $validated['gambar'] = null; // kosongkan file jika ada URL
         }
 
         $berita->update($validated);
@@ -137,7 +146,10 @@ class BeritaController extends Controller
 
     public function landing()
     {
-        $newsList = Berita::published()->latest()->paginate(6);
+        $newsList = Berita::with('user')
+            ->published()
+            ->latest()
+            ->paginate(6);
         $upcomingAgenda = Agenda::where('event_date', '>=', now()->toDateString())
             ->orderBy('event_date')
             ->take(3)

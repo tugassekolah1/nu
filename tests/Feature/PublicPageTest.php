@@ -9,6 +9,30 @@ test('landing page renders the shared public footer', function () {
         ->assertSee('NU BANJARANYAR');
 });
 
+test('landing page shows the core pengurus inti section', function () {
+    Pengurus::create([
+        'nama' => 'Ahmad Fauzi',
+        'jabatan' => 'Ketua',
+        'banom' => 'mwcnu',
+        'label_banom' => 'MWCNU',
+        'urutan' => 1,
+    ]);
+
+    Pengurus::create([
+        'nama' => 'Bambang Anggota',
+        'jabatan' => 'Anggota',
+        'banom' => 'mwcnu',
+        'label_banom' => 'MWCNU',
+        'urutan' => 5,
+    ]);
+
+    $this->get('/')
+        ->assertOk()
+        ->assertSee('Pengurus Inti')
+        ->assertSee('Ahmad Fauzi')
+        ->assertDontSee('Bambang Anggota');
+});
+
 test('/profil redirects to the organisasi profil tab', function () {
     $this->get('/profil')
         ->assertRedirect('/organisasi/mwcnu?tab=profil');

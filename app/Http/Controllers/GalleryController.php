@@ -3,22 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
     public function publicIndex()
-{
-    $galleries = Gallery::orderBy('urutan', 'asc')->orderBy('created_at', 'desc')->get();
-    
-    return view('galeri', compact('galleries'));
-}
-    public function index()
     {
-        
         $galleries = Gallery::orderBy('urutan', 'asc')->orderBy('created_at', 'desc')->get();
-        return view('gallery.index', compact('galleries'));
+
+        return view('galeri', compact('galleries'));
+    }
+
+    public function index(Request $request)
+    {
+        $q = trim((string) $request->query('q', ''));
+
+        $galleries = Gallery::query()
+            ->when($q !== '', function (Builder $query) use ($q) {
+                $like = '%'.$q.'%';
+                $query->where(function (Builder $query) use ($like) {
+                    $query->where('judul', 'like', $like)
+                        ->orWhere('deskripsi', 'like', $like);
+                });
+            })
+            ->orderBy('urutan', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('gallery.index', compact('galleries', 'q'));
     }
 
     public function create()

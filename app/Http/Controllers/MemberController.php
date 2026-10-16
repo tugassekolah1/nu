@@ -1,7 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\NuMember;
 use App\Models\Payment;
 use App\Models\Pengurus;
@@ -27,15 +27,33 @@ class MemberController extends Controller
             $banomFilter = 'all';
         }
 
+        // Search query berdasarkan NIK atau Nama
+        $search = trim($request->query('search', ''));
+
         $members = NuMember::query()
             ->when($statusFilter !== 'all', fn ($q) => $q->withRegistrationState($statusFilter === 'approved' ? 'accepted' : 'pending'))
             ->when($banomFilter === 'none', fn ($q) => $q->whereNull('organisasi'))
             ->when($banomFilter !== 'all' && $banomFilter !== 'none', fn ($q) => $q->where('organisasi', $banomFilter))
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('nik', 'like', "%{$search}%")
+                        ->orWhere('full_name', 'like', "%{$search}%");
+                });
+            })
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.members.index', compact('members', 'statusFilter', 'banomFilter'));
+        // Hitung jumlah anggota per banom
+        $banomCounts = [];
+        foreach (NuMember::ORGANISASI_GROUPS as $group => $items) {
+            foreach (array_keys($items) as $code) {
+                $banomCounts[$code] = NuMember::where('organisasi', $code)->count();
+            }
+        }
+        $banomCounts['none'] = NuMember::whereNull('organisasi')->count();
+
+        return view('admin.members.index', compact('members', 'statusFilter', 'banomFilter', 'banomCounts', 'search'));
     }
 
     public function create()
@@ -46,14 +64,14 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nik'            => 'required|digits:16|unique:nu_members,nik',
-            'full_name'      => 'required|max:255',
-            'phone'          => 'required|max:20',
-            'gender'         => 'required|in:L,P',
-            'organisasi'     => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
-            'address'        => 'required',
+            'nik' => 'required|digits:16|unique:nu_members,nik',
+            'full_name' => 'required|max:255',
+            'phone' => 'required|max:20',
+            'gender' => 'required|in:L,P',
+            'organisasi' => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
+            'address' => 'required',
             'payment_option' => 'required|in:cash,unpaid',
-            'photo'          => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $photoPath = null;
@@ -64,24 +82,24 @@ class MemberController extends Controller
         $isCash = $validated['payment_option'] === 'cash';
 
         $member = NuMember::create([
-            'nik'              => $validated['nik'],
-            'full_name'        => $validated['full_name'],
-            'phone'            => $validated['phone'],
-            'gender'           => $validated['gender'],
-            'organisasi'       => $validated['organisasi'] ?? null,
+            'nik' => $validated['nik'],
+            'full_name' => $validated['full_name'],
+            'phone' => $validated['phone'],
+            'gender' => $validated['gender'],
+            'organisasi' => $validated['organisasi'] ?? null,
             'label_organisasi' => isset($validated['organisasi']) ? Pengurus::BANOMS[$validated['organisasi']]['label'] : null,
-            'address'          => $validated['address'],
-            'photo'            => $photoPath,
-            'status'           => $isCash ? 'active' : 'pending_payment',
-            'payment_status'   => $isCash ? 'paid' : 'unpaid',
-            'member_card_no'   => $isCash ? $this->generateCardNumber() : null,
+            'address' => $validated['address'],
+            'photo' => $photoPath,
+            'status' => $isCash ? 'active' : 'pending_payment',
+            'payment_status' => $isCash ? 'paid' : 'unpaid',
+            'member_card_no' => $isCash ? $this->generateCardNumber() : null,
         ]);
 
         Payment::create([
-            'nu_member_id'     => $member->id,
+            'nu_member_id' => $member->id,
             'transaction_code' => $this->generateTransactionCode(),
-            'amount'           => self::REGISTRATION_FEE,
-            'payment_status'   => $isCash ? 'paid' : 'unpaid',
+            'amount' => self::REGISTRATION_FEE,
+            'payment_status' => $isCash ? 'paid' : 'unpaid',
         ]);
 
         return redirect()->route('members.index')->with('success', 'Anggota berhasil ditambahkan.');
@@ -95,13 +113,13 @@ class MemberController extends Controller
     public function update(Request $request, NuMember $member)
     {
         $validated = $request->validate([
-            'nik'        => 'required|digits:16|unique:nu_members,nik,' . $member->id,
-            'full_name'  => 'required|max:255',
-            'phone'      => 'required|max:20',
-            'gender'     => 'required|in:L,P',
+            'nik' => 'required|digits:16|unique:nu_members,nik,'.$member->id,
+            'full_name' => 'required|max:255',
+            'phone' => 'required|max:20',
+            'gender' => 'required|in:L,P',
             'organisasi' => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
-            'address'    => 'required',
-            'photo'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'address' => 'required',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -138,7 +156,7 @@ class MemberController extends Controller
 
         $member->update([
             'payment_status' => 'paid',
-            'status'         => 'active',
+            'status' => 'active',
             'member_card_no' => $member->member_card_no ?? $this->generateCardNumber(),
         ]);
 
@@ -205,13 +223,13 @@ class MemberController extends Controller
 
         $member->update([
             'registration_status' => 'accepted',
-            'rejection_reason'    => null,
-            'status'              => 'active',
+            'rejection_reason' => null,
+            'status' => 'active',
         ]);
 
         return $this->registrationResponse(
             $member,
-            'Pendaftaran diterima. ' . $member->full_name . ' kini berstatus anggota aktif.'
+            'Pendaftaran diterima. '.$member->full_name.' kini berstatus anggota aktif.'
         );
     }
 
@@ -233,12 +251,12 @@ class MemberController extends Controller
 
         $member->update([
             'registration_status' => 'rejected',
-            'rejection_reason'    => $validated['reason'],
+            'rejection_reason' => $validated['reason'],
         ]);
 
         return $this->registrationResponse(
             $member,
-            'Pendaftaran ' . $member->full_name . ' ditolak.'
+            'Pendaftaran '.$member->full_name.' ditolak.'
         );
     }
 
@@ -251,8 +269,8 @@ class MemberController extends Controller
         return response()->json([
             'success' => true,
             'message' => $message,
-            'html'    => [
-                'status'  => view('admin.members.requests.status-cell', ['member' => $member])->render(),
+            'html' => [
+                'status' => view('admin.members.requests.status-cell', ['member' => $member])->render(),
                 'actions' => view('admin.members.requests.actions-cell', ['member' => $member])->render(),
             ],
         ]);
@@ -279,7 +297,7 @@ class MemberController extends Controller
 
                 // QR hanya dibuat bila anggota sudah lunas (syarat cetak kartu)
                 if ($member->payment_status === 'paid') {
-                    $qrData = "NIK: " . $member->nik . " | CARD: " . $member->member_card_no;
+                    $qrData = 'NIK: '.$member->nik.' | CARD: '.$member->member_card_no;
                     $qrCode = QrCode::size(80)->generate($qrData);
                 }
             }
@@ -318,10 +336,75 @@ class MemberController extends Controller
         }
 
         // Generate QR Code berisi NIK & Nomor Kartu
-        $qrData = "NIK: " . $member->nik . " | CARD: " . $member->member_card_no;
+        $qrData = 'NIK: '.$member->nik.' | CARD: '.$member->member_card_no;
         $qrCode = QrCode::size(90)->generate($qrData);
 
         return view('admin.members.print-card', compact('member', 'qrCode'));
+    }
+
+    /**
+     * Cetak KTA masal (Kartu Tanda Anggota).
+     *
+     * Menerima salah satu dari:
+     * - ids[]  : array ID anggota terpilih (bulk action dari tabel)
+     * - banom : kode organisasi (cetak berjamaah satu banom) atau "none"
+     * - tanpa keduanya: seluruh anggota lunas
+     */
+    public function printKtaBulk(Request $request)
+    {
+        $ids = array_filter((array) $request->input('ids', []), fn ($id) => is_numeric($id));
+        $banom = $request->query('banom');
+
+        $query = NuMember::where('payment_status', 'paid');
+
+        if ($ids !== []) {
+            $query->whereIn('id', $ids);
+        } elseif ($banom !== null && $banom !== '') {
+            $validCodes = NuMember::organisasiCodes();
+
+            if ($banom === 'none') {
+                $query->whereNull('organisasi');
+            } elseif (in_array($banom, $validCodes, true)) {
+                $query->where('organisasi', $banom);
+            } else {
+                return back()->with('error', 'Banom tidak valid.');
+            }
+        }
+
+        $members = $query->get();
+
+        if ($members->isEmpty()) {
+            return back()->with('error', 'Tidak ada anggota yang sudah lunas untuk dicetak.');
+        }
+
+        // Generate QR untuk setiap member
+        $membersWithQr = $members->map(function ($member) {
+            $qrData = 'NIK: '.$member->nik.' | CARD: '.$member->member_card_no;
+
+            return [
+                'member' => $member,
+                'qrCode' => QrCode::size(70)->generate($qrData),
+            ];
+        });
+
+        return view('admin.members.cetak-kta-bulk', compact('membersWithQr'));
+    }
+
+    /**
+     * Download KTA individual dalam format PDF/printable
+     */
+    public function downloadKta($id)
+    {
+        $member = NuMember::findOrFail($id);
+
+        if ($member->payment_status !== 'paid') {
+            return back()->with('error', 'Kartu belum dapat diunduh karena status belum lunas.');
+        }
+
+        $qrData = 'NIK: '.$member->nik.' | CARD: '.$member->member_card_no;
+        $qrCode = QrCode::size(90)->generate($qrData);
+
+        return view('admin.members.download-kta', compact('member', 'qrCode'));
     }
 
     private function generateCardNumber(): string
@@ -343,7 +426,7 @@ class MemberController extends Controller
     private function generateTransactionCode(): string
     {
         do {
-            $code = 'TRX-' . strtoupper(uniqid());
+            $code = 'TRX-'.strtoupper(uniqid());
         } while (Payment::where('transaction_code', $code)->exists());
 
         return $code;
@@ -357,13 +440,13 @@ class MemberController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'nik'        => 'required|digits:16|unique:nu_members,nik',
-            'full_name'  => 'required|max:255',
-            'phone'      => 'required|max:20',
-            'gender'     => 'required|in:L,P',
+            'nik' => 'required|digits:16|unique:nu_members,nik',
+            'full_name' => 'required|max:255',
+            'phone' => 'required|max:20',
+            'gender' => 'required|in:L,P',
             'organisasi' => ['nullable', 'string', Rule::in(NuMember::organisasiCodes())],
-            'address'    => 'required',
-            'photo'      => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'address' => 'required',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $photoPath = null;
@@ -372,23 +455,23 @@ class MemberController extends Controller
         }
 
         $member = NuMember::create([
-            'nik'              => $validated['nik'],
-            'full_name'        => $validated['full_name'],
-            'phone'            => $validated['phone'],
-            'gender'           => $validated['gender'],
-            'organisasi'       => $validated['organisasi'] ?? null,
+            'nik' => $validated['nik'],
+            'full_name' => $validated['full_name'],
+            'phone' => $validated['phone'],
+            'gender' => $validated['gender'],
+            'organisasi' => $validated['organisasi'] ?? null,
             'label_organisasi' => isset($validated['organisasi']) ? Pengurus::BANOMS[$validated['organisasi']]['label'] : null,
-            'address'          => $validated['address'],
-            'photo'            => $photoPath,
-            'status'           => 'pending_payment',
-            'payment_status'   => 'unpaid',
+            'address' => $validated['address'],
+            'photo' => $photoPath,
+            'status' => 'pending_payment',
+            'payment_status' => 'unpaid',
         ]);
 
         Payment::create([
-            'nu_member_id'     => $member->id,
+            'nu_member_id' => $member->id,
             'transaction_code' => $this->generateTransactionCode(),
-            'amount'           => self::REGISTRATION_FEE,
-            'payment_status'   => 'unpaid',
+            'amount' => self::REGISTRATION_FEE,
+            'payment_status' => 'unpaid',
         ]);
 
         return redirect()->route('members.payment-page', $member)->with('success', 'Pendaftaran berhasil! Silakan lakukan pembayaran di bawah ini.');
@@ -397,6 +480,7 @@ class MemberController extends Controller
     public function paymentPage(NuMember $member)
     {
         $payment = $member->payments()->latest()->first();
+
         return view('members-payment', compact('member', 'payment'));
     }
 

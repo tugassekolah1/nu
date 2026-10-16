@@ -46,12 +46,36 @@
 
 <div class="mb-4">
     <x-input-label for="gambar" value="Gambar (opsional)" />
-    <input id="gambar" name="gambar" type="file" accept="image/*"
-           class="mt-1 block w-full text-sm text-gray-600" />
+    <div class="space-y-3">
+        <div>
+            <p class="text-xs text-gray-500 mb-2">Pilihan 1: Upload file gambar</p>
+            <input id="gambar" name="gambar" type="file" accept="image/*"
+                   class="mt-1 block w-full text-sm text-gray-600" />
+        </div>
+
+        <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-gray-500">Atau</span>
+            </div>
+        </div>
+
+        <div>
+            <p class="text-xs text-gray-500 mb-2">Pilihan 2: Gunakan URL gambar dari internet</p>
+            <x-text-input id="gambar_url" name="gambar_url" type="url" class="mt-1 block w-full"
+                          value="{{ old('gambar_url', $berita->gambar_url ?? '') }}"
+                          placeholder="https://example.com/gambar.jpg" />
+        </div>
+    </div>
 
     @isset($berita)
-        @if ($berita->gambar)
-            <img src="{{ Storage::url($berita->gambar) }}" class="w-32 mt-2 rounded">
+        @if ($berita->gambar_utama)
+            <div class="mt-3">
+                <p class="text-xs text-gray-500 mb-2">Gambar saat ini:</p>
+                <img src="{{ $berita->gambar_utama }}" class="w-32 rounded shadow-sm border border-gray-200">
+            </div>
         @endif
     @endisset
 </div>

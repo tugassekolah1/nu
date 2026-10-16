@@ -246,8 +246,8 @@
                 <section class="max-w-7xl mx-auto px-4 sm:px-8 py-10 reveal">
                     <article class="group bg-warm-card rounded-container-r border border-border-neutral shadow-subtle overflow-hidden lg:grid lg:grid-cols-12 hover:shadow-elevated transition-shadow duration-300">
                         <div class="lg:col-span-8 relative aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-warm-beige">
-                            @if ($featuredNews->gambar)
-                                <img src="{{ $featuredNews->gambar }}"
+                            @if ($featuredNews->gambar_utama)
+                                <img src="{{ $featuredNews->gambar_utama }}"
                                      alt="{{ $featuredNews->judul }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/>
                             @else

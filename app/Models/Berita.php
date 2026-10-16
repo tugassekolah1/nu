@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Berita extends Model
 {
@@ -26,7 +26,7 @@ class Berita extends Model
         'terlama' => 'Terlama',
     ];
 
-    protected $fillable = ['judul', 'slug', 'jenis', 'isi', 'gambar', 'user_id', 'status', 'views'];
+    protected $fillable = ['judul', 'slug', 'jenis', 'isi', 'gambar', 'gambar_url', 'user_id', 'status', 'views'];
 
     protected $attributes = [
         'jenis' => 'Berita',
@@ -41,6 +41,23 @@ class Berita extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Ambil gambar dari URL atau file upload.
+     * Prioritas: gambar_url > gambar (file upload)
+     */
+    public function getGambarUtamaAttribute(): ?string
+    {
+        if ($this->gambar_url) {
+            return $this->gambar_url;
+        }
+
+        if ($this->gambar) {
+            return Storage::url($this->gambar);
+        }
+
+        return null;
     }
 
     /**

@@ -108,13 +108,19 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('gallery', GalleryController::class);
 
     // Members Management
-    Route::resource('members', MemberController::class)
-        ->parameters(['members' => 'member'])
-        ->except(['show']);
-    Route::patch('/members/{member}/confirm-payment', [MemberController::class, 'confirmPayment'])
-        ->name('members.confirm-payment');
-    Route::get('/members/{member}/print-card', [MemberController::class, 'printCard'])
-        ->name('members.print-card');
+    Route::prefix('admin')->group(function () {
+        Route::resource('members', MemberController::class)
+            ->parameters(['members' => 'member'])
+            ->except(['show']);
+        Route::patch('/members/{member}/confirm-payment', [MemberController::class, 'confirmPayment'])
+            ->name('members.confirm-payment');
+        Route::get('/members/{member}/print-card', [MemberController::class, 'printCard'])
+            ->name('members.print-card');
+        Route::match(['get', 'post'], '/members/cetak-kta-bulk', [MemberController::class, 'printKtaBulk'])
+            ->name('members.cetak-kta-bulk');
+        Route::get('/members/{member}/download-kta', [MemberController::class, 'downloadKta'])
+            ->name('members.download-kta');
+    });
 
     // Pengurus Management
     Route::get('/pengurus', [PengurusController::class, 'adminIndex'])->name('pengurus.index');

@@ -3,8 +3,8 @@
 <article {{ $attributes->merge(['class' => 'group bg-warm-card rounded-card border border-border-neutral shadow-subtle p-3 flex flex-col hover:-translate-y-1.5 hover:shadow-elevated hover:border-border-subtle transition-all duration-300']) }}>
     <a class="relative block aspect-[16/10] overflow-hidden rounded-[16px] bg-warm-beige"
        href="{{ route('berita.show', $berita->slug) }}">
-        @if ($berita->gambar)
-            <img src="{{ Storage::url($berita->gambar) }}"
+        @if ($berita->gambar_utama)
+            <img src="{{ $berita->gambar_utama }}"
                  alt="{{ $berita->judul }}"
                  loading="lazy"
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">

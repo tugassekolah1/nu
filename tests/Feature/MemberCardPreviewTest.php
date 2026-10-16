@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\NuMember;
+use App\Models\User;
 
 function paidMemberForCardPreview(array $overrides = []): NuMember
 {
@@ -74,8 +75,8 @@ test('the admin print card page renders both sides and the download options', fu
         'photo' => 'members-photo/fulan.png',
     ]);
 
-    $this->actingAs(\App\Models\User::factory()->admin()->create())
-        ->get('/members/'.$member->id.'/print-card')
+    $this->actingAs(User::factory()->admin()->create())
+        ->get(route('members.print-card', $member))
         ->assertOk()
         ->assertSee('Download Depan', false)
         ->assertSee('Download Belakang', false)

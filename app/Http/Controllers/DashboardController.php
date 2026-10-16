@@ -9,6 +9,7 @@ use App\Models\Infaq;
 use App\Models\NuMember;
 use App\Models\Pengurus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
@@ -19,28 +20,44 @@ class DashboardController extends Controller
         if (! in_array($statusFilter, ['all', 'pending', 'approved'], true)) {
             $statusFilter = 'all';
         }
-        $state = $statusFilter === 'approved' ? 'accepted' : $statusFilter;
 
-        $filtered = fn () => NuMember::notRejected()
-            ->when($statusFilter !== 'all', fn ($q) => $q->withRegistrationState($state));
+        // Agregat NuMember: total, pending, accepted, tanpa organisasi dalam 1 query
+        $memberStats = DB::table('nu_members')
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN registration_status = 'pending' OR (registration_status IS NULL AND status != 'active') THEN 1 ELSE 0 END) as pending_count,
+                SUM(CASE WHEN registration_status = 'accepted' OR (registration_status IS NULL AND status = 'active') THEN 1 ELSE 0 END) as approved_count,
+                SUM(CASE WHEN organisasi IS NULL THEN 1 ELSE 0 END) as without_org
+            ")
+            ->where(function ($query) {
+                $query->whereNull('registration_status')
+                    ->orWhere('registration_status', '!=', 'rejected');
+            })
+            ->first();
 
-        $membersPerOrganisasi = $filtered()
-            ->selectRaw('organisasi, COUNT(*) as total')
+        // Per organisasi aggregation dalam 1 query dengan conditional
+        $memberAggregates = DB::table('nu_members')
+            ->selectRaw("
+                organisasi,
+                COUNT(*) as total,
+                SUM(CASE WHEN registration_status = 'pending' OR (registration_status IS NULL AND status != 'active') THEN 1 ELSE 0 END) as pending_count,
+                SUM(CASE WHEN registration_status = 'accepted' OR (registration_status IS NULL AND status = 'active') THEN 1 ELSE 0 END) as approved_count
+            ")
+            ->where(function ($query) {
+                $query->whereNull('registration_status')
+                    ->orWhere('registration_status', '!=', 'rejected');
+            })
             ->groupBy('organisasi')
-            ->pluck('total', 'organisasi');
+            ->get()
+            ->keyBy('organisasi');
 
-        // Rincian menunggu vs disetujui per banom (untuk mode "Semua").
-        $pendingPerOrganisasi = NuMember::notRejected()->withRegistrationState('pending')
-            ->selectRaw('organisasi, COUNT(*) as total')
-            ->groupBy('organisasi')
-            ->pluck('total', 'organisasi');
-        $approvedPerOrganisasi = NuMember::notRejected()->withRegistrationState('accepted')
-            ->selectRaw('organisasi, COUNT(*) as total')
-            ->groupBy('organisasi')
-            ->pluck('total', 'organisasi');
+        // Extract masing-masing organisasi breakdown
+        $membersPerOrganisasi = $memberAggregates->mapWithKeys(fn ($item) => [$item->organisasi => $item->total]);
+        $pendingPerOrganisasi = $memberAggregates->mapWithKeys(fn ($item) => [$item->organisasi => $item->pending_count]);
+        $approvedPerOrganisasi = $memberAggregates->mapWithKeys(fn ($item) => [$item->organisasi => $item->approved_count]);
 
-        return view('dashboard', [
-            'totalMembers' => NuMember::count(),
+        // Agregat tabel lain (non-member) dalam 1 query per tabel
+        $otherStats = [
             'totalPengurus' => Pengurus::count(),
             'totalNews' => Berita::count(),
             'totalNewsViews' => (int) Berita::sum('views'),
@@ -48,13 +65,24 @@ class DashboardController extends Controller
             'totalAgenda' => Agenda::count(),
             'totalInfaq' => Infaq::where('status', 'lunas')->sum('nominal'),
             'infaqTerbaru' => Infaq::latest()->take(5)->get(),
+        ];
+
+        return view('dashboard', [
+            'totalMembers' => $memberStats->total,
+            'totalPengurus' => $otherStats['totalPengurus'],
+            'totalNews' => $otherStats['totalNews'],
+            'totalNewsViews' => $otherStats['totalNewsViews'],
+            'totalGaleri' => $otherStats['totalGaleri'],
+            'totalAgenda' => $otherStats['totalAgenda'],
+            'totalInfaq' => $otherStats['totalInfaq'],
+            'infaqTerbaru' => $otherStats['infaqTerbaru'],
             'statusFilter' => $statusFilter,
-            'pendingCount' => NuMember::withRegistrationState('pending')->count(),
-            'approvedCount' => NuMember::withRegistrationState('accepted')->count(),
+            'pendingCount' => $memberStats->pending_count,
+            'approvedCount' => $memberStats->approved_count,
             'membersPerOrganisasi' => $membersPerOrganisasi,
             'pendingPerOrganisasi' => $pendingPerOrganisasi,
             'approvedPerOrganisasi' => $approvedPerOrganisasi,
-            'membersTanpaOrganisasi' => $filtered()->whereNull('organisasi')->count(),
+            'membersTanpaOrganisasi' => $memberStats->without_org,
         ]);
     }
 }

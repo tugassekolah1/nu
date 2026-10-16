@@ -100,9 +100,9 @@
         <!-- KONTEN ARTIKEL -->
         <article class="max-w-3xl mx-auto px-4 sm:px-8 -mt-8 pb-4 reveal">
             <div class="bg-warm-card rounded-container-r border border-border-neutral shadow-elevated overflow-hidden">
-                @if ($berita->gambar)
+                @if ($berita->gambar_utama)
                     <div class="aspect-[16/10] sm:aspect-[16/9] overflow-hidden bg-warm-beige">
-                        <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover">
+                        <img src="{{ $berita->gambar_utama }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover">
                     </div>
                 @endif
 
